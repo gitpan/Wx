@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.93 2003/09/08 10:42:54 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.95 2003/11/23 07:43:27 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -43,6 +43,7 @@
 #include <wx/image.h>
 #include <wx/sizer.h>
 #include <wx/toolbar.h>
+#include <wx/gauge.h>
 #if defined(__WXMSW__) || defined(wxHAS_TASK_BAR_ICON)
 #include <wx/taskbar.h>
 #endif
@@ -249,6 +250,7 @@ static wxPlINH inherit[] =
     I( GenericColourDialog, ColourDialog )
     I( FindReplaceDialog, Dialog )
     I( FontDialog,      Dialog )
+    I( GenericFontDialog, FontDialog )
     I( DirDialog,       Dialog )
 #if defined(__WXGTK__)
     I( GenericFileDialog, Dialog )
@@ -361,7 +363,8 @@ static wxPlINH inherit[] =
     I( TreeCtrl,        GenericTreeCtrl )
 #endif
 
-#if defined(__WXGTK__)
+#if defined(__WXGTK__) || \
+    ( defined( __WXMAC__ ) && WXPERL_W_VERSION_GE( 2, 5, 0 ) )
     I( ComboBox,        Control )
 #else
     I( ComboBox,        Choice )
@@ -1838,25 +1841,10 @@ void SetConstantsOnce()
     tmp = get_sv( "Wx::wxIMAGE_OPTION_FILENAME", 0 );
     wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_FILENAME, tmp );
 
-    int platform;
     int universal;
     int xstatic;
     int unicode;
     int debugging;
-
-#if defined(__WXMSW__)
-    platform = 1;
-#elif defined(__WXGTK__)
-    platform = 2;
-#elif defined(__WXMOTIF__)
-    platform = 3;
-#elif defined(__WXMAC__)
-    platform = 4;
-#elif defined(__WXX11__)
-    platform = 5;
-#else
-    #error must add case
-#endif
 
 #if defined(__WXUNIVERSAL__)
     universal = 1;
@@ -1881,9 +1869,6 @@ void SetConstantsOnce()
 #else
     debugging = 0;
 #endif
-
-    tmp = get_sv( "Wx::_platform", 1 );
-    sv_setiv( tmp, platform );
 
     tmp = get_sv( "Wx::_universal", 1 );
     sv_setiv( tmp, universal );

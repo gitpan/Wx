@@ -58,7 +58,8 @@ foreach my $d ( @data ) {
       # simple creation
       skip "Some controls are weird", 2
         if Wx::wxMOTIF() && $class eq 'Wx::StaticLine'
-        or Wx::wxGTK() && $class =~ m/^Wx::(MiniFrame|StatusBar)/;
+        or Wx::wxGTK() && $class =~ m/^Wx::(MiniFrame|StatusBar)/
+        or Wx::wxMAC() && $class eq 'Wx::SpinCtrl';
 
       my $lb = $class->new( $this, -1, @$args );
       my $lb2 = ($this->GetChildren)[-1];
@@ -93,7 +94,8 @@ $lb->Destroy;
 
 Wx::Event::EVT_IDLE( $this,
                      sub { $this->Destroy } );
-$this->Destroy if Wx::wxMSW || Wx::wxGTK || Wx::wxMOTIF;
+$this->Destroy if ( Wx::wxMSW || Wx::wxGTK || Wx::wxMOTIF )
+               && Wx::wxVERSION() < 2.005;
 };
 
 package main;

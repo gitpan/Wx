@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h,v 1.60 2003/08/22 22:21:57 mbarbon Exp $
+// RCS-ID:      $Id: helpers.h,v 1.63 2003/11/09 17:19:19 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -86,13 +86,18 @@ inline SV* wxPli_wxString_2_sv( pTHX_ const wxString& str, SV* out )
 }
 
 #define WXCHAR_INPUT( var, type, arg ) \
-  var = (type)SvPV_nolen(arg)
+  const wxString var##_tmp = ( SvUTF8( arg ) ) ? \
+            ( wxString( wxConvUTF8.cMB2WC( SvPVutf8_nolen( arg ) ), wxConvLocal ) ) \
+          : ( wxString( SvPV_nolen( arg ) ) ); \
+  var = (type)var##_tmp.c_str();
 
 #define WXCHAR_OUTPUT( var, arg ) \
   wxPli_wxChar_2_sv( aTHX_ var, arg )
 
 #define WXSTRING_INPUT( var, type, arg ) \
-  var = (type)SvPV_nolen(arg)
+  var =  ( SvUTF8( arg ) ) ? \
+           wxString( wxConvUTF8.cMB2WC( SvPVutf8_nolen( arg ) ), wxConvLocal ) \
+         : wxString( SvPV_nolen( arg ) );
 
 #define WXSTRING_OUTPUT( var, arg ) \
   wxPli_wxString_2_sv( aTHX_ var, arg )
@@ -421,11 +426,19 @@ public:
     wxPliGetCallbackObjectFn m_func;
 };
 
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+#define WXPLI_DECLARE_DYNAMIC_CLASS(name) \
+public:\
+  static wxPliClassInfo ms_classInfo;\
+  virtual wxClassInfo *GetClassInfo() const \
+   { return &ms_classInfo; }
+#else
 #define WXPLI_DECLARE_DYNAMIC_CLASS(name) \
 public:\
   static wxPliClassInfo sm_class##name;\
   virtual wxClassInfo *GetClassInfo() const \
-   { return &name::sm_class##name; }
+   { return &sm_class##name; }
+#endif
 
 #define WXPLI_DECLARE_SELFREF() \
 public:\
@@ -435,12 +448,12 @@ public:\
 public:\
   wxPliVirtualCallback m_callback
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
 #define WXPLI_IMPLEMENT_DYNAMIC_CLASS(name, basename)                        \
     wxPliSelfRef* wxPliGetSelfFor##name(wxObject* object)                    \
         { return &((name *)object)->m_callback; }                            \
-    wxPliClassInfo name::sm_class##name((wxChar *) wxT(#name),               \
-        &sm_class##basename, NULL, (int) sizeof(name),                       \
+    wxPliClassInfo name::ms_classInfo((wxChar *) wxT(#name),                 \
+        &basename::ms_classInfo, NULL, (int) sizeof(name),                   \
         (wxPliGetCallbackObjectFn) wxPliGetSelfFor##name);
 #else
 #define WXPLI_IMPLEMENT_DYNAMIC_CLASS(name, basename) \

@@ -1,5 +1,11 @@
 Revision history for Perl extension Wx.
 
+0.18  Sun Nov 23 14:42:39 CET 2003
+	- Corrected handling of UTF-8 encoded strings in ANSI builds.
+	- Added wxGridTableMessage.
+	- Fixed build problems with GTK 2 and/or Unicode on
+	  Unix hosts.
+
 0.17  Tue Sep  9 22:45:40 CEST 2003
 	- Bugfix release.
 	- Completed wxWindows 2.5 compatibility.
