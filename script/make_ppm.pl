@@ -1,4 +1,15 @@
 #!/usr/bin/perl -w
+#############################################################################
+## Name:        script/make_ppm.pl
+## Purpose:     builds the Wx and Wx-dev PPMs
+## Author:      Mattia Barbon
+## Modified by:
+## Created:     25/08/2003
+## RCS-ID:      $Id: make_ppm.pl,v 1.1 2003/08/26 16:43:42 mbarbon Exp $
+## Copyright:   (c) 2003 Mattia Barbon
+## Licence:     This program is free software; you can redistribute it and/or
+##              modify it under the same terms as Perl itself
+#############################################################################
 
 use strict;
 use File::Find;

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.91 2003/08/23 12:56:42 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.93 2003/09/08 10:42:54 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -532,9 +532,6 @@ static double constant( const char *name, int arg )
     r( wxBU_AUTODRAW );                 // button
     r( wxBU_RIGHT );                    // button
 
-    // !export: Type_Boolean
-    if( strEQ( name, "Type_Boolean" ) )
-        return wxConfigBase::Type_Boolean;
     r( wxBU_EXACTFIT );                 // button
 
     r( wxBDIAGONAL_HATCH );             // brush pen
@@ -601,6 +598,11 @@ static double constant( const char *name, int arg )
 
 #define wxCenterX wxCentreX
 #define wxCenterY wxCentreY
+
+#if !WXPERL_W_VERSION_GE( 2, 5, 0 )
+    #define wxCLOSE_BOX 0
+#endif
+    r( wxCLOSE_BOX );                   // frame
 
     r( wxCentreX );                     // layout constraints
     r( wxCentreY );                     // layout constraints
@@ -874,9 +876,6 @@ static double constant( const char *name, int arg )
     r( wxFULLSCREEN_NOCAPTION );        // frame dialog
     r( wxFULLSCREEN_ALL );              // frame dialog
 
-    // !export: Type_Float
-    if( strEQ( name, "Type_Float" ) )
-        return wxConfigBase::Type_Float;
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
@@ -972,9 +971,6 @@ static double constant( const char *name, int arg )
     r( wxITEM_CHECK );                  // menu
     r( wxITEM_RADIO );                  // menu
 
-    // !export: Type_Integer
-    if( strEQ( name, "Type_Integer" ) )
-        return wxConfigBase::Type_Integer;
     break;
   case 'J':
     r( wxJOIN_BEVEL );                  // pen
@@ -1406,6 +1402,7 @@ static double constant( const char *name, int arg )
     r( wxRA_SPECIFY_ROWS );             // radiobox
     r( wxRA_SPECIFY_COLS );             // radiobox
     r( wxRB_GROUP );                    // radiobutton
+    r( wxRB_SINGLE );                   // radiobutton
     r( wxRESIZE_BORDER );               // dialog frame
     r( wxRETAINED );                    // scrolledwindow
     r( wxRIGHT );                       // sizer layout constraints
@@ -1604,9 +1601,6 @@ static double constant( const char *name, int arg )
     // capabilities
     r( wxSYS_CAN_DRAW_FRAME_DECORATIONS );
     r( wxSYS_CAN_ICONIZE_FRAME );
-    // !export: Type_String
-    if( strEQ( name, "Type_String" ) )
-        return wxConfigBase::Type_String;
     break;
   case 'T':
     r( wxTAB_TRAVERSAL );               // panel
@@ -1641,13 +1635,26 @@ static double constant( const char *name, int arg )
     r( wxTRANSPARENT );                 // dc brush pen
 
     r( wxTop );                         // layout constraints
+
+    // !export: Type_Boolean
+    // !export: Type_Float
+    // !export: Type_Integer
+    // !export: Type_String
+    // !export: Type_Unknown
+    if( strEQ( name, "Type_Boolean" ) )
+        return wxConfigBase::Type_Boolean;
+    if( strEQ( name, "Type_Float" ) )
+        return wxConfigBase::Type_Float;
+    if( strEQ( name, "Type_Integer" ) )
+        return wxConfigBase::Type_Integer;
+    if( strEQ( name, "Type_Unknown" ) )
+        return wxConfigBase::Type_Unknown;
+    if( strEQ( name, "Type_String" ) )
+        return wxConfigBase::Type_String;
+
     break;
   case 'U':
     r( wxUnconstrained );               // layout constraints
-    // !export: Type_Unknown
-    if( strEQ( name, "Type_Unknown" ) )
-        return wxConfigBase::Type_Unknown;
-
     r( wxUSER_DASH );                   // pen
     break;
   case 'V':
@@ -1835,6 +1842,7 @@ void SetConstantsOnce()
     int universal;
     int xstatic;
     int unicode;
+    int debugging;
 
 #if defined(__WXMSW__)
     platform = 1;
@@ -1868,6 +1876,12 @@ void SetConstantsOnce()
     unicode = 0;
 #endif
 
+#ifdef __WXDEBUG__
+    debugging = 1;
+#else
+    debugging = 0;
+#endif
+
     tmp = get_sv( "Wx::_platform", 1 );
     sv_setiv( tmp, platform );
 
@@ -1882,9 +1896,13 @@ void SetConstantsOnce()
     tmp = get_sv( "Wx::wxUNICODE", 1 );
     sv_setiv( tmp, unicode );
 
+    tmp = get_sv( "Wx::wxDEBUG", 1 );
+    sv_setiv( tmp, debugging );
+
     // constant functions
     wxPli_make_const( "wxUNICODE" /* don't export */ );
     wxPli_make_const( "wxVERSION" /* don't export */ );
+    wxPli_make_const( "wxDEBUG" /* don't export */ );
 }
 
 // !parser:

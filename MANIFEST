@@ -476,6 +476,7 @@ demo/wxFileSystem.pm
 demo/wxGrid.pm
 demo/wxGridCER.pm
 demo/wxGridER.pm
+demo/wxGridTable.pm
 demo/wxHtmlDynamic.pm
 demo/wxHtmlWindow.pm
 demo/wxListCtrl.pm
