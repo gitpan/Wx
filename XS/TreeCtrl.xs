@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:      4/ 2/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -190,6 +190,16 @@ Wx_TreeCtrl::Delete( item )
   CODE:
     THIS->Delete( *item );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 4 )
+
+void
+wxTreeCtrl::DeleteChildren( item )
+    wxTreeItemId* item;
+  CODE:
+    THIS->DeleteChildren( *item );
+
+#endif
+
 void
 Wx_TreeCtrl::DeleteAllItems()
 
@@ -371,7 +381,13 @@ Wx_TreeItemId*
 Wx_TreeCtrl::GetItemParent( item )
     Wx_TreeItemId* item
   CODE:
-    RETVAL = new wxTreeItemId( THIS->GetParent( *item ) );
+    RETVAL = new wxTreeItemId( 
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+       THIS->GetItemParent( *item )
+#else
+       THIS->GetParent( *item )
+#endif
+     );
   OUTPUT:
     RETVAL
 

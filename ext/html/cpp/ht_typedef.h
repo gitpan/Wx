@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     17/ 3/2001
 // RCS-ID:      
-// Copyright:   (c) 2001 Mattia Barbon
+// Copyright:   (c) 2001-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -15,8 +15,7 @@
 
 #define FD_TD( name ) \
   class wx##name; \
-  typedef wx##name Wx_##name; \
-  extern "C" const char wxPl##name##Name[] = "Wx::" #name; 
+  typedef wx##name Wx_##name;
 
 FD_TD( HtmlWindow );
 FD_TD( HtmlLinkInfo );

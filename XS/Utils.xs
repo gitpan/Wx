@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:      9/ 2/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -234,9 +234,20 @@ wxSleep( sec )
 bool
 wxYield()
 
+#if WXPERL_W_VERSION_GE( 2, 4, 0 )
+
+bool
+wxSafeYield( window = 0, onlyIfNeeded = FALSE )
+    wxWindow* window
+    bool onlyIfNeeded
+
+#else
+
 bool
 wxSafeYield( window = 0 )
-    Wx_Window* window
+    wxWindow* window
+
+#endif
 
 bool
 wxYieldIfNeeded()

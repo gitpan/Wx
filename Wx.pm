@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:      1/10/2000
 ## RCS-ID:      
-## Copyright:   (c) 2000 Mattia Barbon
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -32,12 +32,13 @@ use strict;
 require Exporter;
 
 use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
-  $_platform $_universal $_msw $_gtk $_motif $_wx_version $_static);
+  $_platform $_universal $_msw $_gtk $_motif $_mac $_wx_version $_static
+  $_unicode);
 
-$_msw = 1; $_gtk = 2; $_motif = 3;
+$_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4;
 
 @ISA = qw(Exporter);
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 sub BEGIN{
   @EXPORT_OK = qw(wxPOINT wxSIZE);
@@ -75,16 +76,7 @@ sub import {
   foreach ( @_ ) {
     m/^:/ or last;
     m/^:allclasses$/ and do {
-      eval <<'EOT';
-use Wx::DND;
-use Wx::DocView;
-use Wx::FS;
-use Wx::Grid;
-use Wx::Help;
-use Wx::Html;
-use Wx::MDI;
-use Wx::Print;
-EOT
+      eval _get_packages();
 
       die $@ if $@;
 
@@ -210,11 +202,12 @@ eval( "sub wxPL_STATIC() { $_static }" );
 eval( "sub wxMOTIF() { $_platform == $_motif }" );
 eval( "sub wxMSW() { $_platform == $_msw }" );
 eval( "sub wxGTK() { $_platform == $_gtk }" );
+eval( "sub wxMAC() { $_platform == $_mac }" );
 eval( "sub wxVERSION() { $_wx_version }" );
+eval( "sub wxUNICODE() { $_unicode }" );
 
 require Wx::App;
 require Wx::Event;
-require Wx::Image;
 require Wx::ImageList;
 require Wx::Locale;
 require Wx::Menu;
@@ -226,10 +219,35 @@ require Wx::_Exp;
 require Wx::_Functions;
 # for Wx::Stream & co.
 if( $] >= 5.005 ) { require Tie::Handle; }
-require Wx::SplashScreen;
 
 package Wx::GDIObject;
-package Wx::TreeItemId; use overload '<=>' => \&tiid_spaceship;
+package Wx::TreeItemId;
+
+use overload '<=>'      => \&tiid_spaceship,
+             'bool'     => sub { $_[0]->IsOk },
+             'fallback' => 1;
+
+package Wx::SplashScreen;
+
+use strict;
+use vars qw(@ISA);
+
+if( $Wx::_wx_version < 2.003001 ) {
+  require Wx::SplashScreen;
+  @ISA = qw(Wx::_SplashScreenPerl);
+
+  *Wx::wxSPLASH_CENTRE_ON_PARENT = sub { 0x01 };
+  *Wx::wxSPLASH_CENTRE_ON_SCREEN = sub { 0x02 };
+  *Wx::wxSPLASH_NO_CENTRE = sub { 0x00 };
+  *Wx::wxSPLASH_TIMEOUT = sub { 0x04 };
+  *Wx::wxSPLASH_NO_TIMEOUT = sub { 0x00 };
+} else {
+  @ISA = qw(Wx::_SplashScreenCpp);
+}
+
+package Wx::_SplashScreenCpp;
+
+use vars qw(@ISA); @ISA = qw(Wx::Frame);
 
 1;
 

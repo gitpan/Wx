@@ -4,7 +4,7 @@
 
 use strict;
 use Wx;
-use lib "build";
+use lib './t';
 use Tests_Helper qw(test_frame);
 use Wx::Event qw(EVT_BUTTON);
 

@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -48,8 +48,7 @@
 #include <wx/wizard.h>
 #include <wx/filefn.h>
 
-#include "cpp/compat.h"
-#include "cpp/chkconfig.h"
+#include "cpp/wxapi.h"
 
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 #include <wx/tglbtn.h>
@@ -61,27 +60,11 @@
 #endif
 
 #include <wx/list.h>
-#include <stdarg.h>
-
-WXPL_EXTERN_C_START
-#include <EXTERN.h>
-#include <perl.h>
-#include <XSUB.h>
-WXPL_EXTERN_C_END
-
-#undef bool
-#undef Move
-#undef Copy
-
-#if __VISUALC__
-#pragma warning (disable: 4800 )
-#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // implementation for wxPlConstantsModule OnInit/OnExit
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cpp/helpers.h"
 #include "cpp/constants.h"
 #include <wx/listimpl.cpp>
 
@@ -332,7 +315,8 @@ static wxPlINH inherit[] =
     ///////////////////////////////////////////
     // Conditional part
     ///////////////////////////////////////////
-#define HAS_TLW    ( WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined(__WXMOTIF__) )
+#define HAS_TLW    ( WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined(__WXMOTIF__) )\
+                     || WXPERL_W_VERSION_GE( 2, 5, 0 )
 
 #if HAS_TLW
     I( Frame,           TopLevelWindow )
@@ -348,6 +332,8 @@ static wxPlINH inherit[] =
 
 #if defined(__WXMSW__)
     I( MemoryDC,        DC )
+#elif defined(__WXMAC__)
+    I( MemoryDC,        PaintDC )
 #else
     I( MemoryDC,        WindowDC )
 #endif
@@ -391,13 +377,13 @@ static wxPlINH inherit[] =
     I( StatusBar,       Window )
 #endif
 
-#if defined(__WXMOTIF__)
+#if defined(__WXMOTIF__) || defined(__WXMAC__)
     I( Cursor,          Bitmap )
 #elif !defined(__WXGTK__)
     I( Cursor,          GDIObject )
 #endif
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
     I( Icon,            Bitmap )
 #else
     I( Icon,            GDIObject )
@@ -441,9 +427,14 @@ static wxPlINH inherit[] =
     I( ProcessEvent,    Event )
     I( QueryLayoutInfoEvent, Event )
     I( SashEvent,       CommandEvent )
+    I( ScrollEvent,     CommandEvent )
     I( SizeEvent,       Event )
     I( ScrollWinEvent,  Event )
+#if defined(__WXMAC__)
+    I( SpinEvent,       ScrollEvent )
+#else
     I( SpinEvent,       NotifyEvent )
+#endif
     I( SysColourChangedEvent, Event )
     I( TextUrlEvent,    CommandEvent )
     I( TimerEvent,      Event )
@@ -514,6 +505,9 @@ static double constant( const char *name, int arg )
     r( wxAND_INVERT );                  // dc
     r( wxAND_REVERSE );                 // dc
 
+#if WXPERL_W_VERSION_GE( 2, 3, 4 )
+    r( wxADJUST_MINSIZE );              // layout sizer
+#endif
     r( wxAbove );                       // layout constraints
     r( wxAbsolute );                    // layout constraints
     r( wxAsIs );                        // layout constraints
@@ -844,7 +838,6 @@ static double constant( const char *name, int arg )
     r( wxFONTENCODING_DEFAULT );        // font
     r( wxFONTENCODING_SYSTEM );         // font
     r( wxFRAME_FLOAT_ON_PARENT );       // frame
-    r( wxFRAME_TOOL_WINDOW );           // frame
     r( wxFRAME_NO_WINDOW_MENU );
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
     r( wxFRAME_NO_TASKBAR );            // frame
@@ -1476,6 +1469,7 @@ static double constant( const char *name, int arg )
     r( wxSTATIC_BORDER );               // window
     r( wxSTAY_ON_TOP );                 // frame dialog
     r( wxST_NO_AUTORESIZE );            // statictext
+    r( wxST_SIZEGRIP );
     r( wxSUNKEN_BORDER );               // window
     r( wxSYSTEM_MENU );                 // frame dialog
     r( wxSWISS );                       // font
@@ -1675,6 +1669,8 @@ static double constant( const char *name, int arg )
     r( wxTE_AUTO_URL );                 // textctrl
 #endif
     r( wxTHICK_FRAME );                 // frame dialog
+    r( wxTINY_CAPTION_HORIZ );
+    r( wxTINY_CAPTION_VERT );
     r( wxTOP );                         // sizer layout constraints
     r( wxTRANSPARENT_WINDOW );          // window
     r( wxTRANSPARENT );                 // dc brush pen
@@ -1700,6 +1696,12 @@ static double constant( const char *name, int arg )
     r( wxWidth );                       // layout constraints
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
     r( wxWIZARD_EX_HELPBUTTON );
+#endif
+
+    r( wxWS_EX_VALIDATE_RECURSIVELY );
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxWS_EX_BLOCK_EVENTS );
+    r( wxWS_EX_TRANSIENT );
 #endif
     break;
   case 'X':
@@ -1953,8 +1955,12 @@ void SetConstants()
     sv_setiv( tmp, 1 );
 #elif defined(__WXGTK__)
     sv_setiv( tmp, 2 );
-#else
+#elif defined(__WXMOTIF__)
     sv_setiv( tmp, 3 );
+#elif defined(__WXMAC__)
+    sv_setiv( tmp, 4 );
+#else
+    #error must add case
 #endif
 
     tmp = get_sv( "Wx::_universal", 0 );
@@ -1966,6 +1972,13 @@ void SetConstants()
 
     tmp = get_sv( "Wx::_static", 0 );
 #if defined(WXPL_STATIC)
+    sv_setiv( tmp, 1 );
+#else
+    sv_setiv( tmp, 0 );
+#endif
+
+    tmp = get_sv( "Wx::_unicode", 0 );
+#if wxUSE_UNICODE
     sv_setiv( tmp, 1 );
 #else
     sv_setiv( tmp, 0 );
@@ -1987,3 +2000,40 @@ SetEvents()
 
 void
 SetInheritance()
+
+char*
+_get_packages()
+  CODE:
+    static const char packages[] = ""
+#if wxPERL_USE_DND && !defined(__WXMAC__) && !defined(__WXMOTIF__)
+    "use Wx::DND;"
+#endif
+#if wxPERL_USE_DOCVIEW && !defined(__WXMAC__)
+    "use Wx::DocView;"
+#endif
+#if wxPERL_USE_FILESYS
+    "use Wx::FS;"
+#endif
+#if wxPERL_USE_GRID
+    "use Wx::Grid;"
+#endif
+#if wxPERL_USE_HELP
+    "use Wx::Help;"
+#endif
+#if wxPERL_USE_HTML
+    "use Wx::Html;"
+#endif
+#if wxPERL_USE_MDI
+    "use Wx::MDI;"
+#endif
+#if wxPERL_USE_PRINT
+    "use Wx::Print;"
+#endif
+#if wxPERL_USE_SOCKET
+    "use Wx::Socket;"
+#endif
+    ;
+
+    RETVAL = (char*)packages;
+  OUTPUT:
+    RETVAL

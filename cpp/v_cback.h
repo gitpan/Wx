@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 
-class WXPLDLL wxPliVirtualCallback:public wxPliSelfRef
+class wxPliVirtualCallback : public wxPliSelfRef
 {
 public:
     wxPliVirtualCallback( const char* package );
@@ -198,12 +198,13 @@ inline wxPliVirtualCallback::wxPliVirtualCallback( const char* package )
     dTHX;                                                                     \
     if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, #METHOD ) )     \
     {                                                                         \
+        SV* n = newSVpvn( CHAR_P (const char*)param2, param1 );               \
         SV* ret = wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,       \
                                                      G_SCALAR,                \
-                               "s", newSVpvn( CHAR_P (const char*)param2,     \
-                                              param1 ) );                     \
+                               "s", n );                                      \
         bool val = SvTRUE( ret );                                             \
         SvREFCNT_dec( ret );                                                  \
+        SvREFCNT_dec( n );                                                    \
         return val;                                                           \
     } else                                                                    \
         return BASE::METHOD( param1, param2 );                                \

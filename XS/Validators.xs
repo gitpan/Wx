@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     29/10/2000
 ## RCS-ID:      
-## Copyright:   (c) 2000 Mattia Barbon
+## Copyright:   (c) 2000-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -26,15 +26,15 @@ void
 Wx_Validator::SetWindow( window )
     Wx_Window* window
 
-bool
-Wx_Validator::TransferFromWindow()
+# bool
+# Wx_Validator::TransferFromWindow()
 
-bool
-Wx_Validator::TransferToWindow()
+# bool
+# Wx_Validator::TransferToWindow()
 
-bool
-Wx_Validator::Validate( parent )
-    Wx_Window* parent
+# bool
+# Wx_Validator::Validate( parent )
+#    Wx_Window* parent
 
 MODULE=Wx PACKAGE=Wx::PlValidator
 

@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -104,13 +104,6 @@
 
 #define WXINTL_NO_GETTEXT_MACRO 1
 
-// Win32 dll stuff
-#if defined(__WXMSW__) && WXPL_USE_DLLEXPORT
-#define WXPL_MSW_EXPORTS 1
-#else
-#define WXPL_MSW_EXPORTS 0
-#endif
-
 #if defined(WIN32) || defined(__CYGWIN__)
 #  if WXPERL_P_VERSION_GE( 5, 6, 0 )
 #    define WXXS( name ) __declspec(dllexport) void name( pTHXo_ CV* cv )
@@ -123,20 +116,11 @@
 #  endif
 #endif
 
-#if WXPL_MSW_EXPORTS
-#  if defined( WXPL_EXT )
-#    define WXPLDLL __declspec( dllimport )
-#  else
-#    define WXPLDLL __declspec( dllexport )
-#  endif
-#  define FUNCPTR( name ) name
+#define WXPLDLL
+#if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
+#  define FUNCPTR( name ) ( * name )
 #else
-#  define WXPLDLL
-#  if defined( WXPL_EXT ) && !defined( WXPL_STATIC )
-#    define FUNCPTR( name ) ( * name )
-#  else
-#    define FUNCPTR( name ) name
-#  endif
+#  define FUNCPTR( name ) name
 #endif
 
 // puts extern "C" around perl headers

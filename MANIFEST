@@ -6,31 +6,32 @@ README.txt
 Changes
 run
 
-build/nmake.mak
-build/gmake.mak
-build/Any_OS.pm
-build/Any_wx_config.pm
-build/MacOSX_GCC.pm
-build/Win32_MSVC.pm
-build/Win32_MinGW.pm
-build/wxConfig.pm
-build/wxMMUtils.pm
-build/wxMMHacks.pm
-build/Tests_Helper.pm
-build/W32.pm
-
-build/Test/Builder.pm		Test::Simple, Test::More and Test::Harness
-build/Test/Harness.pm
-build/Test/Harness/Assert.pm
-build/Test/Harness/Iterator.pm
-build/Test/Harness/Straps.pm
-build/Test/More.pm
-build/Test/Simple.pm
+build/Wx/build/Config/Any_OS.pm
+build/Wx/build/Config/Any_wx_config.pm
+build/Wx/build/Config/gmake.mak
+build/Wx/build/Config/MacOSX_GCC.pm
+build/Wx/build/Config/nmake.mak
+build/Wx/build/Config/Win32.pm
+build/Wx/build/Config/Win32_MinGW.pm
+build/Wx/build/Config/Win32_MSVC.pm
+build/Wx/build/Config.pm
+build/Wx/build/MakeMaker/Any_OS.pm
+build/Wx/build/MakeMaker/Any_wx_config.pm
+build/Wx/build/MakeMaker/MacOSX_GCC.pm
+build/Wx/build/MakeMaker/Core.pm
+build/Wx/build/MakeMaker/Hacks.pm
+build/Wx/build/MakeMaker/Win32.pm
+build/Wx/build/MakeMaker/Win32_MinGW.pm
+build/Wx/build/MakeMaker/Win32_MSVC.pm
+build/Wx/build/MakeMaker.pm
+build/Wx/build/Options.pm
+build/Wx/build/Utils.pm
 
 docs/bugs.txt
 docs/install.txt
 docs/todo.txt
 
+script/copy_files.pl
 script/make_exp_list.pl
 script/make_ovl_list.pl
 script/pipe.pl
@@ -44,10 +45,10 @@ t/06_loadxpm.t
 t/07_overload.t
 t/08_ovl_func.t
 t/09_create_delete.t
+t/Tests_Helper.pm
 
 lib/Wx/App.pm
 lib/Wx/Event.pm
-lib/Wx/Image.pm
 lib/Wx/ImageList.pm
 lib/Wx/Locale.pm
 lib/Wx/Menu.pm
@@ -126,6 +127,9 @@ samples/listctrl/bitmaps/tooltodo.xpm
 samples/listctrl/bitmaps/toolword.ico
 samples/listctrl/bitmaps/toolword.xpm
 samples/listctrl/listctrl.pl
+
+samples/socket/wxSocketClient.pl
+samples/socket/wxSocketServer.pl
 
 Wx.pm
 Wx.rc
@@ -208,6 +212,7 @@ XS/ToolBar.xs
 XS/ToolTip.xs
 XS/Utils.xs
 XS/Validators.xs
+XS/Wave.xs
 XS/Wizard.xs
 XS/ColourDialog.xs
 XS/DirDialog.xs
@@ -355,6 +360,19 @@ ext/print/typemap
 ext/print/t/01_load.t
 ext/print/t/02_inheritance.t
 
+ext/socket/Makefile.PL
+ext/socket/Socket.xs
+ext/socket/XS/SocketBase.xs
+ext/socket/XS/SocketClient.xs
+ext/socket/XS/SocketEvent.xs
+ext/socket/XS/SocketServer.xs
+ext/socket/cpp/sk_constants.cpp
+ext/socket/cpp/socket.h
+ext/socket/lib/Wx/Socket.pm
+ext/socket/t/01_load.t
+ext/socket/t/02_inheritance.t
+ext/socket/typemap
+
 ext/stc/Makefile.PL
 ext/stc/STC.xs
 ext/stc/XS/StyledTextCtrl.xs
@@ -364,6 +382,10 @@ ext/stc/lib/Wx/STC.pm
 ext/stc/t/01_load.t
 ext/stc/t/02_inheritance.t
 ext/stc/typemap
+
+ext/pperl/carp/Carp.pm
+ext/pperl/carp/Makefile.PL
+ext/pperl/carp/t/01_load.t
 
 ext/pperl/splashfast/Makefile.PL
 ext/pperl/splashfast/SplashFast.pm

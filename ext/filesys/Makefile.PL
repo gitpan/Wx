@@ -5,22 +5,19 @@
 ## Modified by:
 ## Created:     28/ 4/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 use strict;
-
-use Config;
 use lib '../../build';
+use Wx::build::MakeMaker;
 
-use wxConfig;
-
-wxWriteMakefile( NAME => 'Wx::FS',
+wxWriteMakefile( NAME         => 'Wx::FS',
                  VERSION_FROM => 'lib/Wx/FS.pm',
                );
 
-# Local variables: #
-# mode: cperl #
-# End: #
+# local variables:
+# mode: cperl
+# end:

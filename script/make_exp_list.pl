@@ -1,3 +1,4 @@
+#!/usr/bin/perl -w
 #############################################################################
 ## Name:        make_exp_list.pl
 ## Purpose:     builds lib/Wx/_Exp.pm (export lists for Wx and Wx::Event)
@@ -5,7 +6,7 @@
 ## Modified by:
 ## Created:     29/10/2000
 ## RCS-ID:      
-## Copyright:   (c) 2000 Mattia Barbon
+## Copyright:   (c) 2000-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -56,7 +57,8 @@ foreach my $i ( @ARGV ) {
     next unless $parser;
 
     my @values = $parser->( $_ );
-    length( $values[0] ) || next;
+    ( defined( $values[0] ) && length( $values[0] ) ) || next;
+    $values[1] ||= '';
 
     add_to_exports( $values[0], "$values[1] $tag" );
   }

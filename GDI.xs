@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -17,6 +17,7 @@
 #include "cpp/typedef.h"
 
 #undef THIS
+
 WXPLI_BOOT_ONCE(Wx_GDI);
 #define boot_Wx_GDI wxPli_boot_Wx_GDI
 
@@ -34,12 +35,12 @@ INCLUDE: XS/Brush.xs
 INCLUDE: XS/Image.xs
 INCLUDE: XS/Palette.xs
 
-MODULE=Wx PACKAGE=Wx
+MODULE=Wx PACKAGE=Wx PREFIX=wx
 
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 wxRect*
-GetClientDisplayRect()
+wxGetClientDisplayRect()
   CODE:
     RETVAL = new wxRect( wxGetClientDisplayRect() );
   OUTPUT:

@@ -5,8 +5,8 @@
 
 use strict;
 use Wx;
-use lib 'build';
-use Test::More 'tests' => 142;
+use lib './t';
+use Test::More 'tests' => 144;
 use Tests_Helper qw(test_app);
 
 my $nolog = Wx::LogNull->new;
@@ -162,11 +162,14 @@ my $good_combo = 'Wx::ComboBox'->isa( 'Wx::Choice' );
 hijack( 'Wx::ControlWithItems::AppendString' => sub { $cwiappendstr = 1 },
         'Wx::ControlWithItems::AppendData'   => sub { $cwiappenddata = 1 },
         ( $good_combo ? () :
-          ( 'Wx::ComboBox::AppendString'         => sub { $cbappendstr = 1 },
-            'Wx::ComboBox::AppendData'           => sub { $cbappenddata = 1 } )
+          ( 'Wx::ComboBox::AppendString'     => sub { $cbappendstr = 1 },
+            'Wx::ComboBox::AppendData'       => sub { $cbappenddata = 1 } )
         ),
         'Wx::ComboBox::SetMark'              => sub { $cbsetselectionNN = 1 },
-        'Wx::ComboBox::SetSelectionN'        => sub { $cbsetselectionN = 1 } );
+        ( !Wx::wxMAC() ?
+          ( 'Wx::ComboBox::SetSelectionN'    => sub { $cbsetselectionN = 1 } )
+          : () ),
+       );
 
 my $cwi = Wx::ListBox->new( $frame, -1 );
 my $cb = Wx::ComboBox->new( $frame, -1, 'bar' );
@@ -186,8 +189,13 @@ if( !$good_combo  ) {
 ok( $cbappendstr,     "Wx::ComboBox::AppendString" );
 ok( $cbappenddata,    "Wx::ComboBox::AppendData" );
 
-$cb->SetSelection( 0 );
-ok( $cbsetselectionN, "Wx::ComboBox::SetSelectionN" );
+SKIP: {
+  skip "Segfaults on wxMAC", 1 if Wx::wxMAC();
+
+  $cb->SetSelection( 0 );
+  ok( $cbsetselectionN, "Wx::ComboBox::SetSelectionN" );
+}
+
 $cb->SetSelection( 0, 1 );
 ok( $cbsetselectionNN,"Wx::ComboBox::SetMark" );
 }
@@ -198,7 +206,7 @@ ok( $cbsetselectionNN,"Wx::ComboBox::SetMark" );
 {
 my( $newid, $newimage, $newfile ) = ( 0, 0, 0 );
 hijack( 'Wx::Cursor::newId'    => sub { $newid = 1 },
-        ( Wx::wxVERSION() >= 2.003002
+        ( Wx::wxVERSION() >= 2.003002 && !Wx::wxMAC()
           ? ( 'Wx::Cursor::newImage' => sub { $newimage = 1 } )
           : () ),
         ( Wx::wxMSW()
@@ -209,7 +217,8 @@ Wx::Cursor->new( 1 );
 ok( $newid,    "Wx::Cursor::newId" );
 
 SKIP: {
-  skip "Only for wxWindows 2.3.x", 1 unless Wx::wxVERSION() >= 2.003002;
+  skip "Only for wxWindows 2.3.x", 1
+    unless Wx::wxVERSION() >= 2.003002 && !Wx::wxMAC();
 
   Wx::Cursor->new( Wx::Image->new( 1, 1 ) );
   ok( $newimage, "Wx::Cursor::newImage" );
@@ -242,10 +251,15 @@ ok( $newfile, "Wx::Icon::newFile" );
 # Wx::ToolBar
 ##############################################################################
 {
-my( $addtoollong, $addtoolshort, $setmarginsxy, $setmarginssize ) =
-  ( 0, 0, 0, 0 );
+my( $addtoollong, $addtoolshort, $setmarginsxy, $setmarginssize,
+    $addnews, $addnewl ) =
+  ( 0, 0, 0, 0, 0, 0 );
 hijack( 'Wx::ToolBarBase::AddToolLong'    => sub { $addtoollong = 1 },
         'Wx::ToolBarBase::AddToolShort'   => sub { $addtoolshort = 1 },
+        ( Wx::wxVERSION >= 2.004 ?
+          ( 'Wx::ToolBarBase::AddToolNewShort'=> sub { $addnews = 1 },
+            'Wx::ToolBarBase::AddToolNewLong' => sub { $addnewl = 1 } ) :
+          () ),
         'Wx::ToolBarBase::SetMarginsXY'   => sub { $setmarginsxy = 1 },
         'Wx::ToolBarBase::SetMarginsSize' => sub { $setmarginssize = 1 } );
 
@@ -261,6 +275,17 @@ ok( $addtoollong, "Wx::ToolBar::AddToolLong" );
 
 $tbar->AddTool( -1, $bmpok, 'a', 'b' );
 ok( $addtoolshort, "Wx::ToolBar::AddToolShort" );
+
+SKIP: {
+  skip "Only for wxWindows 2.4", 2 unless Wx::wxVERSION >= 2.004;
+
+  $tbar->AddTool( -1, "boo", $bmpok, Wx::wxNullBitmap(), 0,
+                  'str', 'foo', 'data' );
+  ok( $addnewl, "Wx::ToolBar::AddToolNewLong" );
+
+  $tbar->AddTool( -1, "bar", $bmpok, 'a', 0 );
+  ok( $addnews, "Wx::ToolBar::AddToolNewShort" );
+}
 }
 
 ##############################################################################
@@ -327,8 +352,9 @@ hijack( 'Wx::Window::SetSizeXYWHF' => sub { $ssxywh = 1 },
         'Wx::Window::SetSizeWH'    => sub { $sswh = 1 },
         'Wx::Window::SetSizeSize'  => sub { $sssize = 1 },
         'Wx::Window::SetSizeRect'  => sub { $ssrect = 1 },
-        'Wx::Window::SetToolTipTip'    => sub { $stttip = 1 },
-        'Wx::Window::SetToolTipString' => sub { $sttstr = 1 },
+        ( Wx::wxMOTIF() ? () :
+          ( 'Wx::Window::SetToolTipTip'    => sub { $stttip = 1 },
+            'Wx::Window::SetToolTipString' => sub { $sttstr = 1 }, ) ),
         'Wx::Window::ClientToScreenXY'    => sub { $ctsxy = 1 },
         'Wx::Window::ClientToScreenPoint' => sub { $ctspoint = 1 },
         'Wx::Window::ConvertDialogPointToPixels' => sub { $cdppoint = 1 },
@@ -359,11 +385,15 @@ ok( $sssize, "Wx::Window::SetSizeSize" );
 $frame->SetSize( Wx::Rect->new( 40, 40, 60, 60 ) );
 ok( $ssrect, "Wx::Window::SetSizeRect" );
 
-$frame->SetToolTip( "FOO" );
-ok( $sttstr, "Wx::Window::SetToolTipString" );
+SKIP: {
+  skip "No ToolTips under wxMOTIF", 2 if Wx::wxMOTIF();
 
-$frame->SetToolTip( Wx::ToolTip->new( "Bar" ) );
-ok( $stttip, "Wx::Window::SetToolTipTip" );
+  $frame->SetToolTip( "FOO" );
+  ok( $sttstr, "Wx::Window::SetToolTipString" );
+
+  $frame->SetToolTip( Wx::ToolTip->new( "Bar" ) );
+  ok( $stttip, "Wx::Window::SetToolTipTip" );
+}
 
 $frame->ClientToScreen( 1, 2 );
 ok( $ctsxy, "Wx::Window::ClientToScreenXY" );
@@ -797,8 +827,8 @@ my( $newnull, $newicon, $newbitmap, $newstreamt, $newstreamm,
     $lsm, $lst, $lft, $lfm, $ssm, $sst, $sft, $sfm, $sfo )
   = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 );
 hijack( 'Wx::Image::newNull'        => sub { $newnull = 1 },
-        'Wx::Image::newIcon'        => sub { $newicon = 1 },
-        'Wx::Image::newBitmap'      => sub { $newbitmap = 1 },
+#        'Wx::Image::newIcon'        => sub { $newicon = 1 },
+#        'Wx::Image::newBitmap'      => sub { $newbitmap = 1 },
         'Wx::Image::newStreamType'  => sub { $newstreamt = 1 },
         'Wx::Image::newStreamMIME'  => sub { $newstreamm = 1 },
         'Wx::Image::newWH'          => sub { $newwh = 1 },
@@ -820,11 +850,15 @@ my $op = '< demo/data/logo.jpg';
 Wx::Image->new;
 ok( $newnull, "Wx::Image::newNull" );
 
-Wx::Image->new( $icook );
-ok( $newicon, "Wx::Image::newIcon" );
+SKIP: {
+  skip "Only for backward compatibility", 2;
 
-Wx::Image->new( $bmpok );
-ok( $newbitmap, "Wx::Image::newBitmap" );
+  Wx::Image->new( $icook );
+  ok( $newicon, "Wx::Image::newIcon" );
+
+  Wx::Image->new( $bmpok );
+  ok( $newbitmap, "Wx::Image::newBitmap" );
+}
 
 open IN, $op; binmode IN;
 Wx::Image->new( *IN, Wx::wxBITMAP_TYPE_JPEG() );

@@ -5,7 +5,7 @@
 // Modified by:
 // Created:      1/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,6 @@ int  WXDLLEXPORT wxEntryStart( int argc, char** argv );
 int  WXDLLEXPORT wxEntryInitGui();
 void WXDLLEXPORT wxEntryCleanup();
 
-#define _WXP_DEFINE_CLASSNAME 1
 #include "cpp/typedef.h"
 
 #include "cpp/v_cback.h"
@@ -265,6 +264,7 @@ INCLUDE: XS/Config.xs
 INCLUDE: XS/Process.xs
 INCLUDE: XS/FontMapper.xs
 INCLUDE: XS/FontEnumerator.xs
+INCLUDE: XS/Wave.xs
 
 # this is here for debugging purpouses
 INCLUDE: XS/ClassInfo.xs

@@ -1,3 +1,4 @@
+#!/usr/bin/perl -w
 #############################################################################
 ## Name:        make_ovl_list.pl
 ## Purpose:     builds overload constants
@@ -5,7 +6,7 @@
 ## Modified by:
 ## Created:     17/ 8/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -81,6 +82,7 @@ my %name2type =
    wcur => 'Wx::Cursor',
    wehd => 'Wx::EvtHandler',
    wtid => 'Wx::TreeItemId',
+   wfon => 'Wx::Font',
    wist => 1,
    wost => 1,
    num  => 1,
@@ -112,13 +114,13 @@ foreach my $i ( @ARGV ) {
   }
 }
 
-my @keys = ( ( sort grep { $name2type{$_} != 1 } keys %name2type ),
-             ( sort grep { $name2type{$_} == 1 } keys %name2type ) );
+my @keys = ( ( sort grep { $name2type{$_} ne '1' } keys %name2type ),
+             ( sort grep { $name2type{$_} eq '1' } keys %name2type ) );
 
 my $vars_comma = join ", ", map { "\$$_" } @keys;
 my $vars = $vars_comma; $vars =~ s/,//g;
 my $types = join ", ", map { "'$name2type{$_}'" }
-  grep { $name2type{$_} != 1 } @keys;
+  grep { $name2type{$_} ne '1' } @keys;
 
 =for comment
 

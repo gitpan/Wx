@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     17/ 3/2001
 // RCS-ID:      
-// Copyright:   (c) 2001 Mattia Barbon
+// Copyright:   (c) 2001-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -37,15 +37,15 @@ private:
 };
 
 // duplicated from helpers.h
-WXPLDLL extern void FUNCPTR( wxPli_add_constant_function )
+extern void FUNCPTR( wxPli_add_constant_function )
     ( double (**)( const char*, int ) );
-WXPLDLL extern void FUNCPTR( wxPli_remove_constant_function )
+extern void FUNCPTR( wxPli_remove_constant_function )
     ( double (**)( const char*, int ) );
 
 inline wxPlConstants::wxPlConstants( PL_CONST_FUNC function )
     :m_function( function )
 {
-#if defined( WXPL_EXT ) && !WXPL_MSW_EXPORTS && !defined( WXPL_STATIC )
+#if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
     dTHX;
     // GRR! init helpers...
     SV* wxpli_tmp = get_sv( "Wx::_exports", 1 );

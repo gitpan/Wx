@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:      6/ 9/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -31,7 +31,9 @@ no strict;
 
 package Wx::MDIParentFrame;     @ISA = qw(Wx::Frame);
 package Wx::MDIChildFrame;      @ISA = qw(Wx::Frame);
-package Wx::MDIClientWindow;    @ISA = qw(Wx::Window);
+package Wx::MDIClientWindow;    
+
+@ISA = Wx::wxMOTIF ? 'Wx::Notebook' : 'Wx::Window';
 
 use strict;
 

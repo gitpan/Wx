@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib 'build';
 use Wx;
+use lib './t';
 use Tests_Helper 'test_frame';
 
 package MyFrame;
@@ -29,7 +29,9 @@ foreach my $t ( @tests ) {
   ok( 1, "got there after $class->Destroy" );
 }
 
-$this->Destroy;
+Wx::Event::EVT_IDLE( $this,
+                     sub { $this->Destroy } );
+$this->Destroy if Wx::wxMSW || Wx::wxGTK;
 };
 
 package main;

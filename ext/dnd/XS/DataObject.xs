@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     12/ 8/2001
 ## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## Copyright:   (c) 2001-2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -16,19 +16,19 @@
 MODULE=Wx PACKAGE=Wx::DataFormat
 
 Wx_DataFormat*
-Wx_DataFormat::newNative( format = wxDF_INVALID )
+newNative( dummy, format = wxDF_INVALID )
+    SV* dummy
     NativeFormat format
   CODE:
-    THIS = 0; // fool SGI CC warnings
     RETVAL = new wxDataFormat( format );
   OUTPUT:
     RETVAL
 
 Wx_DataFormat*
-Wx_DataFormat::newUser( id )
+newUser( dummy, id )
+    SV* dummy
     wxChar* id
   CODE:
-    THIS = 0; // fool SGI CC warnings
     RETVAL = new wxDataFormat( id );
   OUTPUT:
     RETVAL
@@ -183,9 +183,14 @@ Wx_PlDataObjectSimple::new( format = (wxDataFormat*)&wxFormatInvalid )
     Wx_DataFormat* format
   CODE:
     wxPlDataObjectSimple* THIS = new wxPlDataObjectSimple( CLASS, *format );
-    RETVAL = THIS->m_callback.GetSelf();
-  OUTPUT:
-    RETVAL
+    RETVAL = newRV_noinc( SvRV( THIS->m_callback.GetSelf() ) );
+  OUTPUT: RETVAL
+
+void
+wxPlDataObjectSimple::DESTROY()
+  CODE:
+    SvRV( THIS->m_callback.GetSelf() ) = NULL;
+    delete THIS;
 
 MODULE=Wx PACKAGE=Wx::DataObjectComposite
 

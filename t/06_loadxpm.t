@@ -4,7 +4,7 @@ BEGIN { print "1..2\n"; }
 
 use strict;
 use Wx;
-use lib "build";
+use lib './t';
 use Tests_Helper qw(test_app);
 
 my $data = [ map { m/^"(.*)"/ ? ( $1 ) : () } split /\n/, <<'EOT' ];

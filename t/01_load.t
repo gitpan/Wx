@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 use strict;
-use lib "build";
 use Test::More tests => 4;
 
 BEGIN { use_ok 'Wx' }
@@ -12,10 +11,7 @@ my $x = wxYES;
 ok( 1, "Exported constant" );
 
 SKIP: {
-  skip( "Does not work with wxMotif", 2 ) if Wx::wxMOTIF();
-
-  use Wx ( Wx::wxMOTIF() ?
-           () : qw(:frame :allclasses wxNO_3D wxTAB_TRAVERSAL) );
+  use Wx qw(:frame :allclasses wxNO_3D wxTAB_TRAVERSAL);
 
   $x = wxTAB_TRAVERSAL();
   $x = wxCAPTION();

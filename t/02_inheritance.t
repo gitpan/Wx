@@ -2,8 +2,8 @@
 
 use strict;
 use Wx;
+use lib './t';
 
-use lib "build";
 use Test::More 'no_plan';
 use Tests_Helper qw(:inheritance);
 
