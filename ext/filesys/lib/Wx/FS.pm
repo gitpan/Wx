@@ -15,15 +15,11 @@ package Wx::FS;
 use Wx;
 use strict;
 
-require DynaLoader;
-
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
 
 $VERSION = '0.01';
 
-@ISA = qw(DynaLoader);
-
-bootstrap Wx::FS;
+Wx::wx_boot( 'Wx::FS', $VERSION );
 
 #
 # properly setup inheritance tree
@@ -34,6 +30,8 @@ no strict;
 package Wx::FileSystemHandler;
 package Wx::InternetFSHandler;  @ISA = qw(Wx::FileSystemHandler);
 package Wx::ZipFSHandler;       @ISA = qw(Wx::FileSystemHandler);
+package Wx::PlFileSystemHandler; @ISA = qw(Wx::FileSystemHandler);
+package Wx::PlFSFile;           @ISA = qw(Wx::FSFile);
 
 use strict;
 

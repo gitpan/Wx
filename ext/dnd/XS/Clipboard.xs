@@ -18,7 +18,7 @@ bool
 Wx_Clipboard::AddData( data )
     Wx_DataObject* data
   CODE:
-    wxPli_object_set_deleteable( ST(1), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(1), FALSE );
     RETVAL = THIS->AddData( data );
   OUTPUT:
     RETVAL
@@ -28,6 +28,9 @@ Wx_Clipboard::Clear()
 
 void
 Wx_Clipboard::Close()
+
+bool
+Wx_Clipboard::Flush()
 
 bool
 Wx_Clipboard::GetData( data )
@@ -55,7 +58,7 @@ bool
 Wx_Clipboard::SetData( data )
     Wx_DataObject* data
   CODE:
-    wxPli_object_set_deleteable( ST(1), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(1), FALSE );
     RETVAL = THIS->SetData( data );
   OUTPUT:
     RETVAL

@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+#define PERL_NO_GET_CONTEXT
 #define WXINTL_NO_GETTEXT_MACRO 1
 
 #include <wx/defs.h>
@@ -39,6 +40,7 @@
 #include <wx/dataobj.h>
 #include <wx/clipbrd.h>
 #include <wx/confbase.h>
+#include <wx/image.h>
 #if defined(__WXMSW__)
 #include <wx/taskbar.h>
 #endif
@@ -76,6 +78,7 @@ WXPL_EXTERN_C_END
 //
 // implementation for wxPlConstantsModule OnInit/OnExit
 //
+#include "cpp/helpers.h"
 #include "cpp/constants.h"
 #include <wx/listimpl.cpp>
 
@@ -205,6 +208,9 @@ static double constant( const char *name, int arg )
     r( wxCURSOR_ARROW );                // cursor
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
     r( wxCURSOR_ARROWWAIT );            // cursor
+#endif
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxCURSOR_RIGHT_ARROW );          // cursor
 #endif
     r( wxCURSOR_BULLSEYE );             // cursor
     r( wxCURSOR_CHAR );                 // cursor
@@ -387,6 +393,10 @@ static double constant( const char *name, int arg )
     // r( wxEVT_MENU_CHAR );
     // r( wxEVT_MENU_INIT );
     r( wxEVT_MENU_HIGHLIGHT );
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxEVT_MENU_OPEN );
+    r( wxEVT_MENU_CLOSE );
+#endif
     // r( wxEVT_POPUP_MENU_INIT );
     r( wxEVT_CONTEXT_MENU );
     r( wxEVT_SYS_COLOUR_CHANGED );
@@ -424,6 +434,11 @@ static double constant( const char *name, int arg )
 #endif
 
     r( wxEXPAND );                      // sizer
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxEXEC_SYNC );
+    r( wxEXEC_ASYNC );
+    r( wxEXEC_NOHIDE );
+#endif
     break;
   case 'F':
     r( wxFDIAGONAL_HATCH );             // brush pen
@@ -517,7 +532,9 @@ static double constant( const char *name, int arg )
     r( wxID_HELP_PROCEDURES );          // id
     r( wxID_HELP_CONTEXT );             // id
     r( wxID_HELP );                     // id
-    
+    r( wxID_HIGHEST );
+    r( wxID_LOWEST );
+
     r( wxID_CUT );                      // id
     r( wxID_COPY );                     // id
     r( wxID_PASTE );                    // id
@@ -562,6 +579,13 @@ static double constant( const char *name, int arg )
     r( wxITALIC );                      // font
 
     r( wxInRegion );                    // region
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxITEM_SEPARATOR );              // menu
+    r( wxITEM_NORMAL );                 // menu
+    r( wxITEM_CHECK );                  // menu
+    r( wxITEM_RADIO );                  // menu
+#endif
 
     // !export: Type_Integer
     if( strEQ( name, "Type_Integer" ) )
@@ -963,6 +987,7 @@ static double constant( const char *name, int arg )
     r( wxNO_FULL_REPAINT_ON_RESIZE );   // window
     r( wxNORMAL );                      // font
     r( wxNOT_FOUND );             
+    r( wxNO_DEFAULT );
 
     r( wxNAND );                        // dc
     r( wxNOR );                         // dc
@@ -1008,6 +1033,14 @@ static double constant( const char *name, int arg )
     r( wxRightOf );                     // layout constraints
     break;
   case 'S':
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+    r( wxSPLASH_CENTRE_ON_PARENT );     // splashscreen
+    r( wxSPLASH_CENTRE_ON_SCREEN );     // splashscreen
+    r( wxSPLASH_NO_CENTRE );            // splashscreen
+    r( wxSPLASH_TIMEOUT );              // splashscreen
+    r( wxSPLASH_NO_TIMEOUT );           // splashscreen
+#endif
+
     r( wxSAVE );                        // filedialog
     //    r( wxSB_SIZEGRIP );
     r( wxSB_HORIZONTAL );               // scrollbar
@@ -1069,13 +1102,6 @@ static double constant( const char *name, int arg )
     r( wxSPLIT_HORIZONTAL );            // splitterwindow
     r( wxSPLIT_VERTICAL );              // splitterwindow
 
-#if WXPERL_W_VERSION_GE( 2, 3, 1 )
-    r( wxSPLASH_CENTRE_ON_PARENT );     // splashscreen
-    r( wxSPLASH_CENTRE_ON_SCREEN );     // splashscreen
-    r( wxSPLASH_NO_CENTRE );            // splashscreen
-    r( wxSPLASH_TIMEOUT );              // splashscreen
-    r( wxSPLASH_NO_TIMEOUT );           // splashscreen
-#endif
     r( wxSHAPED );                      // sizer
 
     r( wxSHORT_DASH );                  // pen
@@ -1202,6 +1228,10 @@ static double constant( const char *name, int arg )
     r( wxTB_HORIZONTAL );               // toolbar
     r( wxTB_VERTICAL );                 // toolbar
     r( wxTB_3DBUTTONS );                // toolbar
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxTB_TEXT );                     // toolbar
+    r( wxTB_NOICONS );                  // toolbar
+#endif
     r( wxTE_PROCESS_ENTER );            // textctrl
     r( wxTE_PROCESS_TAB );              // textctrl
     r( wxTE_MULTILINE );                // textctrl
@@ -1211,6 +1241,9 @@ static double constant( const char *name, int arg )
     r( wxTE_PASSWORD );                 // textctrl
     r( wxTE_READONLY );                 // textctrl
     r( wxTE_RICH );                     // textctrl
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxTE_RICH2 );                    // textctrl
+#endif
     r( wxTHICK_FRAME );                 // frame dialog
     r( wxTOP );                         // sizer layout constraints
     r( wxTRANSPARENT_WINDOW );          // window
@@ -1243,6 +1276,7 @@ static double constant( const char *name, int arg )
   case 'Y':
     r( wxYES );
     r( wxYES_NO );
+    r( wxYES_DEFAULT );
     break;
   default:
     break;
@@ -1272,8 +1306,27 @@ static double constant( const char *name, int arg )
 */
 }
 
+// XXX hacky
+void my_sv_setref_pv( pTHX_ SV* mysv, const char* pack, void* ptr )
+{
+    if( SvROK( mysv ) )
+    {
+        HV* stash = gv_stashpv( CHAR_P pack, 1 );
+        sv_setiv( SvRV( mysv ), (IV)ptr );
+        sv_bless( mysv, stash );
+    }
+    else
+    {
+        sv_setref_pv( mysv, CHAR_P pack, ptr );
+    }
+}
+
+#undef sv_setref_pv
+#define sv_setref_pv( s, p, pt ) my_sv_setref_pv( aTHX_ s, p, pt )
+
 void SetConstants()
 {
+    dTHX;
     SV* tmp;
 
     tmp = get_sv( "Wx::_default_position", 0 );
@@ -1447,16 +1500,21 @@ void SetConstants()
     // Miscellaneous
     //
     tmp = get_sv( "Wx::_version_string", 0 );
-#if wxUSE_UNICODE
-    sv_setpv( tmp, wxString(wxVERSION_STRING).mb_str(wxConvUTF8) );
-    SvUTF8_on(tmp);
-#else
-    sv_setpv( tmp, wxVERSION_STRING );
-#endif
+    wxPli_wxChar_2_sv( aTHX_ wxVERSION_STRING, tmp );
 
-    tmp = get_sv( "Wx::_wx_version", 0 );
-    sv_setnv( tmp, wxMAJOR_VERSION + wxMINOR_VERSION / 1000.0 + 
-        wxRELEASE_NUMBER / 1000000.0 );
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    tmp = get_sv( "Wx::_img_bmp_format", 0 );
+    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_BMP_FORMAT, tmp );
+
+    tmp = get_sv( "Wx::_img_cur_hotspot_x", 0 );
+    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_CUR_HOTSPOT_Y, tmp );
+
+    tmp = get_sv( "Wx::_img_cur_hotspot_y", 0 );
+    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_CUR_HOTSPOT_Y, tmp );
+
+    tmp = get_sv( "Wx::_img_filename", 0 );
+    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_FILENAME, tmp );
+#endif
 
     tmp = get_sv( "Wx::_platform", 0 );
 #if defined(__WXMSW__)
@@ -1473,7 +1531,17 @@ void SetConstants()
 #else
     sv_setiv( tmp, 0 );
 #endif
+
+    tmp = get_sv( "Wx::_static", 0 );
+#if defined(WXPL_STATIC)
+    sv_setiv( tmp, 1 );
+#else
+    sv_setiv( tmp, 0 );
+#endif
 }
+
+WXPLI_BOOT_ONCE(Wx_Const);
+#define boot_Wx_Const wxPli_boot_Wx_Const
 
 MODULE=Wx_Const PACKAGE=Wx
 
@@ -1481,6 +1549,3 @@ double
 constant(name,arg)
     const char* name
     int arg
-
-
-

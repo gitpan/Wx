@@ -22,6 +22,8 @@ newNull()
   OUTPUT:
     RETVAL
 
+#if WXPERL_W_VERSION_LE( 2, 3, 2 ) || WXWIN_COMPATIBILITY_2_2
+
 Wx_Image*
 newBitmap( bitmap )
     Wx_Bitmap* bitmap
@@ -42,6 +44,15 @@ newIcon( icon )
 #endif
   OUTPUT:
     RETVAL
+
+Wx_Bitmap*
+Wx_Image::ConvertToBitmap()
+  CODE:
+    RETVAL = new wxBitmap( THIS->ConvertToBitmap() );
+  OUTPUT:
+    RETVAL
+
+#endif
 
 Wx_Image*
 newWH( width, height )
@@ -70,43 +81,66 @@ newData( width, height, dt )
     memcpy( newdata, data, width * height * 3 );
 
     RETVAL = new wxImage( width, height, newdata );
-
-Wx_Image*
-newNameType( name, type )
-    wxString name
-    long type
-  CODE:
-    RETVAL = new wxImage( name, type );
   OUTPUT:
     RETVAL
 
 Wx_Image*
-newNameMIME( name, mimetype )
+newNameType( name, type, index = -1 )
+    wxString name
+    long type
+    int index
+  CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = new wxImage( name, type, index );
+#else
+    RETVAL = new wxImage( name, type );
+#endif
+  OUTPUT:
+    RETVAL
+
+Wx_Image*
+newNameMIME( name, mimetype, index = -1 )
     wxString name
     wxString mimetype
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = new wxImage( name, mimetype, index );
+#else
     RETVAL = new wxImage( name, mimetype );
+#endif
   OUTPUT:
     RETVAL
 
 Wx_Image*
-newStreamType( stream, type )
+newStreamType( stream, type, index = -1 )
     wxPliInputStream stream
     long type
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = new wxImage( stream, type, index );
+#else
     RETVAL = new wxImage( stream, type );
+#endif
   OUTPUT:
     RETVAL
 
 Wx_Image*
-newStreamMIME( stream, mime )
+newStreamMIME( stream, mime, index = -1 )
     wxPliInputStream stream
     wxString mime
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = new wxImage( stream, mime, index );
+#else
     RETVAL = new wxImage( stream, mime );
+#endif
   OUTPUT:
     RETVAL
 
+## XXX threads
 void
 Wx_Image::DESTROY()
 
@@ -115,13 +149,6 @@ AddHandler( handler )
     Wx_ImageHandler* handler
   CODE:
     wxImage::AddHandler( handler );
-
-Wx_Bitmap*
-Wx_Image::ConvertToBitmap()
-  CODE:
-    RETVAL = new wxBitmap( THIS->ConvertToBitmap() );
-  OUTPUT:
-    RETVAL
 
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
@@ -271,43 +298,75 @@ InsertHandler( handler )
     wxImage::InsertHandler( handler );
 
 bool
-Wx_Image::LoadFileType( name, type )
+Wx_Image::LoadFileType( name, type, index = -1 )
     wxString name
     long type
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = THIS->LoadFile( name, type, index );
+#else
     RETVAL = THIS->LoadFile( name, type );
+#endif
   OUTPUT:
     RETVAL
 
 bool
-Wx_Image::LoadFileMIME( name, type )
+Wx_Image::LoadFileMIME( name, type, index = -1 )
     wxString name
     wxString type
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = THIS->LoadFile( name, type, index );
+#else
     RETVAL = THIS->LoadFile( name, type );
+#endif
   OUTPUT:
     RETVAL
 
 bool
-Wx_Image::LoadStreamType( stream, type )
+Wx_Image::LoadStreamType( stream, type, index = -1 )
     wxPliInputStream stream
     long type
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = THIS->LoadFile( stream, type, index );
+#else
     RETVAL = THIS->LoadFile( stream, type );
+#endif
   OUTPUT:
     RETVAL
 
 bool
-Wx_Image::LoadStreamMIME( stream, type )
+Wx_Image::LoadStreamMIME( stream, type, index = -1 )
     wxPliInputStream stream
     wxString type
+    int index
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = THIS->LoadFile( stream, type, index );
+#else
     RETVAL = THIS->LoadFile( stream, type );
+#endif
   OUTPUT:
     RETVAL
 
 bool
 Wx_Image::Ok()
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+bool
+Wx_Image::SaveFileOnly( name )
+    wxString name
+  CODE:
+    RETVAL = THIS->SaveFile( name );
+  OUTPUT:
+    RETVAL
+
+#endif
 
 bool
 Wx_Image::SaveFileType( name, type )
@@ -377,9 +436,9 @@ Wx_Image::Rotate( angle, centre, interpolating = TRUE )
     wxImage* result;
   PPCODE:
     result = new wxImage( THIS->Rotate( angle, centre, interpolating, &after ) );
-    XPUSHs( wxPli_object_2_sv( sv_newmortal(), result ) );
+    XPUSHs( wxPli_object_2_sv( aTHX_ sv_newmortal(), result ) );
     if( GIMME_V == G_ARRAY ) {
-      PUSHs( wxPli_non_object_2_sv( sv_newmortal(), 
+      PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(), 
              new wxPoint( after ), wxPlPointName ) );
     }
 

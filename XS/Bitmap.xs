@@ -100,6 +100,34 @@ newIcon( icon )
   OUTPUT:
     RETVAL
 
+Wx_Bitmap*
+newFromBits( CLASS, bits, width, height, depth = 1 )
+    SV* CLASS
+    SV* bits
+    int width
+    int height
+    int depth
+  PREINIT:
+    char* buffer = SvPV_nolen( bits );
+  CODE:
+    RETVAL = new wxBitmap( buffer, width, height, depth );
+  OUTPUT:
+    RETVAL
+
+Wx_Bitmap*
+newFromXPM( CLASS, data )
+    SV* CLASS
+    SV* data
+  PREINIT:
+    char** xpm_data;
+    size_t i, n = wxPli_av_2_charparray( aTHX_ data, &xpm_data );
+  CODE:
+    RETVAL = new wxBitmap( xpm_data );
+    for( i = 0; i < n; ++i )
+        free( xpm_data[i] );
+  OUTPUT:
+    RETVAL
+
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_Bitmap*
@@ -112,6 +140,7 @@ newImage( image )
 
 #endif
 
+## XXX threads
 void
 Wx_Bitmap::DESTROY()
 
@@ -136,7 +165,9 @@ Wx_Bitmap::CopyFromIcon( icon )
 
 #endif
 
-#if defined( __WXMOTIF__ ) || defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMOTIF__ ) || \
+    defined( __WXMSW__ ) || \
+    defined( __WXPERL_FORCE__ )
 
 void
 AddHandler( handler )
@@ -194,7 +225,7 @@ GetHandlers()
     EXTEND( SP, list.GetCount() );
 
     for( node = list.GetFirst(); node; node = node->GetNext() )
-      PUSHs( wxPli_object_2_sv( sv_newmortal(), node->GetData() ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ sv_newmortal(), node->GetData() ) );
 
 #endif
 

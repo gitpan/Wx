@@ -15,15 +15,11 @@ package Wx::MDI;
 use Wx;
 use strict;
 
-require DynaLoader;
-
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
 
 $VERSION = '0.01';
 
-@ISA = qw(DynaLoader);
-
-bootstrap Wx::MDI;
+Wx::wx_boot( 'Wx::MDI', $VERSION );
 
 # init wxModules
 

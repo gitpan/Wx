@@ -15,15 +15,11 @@ package Wx::Print;
 use Wx;
 use strict;
 
-require DynaLoader;
-
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
 
 $VERSION = '0.01';
 
-@ISA = qw(DynaLoader);
-
-bootstrap Wx::Print;
+Wx::wx_boot( 'Wx::Print', $VERSION );
 
 #
 # properly setup inheritance tree

@@ -83,6 +83,23 @@
 
 #define CHAR_P
 
+#else
+
+#define pTHX
+#define aTHX
+#define dTHX
+#define pTHX_
+#define aTHX_
+
+#endif
+
+#if WXPERL_P_VERSION_GE( 5, 8, 0 )
+
+// XXX this is an hack
+#include <config.h>
+#undef HAS_CRYPT_R
+#undef HAS_LOCALTIME_R
+
 #endif
 
 #define WXINTL_NO_GETTEXT_MACRO 1
@@ -115,7 +132,7 @@
 #  define FUNCPTR( name ) name
 #else
 #  define WXPLDLL
-#  if defined( WXPL_EXT )
+#  if defined( WXPL_EXT ) && !defined( WXPL_STATIC )
 #    define FUNCPTR( name ) ( * name )
 #  else
 #    define FUNCPTR( name ) name

@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+#define PERL_NO_GET_CONTEXT
 
 #include <wx/defs.h>
 #include <stdarg.h>
@@ -47,9 +48,6 @@ WXPL_EXTERN_C_END
 #include <wx/msw/winundef.h>
 #endif // __WXMSW__
 
-#if !WXPL_MSW_EXPORTS
-#define _WXP_DEFINE_CLASSNAME 1
-#endif
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 #include "cpp/dn_typedef.h"
@@ -64,6 +62,7 @@ typedef wxDataFormat::NativeFormat  NativeFormat;
 
 void SetDNDConstants()
 {
+    dTHX;
     SV* tmp;
 
 //    tmp = get_sv( "Wx::_df_invalid", 0 );
@@ -87,9 +86,7 @@ void SetDNDConstants()
 MODULE=Wx__DND
 
 BOOT:
-#if !WXPL_MSW_EXPORTS
   INIT_PLI_HELPERS( wx_pli_helpers );
-#endif
   
 INCLUDE: XS/DataObject.xs
 INCLUDE: XS/DropFiles.xs

@@ -23,6 +23,8 @@ use base 'Any_OS';
 sub my_wx_config {
   my $class = shift;
   my $options = join ' ', map { "--$_" } @_;
+  # not completely correct, but close
+  if( $wxConfig::o_static ) { $options = "--static $options" }
 
   my $t = qx(wx-config $options);
   chomp $t;
@@ -53,19 +55,48 @@ sub ld_is_GNU {
   return;
 }
 
-sub configure {
-  my( $cccflags, $libs );
+# you may, at some point, being tempted to say that Makemaker is,
+# sometimes, annoying...
+require ExtUtils::Liblist;
+my $save;
+if( defined &ExtUtils::Liblist::Kid::ext ) {
+  $save = \&ExtUtils::Liblist::Kid::ext;
+  undef *ExtUtils::Liblist::Kid::ext;
+  *ExtUtils::Liblist::Kid::ext = \&my_ext;
+} else {
+  $save = \&ExtUtils::Liblist::ext;
+  undef *ExtUtils::Liblist::ext;
+  *ExtUtils::Liblist::ext = \&my_ext;
+}
 
-  my( %config ) =
-    ( LIBS => $wxConfig::extra_libs . ' ',
-      CCFLAGS => $wxConfig::extra_cflags . ' -I. ',
-      ( building_extension() ?
-        ( INC => ' -I' . top_dir() . ' ',
-          DEFINE => ' -DWXPL_EXT ',
-          LDFROM => ' $(OBJECT) ',
-        ) : (),
-      ),
-    );
+sub my_ext {
+  &$save( @_ ) unless $wxConfig::o_static;
+
+  my $this = shift;
+  my $libs = shift;
+  my $full; if( $libs =~ m{(?:\s+|^)(/\S+)} )
+    { $full = $1; $libs =~ s{(?:\s+|^)/\S+}{}g }
+  my @libs = &{$save}( $this, $libs, @_ );
+  if( defined $full ) {
+    $libs[0] = "$libs[0] $full $libs[0]" if $libs[0];
+    $libs[2] = "$libs[2] $full $libs[2]" if $libs[2];
+  }
+
+  return @libs;
+}
+
+use vars qw(%config);
+sub configure {
+  my $this = shift;
+  my( $cccflags, $libs );
+  local *config; *config = $this->SUPER::configure();
+
+  $config{CCFLAGS} .= " -I. ";
+  $config{LDFROM} .= " \$(OBJECT) ";
+  if( building_extension() ) {
+    $config{INC} .= " -I" . top_dir() . " ";
+    $config{DEFINE} .= " -DWXPL_EXT ";
+  }
 
   my $cxx = wx_config( 'cxx' );
   $config{CC} = $cxx;
@@ -75,7 +106,8 @@ sub configure {
     $config{OPTIMIZE} = ' ';
   }
 
-  if( ld_is_GNU( $Config{ld} ) ) { $config{LD} = "$cxx -shared" }
+  $config{LD} = wx_config( 'ld' );
+  $config{LD} =~ s/\-o\s*$/ /;
 
   $cccflags = wx_config( 'cxxflags' );
   $libs = wx_config( 'libs' );
@@ -86,12 +118,12 @@ sub configure {
     $config{CCFLAGS} .= $_ . ' ';
   }
 
-  $config{LIBS} .= ' ' . $libs;
+  $config{LIBS} .= " $libs ";
 
   \%config;
 }
 
-sub wx_lib {
+sub wx_contrib_lib {
   my( $this, $lib ) = @_;
   $lib =~ s/^\s*(.*?)\s*/$1/;
 

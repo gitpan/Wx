@@ -27,11 +27,20 @@ use Wx::Help;
 use FindBin;
 use lib $FindBin::RealBin;
 
-sub filename { "$FindBin::RealBin/" . $_[0] }
+sub is_absolute {
+  if( $] < 5.005 ) {
+    return $_[0] =~ m{^/};
+  } else {
+    require File::Spec;
+    return File::Spec->file_name_is_absolute( $_[0] );
+  }
+}
+
+sub filename { is_absolute( $_[0] ) ? $_[0] : "$FindBin::RealBin/" . $_[0] }
 
 # some IDs
-use vars qw($ID_QUIT $ID_TASKBAR_DUMMY);
-( $ID_QUIT, $ID_TASKBAR_DUMMY ) = ( 10000 .. 10020 );
+use vars qw($ID_QUIT $ID_TASKBAR_DUMMY $ID_ABOUT);
+( $ID_QUIT, $ID_TASKBAR_DUMMY, $ID_ABOUT ) = ( 10000 .. 10020 );
 
 package Demo;
 
@@ -46,13 +55,17 @@ sub new {
   return $this;
 }
 
-package Demo::Sample;
+sub menu { }
+
+package Demo::External;
 
 use vars qw(@ISA); @ISA = qw(Demo);
 
 sub init {
   my $this = shift;
   $this->{NAME} = $_[0];
+  $this->{DIRECTORY} = $_[1] ? main::filename( $_[1] ) :
+    main::filename( "../samples/${$this}{NAME}/" );
 }
 
 sub name { $_[0]->{NAME} }
@@ -60,15 +73,35 @@ sub name { $_[0]->{NAME} }
 sub run {
   my $this = shift;
 
-  chdir main::filename( "../samples/${$this}{NAME}/" );
-#  open IN, "perl -Mblib ${$this}{NAME}.pl |";
-
-#  Wx::Shell( 'perl -Mblib ' . $this->filename );
+  chdir $this->{DIRECTORY};
+  Wx::ExecuteCommand( "perl -Mblib ${$this}{NAME}.pl", 0 );
 }
 
 sub load {}
 
 sub description {
+  my $this = shift;
+  my $file = $this->filename;
+  local( *IN, $_ );
+  my $description = '';
+
+  eval {
+    open IN, "< $file" or die;
+    while( <IN> ) {
+      if( m/^=for description$/ ) {
+        while( <IN> ) {
+          return if m/^=back$/;
+          $description .= $_;
+        }
+      }
+    }
+    close IN or die;
+  };
+  return $this->no_description() unless length $description;
+  return $description
+}
+
+sub no_description {
   my $this = shift;
   my $name = $this->name;
   my $Name = ucfirst( $name );
@@ -93,7 +126,7 @@ EOT
 sub filename {
   my $this = shift;
 
-  return '../samples/' . $this->name . '/' . $this->name . '.pl';
+  return $this->{DIRECTORY} . '/' . $this->{NAME} . '.pl';
 }
 
 package Demo::Demo;
@@ -147,6 +180,17 @@ sub run {
   return $this->package->window( $frame->notebook );
 }
 
+sub menu {
+  my $this = shift;
+  no strict;
+
+  if( defined &{$this->package . '::menu'} ) {
+    return $this->package->menu;
+  }
+
+  return;
+}
+
 package DemoFrame;
 
 use base qw(Wx::Frame);
@@ -154,6 +198,7 @@ use Wx qw(:textctrl :sizer :window);
 use Wx qw(wxDefaultPosition wxDefaultSize);
 
 sub sample { return Demo::Sample->new( $_[0] ) }
+sub external { return Demo::External->new( $_[0], $_[1] ) }
 sub the_demo { return Demo::Demo->new }
 sub demo { return Demo::Standard->new( $_[0], $_[1] ) }
 
@@ -163,25 +208,43 @@ my @demos =
       [
        [ 'HtmlWindow', demo( 'wxHtmlWindow' ) ],
        [ 'Grid', demo( 'wxGrid' ) ],
-       [ 'SplashScreen', demo( 'wxSplashScreen' ) ],
+       [ 'SplashScreen', external( 'splash', '.' ) ],
       ],
     ],
     [ 'Controls',
       [
+       [ 'CheckListBox', demo( 'wxCheckListBox' ) ],
        [ 'ListCtrl', demo( 'wxListCtrl' ) ],
+      ],
+    ],
+    [ 'Sizers',
+      [
+       [ 'BoxSizer', demo( 'wxBoxSizer' ) ],
+       [ 'GridSizer', demo( 'wxGridSizer' ) ],
+       [ 'FrexGridSizer', demo( 'wxFlexGridSizer' ) ],
+       [ 'NotebookSizer', demo( 'wxNotebookSizer' ) ],
+      ],
+    ],
+    [ 'Contrib',
+      [
+       [ 'XRC', demo( 'XRC' ), 2.003001 ],
+       [ 'STC', demo( 'wxSTC' ) ],
       ],
     ],
     [ 'Miscellaneous',
       [
        [ 'FileSystem', demo( 'wxFileSystem' ) ],
+       [ 'Dynamic HTML', demo( 'wxHtmlDynamic' ) ],
        [ 'Locale', demo( 'wxLocale' ) ],
        [ 'MDI', demo( 'MDI', 'MDIDemo' ) ],
        [ 'Printing', demo( 'Printing' ) ],
        [ 'Unicode', demo( 'Unicode', 'UnicodeDemo' ), 3.0 ],
-       [ 'XRC', demo( 'XRC' ), 2.003001 ],
        [ 'Clipboard', demo( 'wxClipboard' ) ],
        [ 'Drag&Drop', demo( 'DragDrop', 'DNDDemo' ) ],
        [ 'Process', demo( 'wxProcess' ) ],
+       ( $] >= 5.007003 ?
+         [ 'Threads', demo( 'wxThread' ) ] :
+         () ),
       ],
     ],
 #    [ 'Old samples',
@@ -203,6 +266,20 @@ sub new {
                        wxSUNKEN_BORDER|wxRAISED_BORDER);
 
   $this->SetIcon( Wx::GetWxPerlIcon() );
+
+  # create menu
+  my $bar = Wx::MenuBar->new;
+
+  my $file = Wx::Menu->new;
+  $file->Append( $main::ID_QUIT, "E&xit" );
+
+  my $help = Wx::Menu->new;
+  $help->Append( $main::ID_ABOUT, "&About..." );
+
+  $bar->Append( $file, "&File" );
+  $bar->Append( $help, "&Help" );
+
+  $this->SetMenuBar( $bar );
 
   # create splitters
   my $split1 = Wx::SplitterWindow->new( $this, -1 );
@@ -227,6 +304,9 @@ sub new {
 
   EVT_TREE_SEL_CHANGED( $this, $tree, \&OnSelChanged );
   EVT_CLOSE( $this, \&OnClose );
+
+  EVT_MENU( $this, $main::ID_QUIT, sub { $this->Close; } );
+  EVT_MENU( $this, $main::ID_ABOUT, \&OnAbout );
 
   $split1->SplitVertically( $tree, $split2, 150 );
   $split2->SplitHorizontally( $nb, $text, 300 );
@@ -305,6 +385,15 @@ sub populate_demo_list_helper {
   }
 }
 
+sub OnAbout {
+  use Wx qw(wxOK wxCENTRE wxVERSION_STRING);
+  my $this = shift;
+
+  Wx::MessageBox( "wxPerl demo, (c) 2001-2002 Mattia Barbon\n" .
+                  "wxPerl $Wx::VERSION, " . wxVERSION_STRING,
+                  "About wxPerl demo", wxOK|wxCENTRE, $this );
+}
+
 sub OnClose {
   my $this = shift;
 
@@ -326,6 +415,26 @@ sub OnClose {
   $config->WriteInt( "Height", $h );
 
   $this->Destroy;
+}
+
+sub add_menu {
+  my $this = shift;
+  my $bar = $this->GetMenuBar;
+  my @menus;
+
+  while( @_ ) {
+    my( $menu, $title ) = ( pop @_, pop @_ );
+    $bar->Insert( 1, $menu, $title );
+  }
+}
+
+sub remove_menu {
+  my $this = shift;
+  my $bar = $this->GetMenuBar;
+
+  while( $bar->GetMenuCount > 2 ) {
+    $bar->Remove( 1 )->Destroy;
+  }
 }
 
 sub load_demo {
@@ -362,10 +471,12 @@ sub load_demo {
   if( $nb->GetPageCount == 3 ) {
     $nb->SetSelection( 0 ) if $sel == 2;
     $nb->DeletePage( 2 );
+    $this->remove_menu;
   }
   if( ref( $window ) ) {
     $this->notebook->AddPage( $window, 'Demo' );
     $nb->SetSelection( $sel ) if $sel == 2;
+    $this->add_menu( $obj->menu );
   }
 }
 

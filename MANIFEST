@@ -18,8 +18,15 @@ build/wxMMUtils.pm
 build/Tests_Helper.pm
 build/W32.pm
 
+build/Test/Builder.pm			Test::Simple, Test::More and Test::Harness
+build/Test/Harness.pm
+build/Test/Harness/Assert.pm
+build/Test/Harness/Iterator.pm
+build/Test/Harness/Straps.pm
+build/Test/More.pm
+build/Test/Simple.pm
+
 docs/bugs.txt
-docs/changes.txt
 docs/install.txt
 docs/todo.txt
 
@@ -27,11 +34,12 @@ script/make_exp_list.pl
 script/make_ovl_list.pl
 script/pipe.pl
 
-t/1_load.t
-t/2_inheritance.t
-t/3_event.t
-t/4_userdata.t
-t/5_timer.t
+t/01_load.t
+t/02_inheritance.t
+t/03_event.t
+t/04_userdata.t
+t/05_timer.t
+t/06_loadxpm.t
 
 lib/Wx/App.pm
 lib/Wx/Bitmap.pm
@@ -226,6 +234,7 @@ cpp/constants.h
 cpp/controls.h
 cpp/dialog.h
 cpp/e_cback.h
+cpp/event.h
 cpp/evthandler.h
 cpp/frame.h
 cpp/helpers.h
@@ -250,6 +259,9 @@ cpp/helpers.cpp
 cpp/streams.cpp
 cpp/v_cback.cpp
 
+ext/Makefile.PL
+ext/pperl/Makefile.PL
+
 ext/dnd/DND.xs
 ext/dnd/Makefile.PL
 ext/dnd/XS/Clipboard.xs
@@ -264,8 +276,8 @@ ext/dnd/cpp/dropsource.h
 ext/dnd/cpp/droptarget.h
 ext/dnd/lib/Wx/DropSource.pm
 ext/dnd/lib/Wx/DND.pm
-ext/dnd/t/1_load.t
-ext/dnd/t/2_inheritance.t
+ext/dnd/t/01_load.t
+ext/dnd/t/02_inheritance.t
 ext/dnd/typemap
 
 ext/filesys/FS.xs
@@ -274,10 +286,11 @@ ext/filesys/XS/FSFile.xs
 ext/filesys/XS/FileSystem.xs
 ext/filesys/XS/FileSystemHandler.xs
 ext/filesys/cpp/fs_typedef.h
+ext/filesys/cpp/fshandler.h
 ext/filesys/lib/Wx/FS.pm
 ext/filesys/typemap
-ext/filesys/t/1_load.t
-ext/filesys/t/2_inheritance.t
+ext/filesys/t/01_load.t
+ext/filesys/t/02_inheritance.t
 
 ext/grid/Grid.xs
 ext/grid/XS/GridCellAttr.xs
@@ -290,9 +303,9 @@ ext/grid/cpp/gr_constants.cpp
 ext/grid/cpp/gr_typedef.h
 ext/grid/lib/Wx/Grid.pm
 ext/grid/typemap
-ext/grid/t/1_load.t
-ext/grid/t/2_inheritance.t
-ext/grid/t/3_attr.t
+ext/grid/t/01_load.t
+ext/grid/t/02_inheritance.t
+ext/grid/t/03_attr.t
 
 ext/help/Help.xs
 ext/help/Makefile.PL
@@ -302,8 +315,8 @@ ext/help/XS/HelpProvider.xs
 ext/help/cpp/he_typedef.h
 ext/help/lib/Wx/Help.pm
 ext/help/typemap
-ext/help/t/1_load.t
-ext/help/t/2_inheritance.t
+ext/help/t/01_load.t
+ext/help/t/02_inheritance.t
 
 ext/html/Html.xs
 ext/html/Makefile.PL
@@ -315,8 +328,8 @@ ext/html/cpp/ht_typedef.h
 ext/html/cpp/htmlwindow.h
 ext/html/lib/Wx/Html.pm
 ext/html/typemap
-ext/html/t/1_load.t
-ext/html/t/2_inheritance.t
+ext/html/t/01_load.t
+ext/html/t/02_inheritance.t
 
 ext/mdi/MDI.xs
 ext/mdi/Makefile.PL
@@ -325,8 +338,8 @@ ext/mdi/XS/MDIParentFrame.xs
 ext/mdi/cpp/md_typedef.h
 ext/mdi/cpp/mdi.h
 ext/mdi/lib/Wx/MDI.pm
-ext/mdi/t/1_load.t
-ext/mdi/t/2_inheritance.t
+ext/mdi/t/01_load.t
+ext/mdi/t/02_inheritance.t
 ext/mdi/typemap
 
 ext/print/Makefile.PL
@@ -345,17 +358,34 @@ ext/print/cpp/pr_typedef.h
 ext/print/cpp/printout.h
 ext/print/lib/Wx/Print.pm
 ext/print/typemap
-ext/print/t/1_load.t
-ext/print/t/2_inheritance.t
+ext/print/t/01_load.t
+ext/print/t/02_inheritance.t
+
+ext/stc/Makefile.PL
+ext/stc/STC.xs
+ext/stc/XS/StyledTextCtrl.xs
+ext/stc/cpp/st_constants.cpp
+ext/stc/cpp/st_typedef.h
+ext/stc/lib/Wx/STC.pm
+ext/stc/t/01_load.t
+ext/stc/t/02_inheritance.t
+ext/stc/typemap
+
+ext/pperl/splashfast/Makefile.PL
+ext/pperl/splashfast/SplashFast.pm
+ext/pperl/splashfast/t/01_load.t
+ext/pperl/splashfast/t/02_use.t
+ext/pperl/splashfast/t/03_new.t
+ext/pperl/splashfast/t/04_app.t
 
 ext/xrc/Makefile.PL
 ext/xrc/XRC.xs
 ext/xrc/XS/XmlResource.xs
+ext/xrc/cpp/xr_constants.cpp
 ext/xrc/cpp/xr_typedef.h
 ext/xrc/lib/Wx/XRC.pm
 ext/xrc/typemap
-ext/xrc/t/1_load.t
-ext/xrc/t/2_inheritance.t
+ext/xrc/t/01_load.t
 
 demo/DataObjects.pm
 demo/DragDrop.pm
@@ -374,11 +404,19 @@ demo/data/logo.jpg
 demo/data/cat.pl
 demo/data/dummy.pl
 demo/demo.pl
+demo/splash.pl
+demo/wxCheckListBox.pm
 demo/wxClipboard.pm
 demo/wxFileSystem.pm
 demo/wxGrid.pm
+demo/wxHtmlDynamic.pm
 demo/wxHtmlWindow.pm
 demo/wxListCtrl.pm
 demo/wxLocale.pm
 demo/wxProcess.pm
-demo/wxSplashScreen.pm
+demo/wxSTC.pm
+demo/wxThread.pm
+demo/wxBoxSizer.pm
+demo/wxGridSizer.pm
+demo/wxFlexGridSizer.pm
+demo/wxNotebookSizer.pm

@@ -92,6 +92,42 @@ Wx_Process::Redirect()
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+long
+wxExecuteCommand( command, sync = wxEXEC_ASYNC, callback = 0 )
+    wxString command
+    int sync
+    Wx_Process* callback
+  CODE:
+    RETVAL = wxExecute( command, sync, callback );
+  OUTPUT:
+    RETVAL
+
+long
+wxExecuteArgs( args, sync = wxEXEC_ASYNC, callback = 0 )
+    SV* args
+    int sync
+    Wx_Process* callback
+  PREINIT:
+    char** argv;
+    char** t;
+    int n, i;
+  CODE:
+    n = wxPli_av_2_charparray( aTHX_ args, &t );
+    argv = new char*[n+1];
+    memcpy( argv, t, n*sizeof(char*) );
+    argv[n] = 0;
+    RETVAL = wxExecute( argv, sync, callback );
+    for( i = 0; i < n; ++i )
+        delete argv[i];
+    delete[] argv;
+    delete[] t;
+  OUTPUT:
+    RETVAL
+
+#else
+
 long
 wxExecuteCommand( command, sync = FALSE, callback = 0 )
     wxString command
@@ -112,7 +148,7 @@ wxExecuteArgs( args, sync = FALSE, callback = 0 )
     char** t;
     int n, i;
   CODE:
-    n = wxPli_av_2_charparray( args, &t );
+    n = wxPli_av_2_charparray( aTHX_ args, &t );
     argv = new char*[n+1];
     memcpy( argv, t, n*sizeof(char*) );
     argv[n] = 0;
@@ -124,6 +160,8 @@ wxExecuteArgs( args, sync = FALSE, callback = 0 )
   OUTPUT:
     RETVAL
 
+#endif
+
 void
 wxExecuteStdout( command )
     wxString command
@@ -133,7 +171,7 @@ wxExecuteStdout( command )
     long code;
   PPCODE:
     code = wxExecute( command, out );
-    ret = wxPli_stringarray_2_av( out );
+    ret = wxPli_stringarray_2_av( aTHX_ out );
     EXTEND( SP, 2 );
     PUSHs( sv_2mortal( newSViv( code ) ) );
     PUSHs( sv_2mortal( newRV_noinc( (SV*)ret ) ) );
@@ -147,8 +185,8 @@ wxExecuteStdoutStderr( command )
     long code;
   PPCODE:
     code = wxExecute( command, out, err );
-    rout = wxPli_stringarray_2_av( out );
-    rerr = wxPli_stringarray_2_av( err );
+    rout = wxPli_stringarray_2_av( aTHX_ out );
+    rerr = wxPli_stringarray_2_av( aTHX_ err );
     EXTEND( SP, 3 );
     PUSHs( sv_2mortal( newSViv( code ) ) );
     PUSHs( sv_2mortal( newRV_noinc( (SV*)rout ) ) );

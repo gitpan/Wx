@@ -5,29 +5,6 @@ use Config;
 use File::Find;
 use wxMMUtils;
 
-#FIXME// this is an horrendous hack...
-# since MakeMaker does only understand Makefile.PL une level below
-# the top directory, and we need towo level below, we add one additional
-# level to INST_* constants beginning with 'updir' ( usually '..' )
-sub constants {
-  my $this = shift;
-
-  if( $this->{PARENT} ) {
-    foreach my $k ( sort keys %$this ) {
-      $k !~ m/^INST_/ && next;
-      my $dir = $this->{$k};
-      if( index( $dir, $this->updir ) == 0 ) {
-        $this->{$k} = $this->canonpath( $this->catdir
-          ( top_dir(), substr $this->{$k}, length( $this->updir ) ) );
-#        substr( $this->{$k}, 0, length( $this->updir ) ) = top_dir();
-      }
-    }
-  }
-
-  package MY;
-  $this->SUPER::constants( @_ );
-}
-
 sub depend {
   my $this = shift;
   my $exp = MM->catfile( qw(blib lib Wx _Exp.pm) );
@@ -72,7 +49,7 @@ sub files_with_constants {
           push @files, $name;
           return;
         };
-      }
+      };
     };
   };
 
@@ -88,8 +65,8 @@ sub files_with_overload {
     my $name = $File::Find::name;
 
     m/\.(?:pm)$/i && do {
-      local *IN;
       my $line;
+      local *IN;
 
       open IN, "< $_" || warn "unable to open '$_'";
       while( defined( $line = <IN> ) ) {
@@ -97,7 +74,7 @@ sub files_with_overload {
           push @files, $name;
           return;
         };
-      }
+      };
     };
   };
 
@@ -108,7 +85,7 @@ sub files_with_overload {
 
 sub postamble {
   my $this = shift;
-  my $text;
+  my $text = '';
 
   unless( $this->{PARENT} ) {
     my @c_files = files_with_constants();
@@ -131,8 +108,40 @@ EOT
   $text;
 }
 
+sub dynamic {
+  my $this = shift;
+  package MY;
+  my $text = $this->SUPER::dynamic( @_ );
+
+  if( $this->{PARENT} && $wxConfig::o_static ) {
+    if( $text =~ m/(.*?)^(dynamic\s*:+.*?)$(.*)/ms ) {
+      my( $pre, $dyn, $post ) = ( $1, $2, $3 );
+      # this 'works' because $post is a no-op
+      $dyn =~ s/\$\(INST_\w+\)\s*//g;
+      return "$pre$dyn \$(OBJECT)$post";
+    }
+  } else {
+    return $text;
+  }
+}
+
 sub configure {
-  return @_;
+  my %config =
+    ( LIBS => $wxConfig::extra_libs,
+      CCFLAGS => $wxConfig::extra_cflags,
+    );
+
+  if( $wxConfig::o_static ) {
+    $config{DEFINE} .= " -DWXPL_STATIC ";
+    if( !building_extension() ) {
+      $config{LDFROM} = join( ' ',
+        obj_from_src( map { glob "ext/$_/*.xs" }
+                      @$wxConfig::subdirs
+                    ) ) . ' ';
+    }
+  }
+
+  return \%config;
 }
 
 sub get_config {
@@ -151,15 +160,25 @@ sub get_config {
   return $cfg;
 }
 
-# bleadperl does nasty things here
-sub pasthru {
+# add -Ibuild (or -I../../build) to command line
+sub test {
+  my $this = shift;
   package MY;
-  my $text = shift->SUPER::pasthru( @_ );
-  $text =~ s/INC="[^"]+"//;
-  $text =~ s/DEFINE="[^"]+"//;
+  my $text = $this->SUPER::test( @_ );
+
+  my $build = wxMMUtils::unix_top_dir() . '/build';
+  $text =~ s/(\$\(FULLPERL\)\s+)/$1\"-I$build\" /gi;
 
   return $text;
 }
+
+#
+# stubs from now on
+#
+
+sub top_targets { package MY; my $x = shift; $x->SUPER::top_targets( @_ ); }
+sub dynamic_lib { package MY; my $x = shift; $x->SUPER::dynamic_lib( @_ ); }
+sub ppd { package MY; my $x = shift; $x->SUPER::ppd( @_ ); }
 
 1;
 

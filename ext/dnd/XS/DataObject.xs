@@ -19,6 +19,7 @@ Wx_DataFormat*
 Wx_DataFormat::newNative( format = wxDF_INVALID )
     NativeFormat format
   CODE:
+    THIS = 0; // fool SGI CC warnings
     RETVAL = new wxDataFormat( format );
   OUTPUT:
     RETVAL
@@ -27,10 +28,12 @@ Wx_DataFormat*
 Wx_DataFormat::newUser( id )
     wxChar* id
   CODE:
+    THIS = 0; // fool SGI CC warnings
     RETVAL = new wxDataFormat( id );
   OUTPUT:
     RETVAL
 
+## XXX threads
 void
 Wx_DataFormat::DESTROY()
 
@@ -63,11 +66,12 @@ Wx_DataFormat::SetType( type )
 
 MODULE=Wx PACKAGE=Wx::DataObject
 
+## XXX threads
 void
 DESTROY( THIS )
     Wx_DataObject* THIS
   CODE:
-    if( wxPli_object_is_deleteable( ST(0) ) )
+    if( wxPli_object_is_deleteable( aTHX_ ST(0) ) )
         delete THIS;
 
 void
@@ -89,7 +93,7 @@ Wx_DataObject::GetAllFormats( dir = wxDataObjectBase::Get )
     EXTEND( SP, (IV)wanted );
     for( i = 0; i < wanted; ++i )
     {
-        PUSHs( wxPli_non_object_2_sv( sv_newmortal(),
+        PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                 new wxDataFormat( formats_d[i] ), "Wx::DataFormat" ) );
     }
     delete [] formats_d;
@@ -194,7 +198,7 @@ Wx_DataObjectComposite::Add( dataObject, preferred = FALSE )
     bool preferred
   CODE:
     // at this point the data object is owned!
-    wxPli_object_set_deleteable( ST(1), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(1), FALSE );
     THIS->Add( dataObject, preferred );
 
 MODULE=Wx PACKAGE=Wx::TextDataObject

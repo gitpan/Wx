@@ -2,9 +2,9 @@
 
 use strict;
 use Wx;
-use Wx::Grid;
 
-use lib "../../build";
+use lib "build";
+use Test::More 'no_plan';
 use Tests_Helper qw(:inheritance);
 
 test_inheritance_all();

@@ -18,6 +18,7 @@ MODULE=Wx PACKAGE=Wx::NativeFontInfo
 
 #undef THIS
 
+## XXX threads
 void
 Wx_NativeFontInfo::DESTROY()
 
@@ -42,6 +43,7 @@ Wx_Font::new( pointsize, family, style, weight, underline = FALSE, faceName = wx
     wxString faceName
     wxFontEncoding encoding
 
+## XXX threads
 void
 Wx_Font::DESTROY()
 
@@ -87,7 +89,7 @@ Wx_Font::GetUnderlined()
 int
 Wx_Font::GetWeight()
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
 
 bool
 Wx_Font::IsFixedWidth()
@@ -118,6 +120,16 @@ Wx_Font::SetNativeFontInfo( info )
     Wx_NativeFontInfo* info
   CODE:
     THIS->SetNativeFontInfo( *info );
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+##void
+##Wx_Font::SetNativeFontInfo( info )
+##    wxString info
+##  CODE:
+##    THIS->SetNativeFontInfo( info );
 
 #endif
 

@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+#define PERL_NO_GET_CONTEXT
 
 #include <wx/defs.h>
 
@@ -49,7 +50,12 @@ WXPL_EXTERN_C_END
 #include "cpp/e_cback.h"
 #include "cpp/e_cback.cpp"
 
+#include "cpp/event.h"
+
 #include "cpp/evthandler.h"
+
+WXPLI_BOOT_ONCE(Wx_Evt);
+#define boot_Wx_Evt wxPli_boot_Wx_Evt
 
 MODULE=Wx_Evt
 
@@ -71,6 +77,7 @@ Wx_Event::new( id = 0 )
 
 #endif
 
+## XXX threads
 void
 Wx_Event::DESTROY()
 
@@ -157,6 +164,51 @@ void
 Wx_CommandEvent::SetString( string )
     const char* string
 
+MODULE=Wx_Evt PACKAGE=Wx::PlEvent
+
+Wx_Event*
+Wx_PlEvent::new( id, type )
+    int id
+    wxEventType type
+  CODE:
+    RETVAL = new wxPlEvent( CLASS, id, type );
+  OUTPUT:
+    RETVAL
+
+MODULE=Wx_Evt PACKAGE=Wx::PlCommandEvent
+
+Wx_Event*
+Wx_PlCommandEvent::new( id, type )
+    int id
+    wxEventType type
+  CODE:
+    RETVAL = new wxPlCommandEvent( CLASS, id, type );
+  OUTPUT:
+    RETVAL
+
+MODULE=Wx_Evt PACKAGE=Wx::PlThreadEvent
+
+Wx_Event*
+Wx_PlThreadEvent::new( id, type, data )
+    int id
+    wxEventType type
+    SV* data
+  CODE:
+    RETVAL = new wxPlThreadEvent( CLASS, id, type, data );
+  OUTPUT:
+    RETVAL
+
+SV*
+Wx_PlThreadEvent::GetData()
+  PPCODE:
+    SV* t = THIS->GetData();
+    SvREFCNT_inc( t );
+    XPUSHs( t );
+
+void
+Wx_PlThreadEvent::SetData( data )
+    SV* data
+
 MODULE=Wx_Evt PACKAGE=Wx::ActivateEvent
 
 Wx_ActivateEvent*
@@ -205,7 +257,7 @@ Wx_EraseEvent::GetDC()
   OUTPUT:
     RETVAL
   CLEANUP:
-    wxPli_object_set_deleteable( ST(0), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(0), FALSE );
 
 MODULE=Wx_Evt PACKAGE=Wx::FocusEvent
 
@@ -363,6 +415,13 @@ Wx_MenuEvent::new( eventType = 0, id = 0 )
 
 int
 Wx_MenuEvent::GetMenuId()
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+bool
+Wx_MenuEvent::IsPopup()
+
+#endif
 
 MODULE=Wx_Evt PACKAGE=Wx::MouseEvent
 

@@ -15,15 +15,11 @@ package Wx::Help;
 use Wx;
 use strict;
 
-require DynaLoader;
-
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
 
 $VERSION = '0.01';
 
-@ISA = qw(DynaLoader);
-
-bootstrap Wx::Help;
+Wx::wx_boot( 'Wx::Help', $VERSION );
 
 #
 # properly setup inheritance tree
@@ -35,7 +31,7 @@ package Wx::WinHelpController;  @ISA = qw(Wx::HelpControllerBase);
 package Wx::HelpControllerHtml; @ISA = qw(Wx::HelpControllerBase);
 package Wx::CHMHelpController;  @ISA = qw(Wx::HelpControllerBase);
 package Wx::ExtHelpController;  @ISA = qw(Wx::HelpControllerBase);
-package Wx::BesthelpController; @ISA = qw(Wx::HelpController);
+package Wx::BesthelpController; @ISA = qw(Wx::HelpControllerBase);
 
 package Wx::ContextHelpButton;  @ISA = qw(Wx::BitmapButton);
 package Wx::SimpleHelpProvider; @ISA = qw(Wx::HelpProvider);

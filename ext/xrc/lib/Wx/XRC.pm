@@ -15,19 +15,17 @@ package Wx::XRC;
 use Wx;
 use strict;
 
-require DynaLoader;
-
-use vars qw(@ISA $VERSION);
+use vars qw($VERSION);
 
 $VERSION = '0.01';
 
-@ISA = qw(DynaLoader);
-
-bootstrap Wx::XRC;
+Wx::wx_boot( 'Wx::XRC', $VERSION );
 
 # init wxModules
 Wx::XmlInitXmlModule();
 Wx::XmlInitResourceModule();
+
+*Wx::XmlResource::GetXMLID = \&Wx::XmlResource::GetXRCID;
 
 #
 # properly setup inheritance tree

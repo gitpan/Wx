@@ -19,6 +19,7 @@ MODULE=Wx PACKAGE=Wx::FontData
 Wx_FontData*
 Wx_FontData::new()
 
+## XXX threads
 void
 Wx_FontData::DESTROY()
 
@@ -91,6 +92,14 @@ Wx_FontDialog*
 Wx_FontDialog::new( parent, data = 0 )
     Wx_Window* parent
     Wx_FontData* data
+  CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    RETVAL = new wxFontDialog( parent, *data );
+#else
+    RETVAL = new wxFontDialog( parent, data );
+#endif
+  OUTPUT:
+    RETVAL
 
 Wx_FontData*
 Wx_FontDialog::GetFontData()
@@ -101,7 +110,7 @@ Wx_FontDialog::GetFontData()
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
 
 Wx_Font*
 wxGetFontFromUser( parent = 0, fontInit = (wxFont*)&wxNullFont )

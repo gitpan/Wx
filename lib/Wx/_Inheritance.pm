@@ -93,6 +93,7 @@ package Wx::PCXHandler;                 @ISA = qw(Wx::ImageHandler);
 package Wx::PNMHandler;                 @ISA = qw(Wx::ImageHandler);
 package Wx::TIFFHandler;                @ISA = qw(Wx::ImageHandler);
 package Wx::XPMHandler;                 @ISA = qw(Wx::ImageHandler);
+package Wx::IFFHandler;                 @ISA = qw(Wx::ImageHandler);
 
 package Wx::Log;
 package Wx::LogTextCtrl;                @ISA = qw(Wx::Log);
@@ -127,12 +128,14 @@ package Wx::Frame;
 use vars qw(@ISA);
 
 @ISA = $Wx::_wx_version >= 2.003002 ? qw(Wx::TopLevelWindow) : qw(Wx::Window);
+@ISA = qw(Wx::Window) if &Wx::wxMOTIF;
 
 package Wx::Dialog;
 
 use vars qw(@ISA);
 
 @ISA = $Wx::_wx_version >= 2.003002 ? qw(Wx::TopLevelWindow) : qw(Wx::Panel);
+@ISA = qw(Wx::Panel) if &Wx::wxMOTIF;
 
 package Wx::MemoryDC;
 
@@ -220,7 +223,6 @@ if( $Wx::_platform == $Wx::_motif ) {
   @ISA = qw(Wx::Bitmap);
 }
 elsif( $Wx::_platform == $Wx::_gtk ) {
-  @ISA = qw(UNIVERSAL);
 }
 else {
   @ISA = qw(Wx::GDIObject);
@@ -239,18 +241,15 @@ else {
 
 package Wx::Colour;
 
-use vars qw(@ISA);
-
 if( $Wx::_platform == $Wx::_gtk ) {
-  @ISA = qw(Wx::GDIObject);
+  @Wx::Colour::ISA = qw(Wx::GDIObject);
 } else {
-  @ISA = qw(UNIVERSAL);
 }
 
 package Wx::PlValidator;
 
 # avoids a 'Attempt to free unreferenced scalar' warning
-sub DESTROY {print $_[0],"\n"}
+sub DESTROY {}
 
 no strict;
 

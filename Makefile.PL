@@ -35,15 +35,9 @@ wxWriteMakefile( NAME => 'Wx',
                  ABSTRACT_FROM => 'Wx.pm',
                  AUTHOR => 'Mattia Barbon <mbarbon@dsi.unive.it>',
                  VERSION_FROM => 'Wx.pm',
-                 DIR => [ MM->catdir( qw(ext grid) ),
-                          MM->catdir( qw(ext mdi) ),
-                          MM->catdir( qw(ext dnd) ),
-                          MM->catdir( qw(ext html) ),
-                          MM->catdir( qw(ext help) ),
-                          MM->catdir( qw(ext filesys) ),
-                          MM->catdir( qw(ext print) ),
-                          MM->catdir( qw(ext xrc) ),
-                        ],
+                 ( $wxConfig::o_static ?
+                   ( WXLIB => [ 'wxxrc', 'stc' ] ) :
+                   () ),
                  OBJECT => join( ' ', obj_from_src( @top_level_xs ) ) . ' ',
                );
 

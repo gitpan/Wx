@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+#define PERL_NO_GET_CONTEXT
 
 #include <stddef.h>
 #include "cpp/compat.h"
@@ -81,6 +82,17 @@ extern "C" {
     XS( boot_Wx_Win );
     XS( boot_Wx_Wnd );
     XS( boot_Wx_GDI );
+#if defined( WXPL_STATIC )
+    XS( boot_Wx__STC );
+    XS( boot_Wx__XRC );
+    XS( boot_Wx__Print );
+    XS( boot_Wx__MDI );
+    XS( boot_Wx__Html );
+    XS( boot_Wx__Help );
+    XS( boot_Wx__Grid );
+    XS( boot_Wx__FS );
+    XS( boot_Wx__DND );
+#endif
 #ifdef __cplusplus
 }
 #endif
@@ -140,6 +152,9 @@ DEFINE_PLI_HELPERS( st_wxPliHelpers );
 #include <wx/confbase.h>
 typedef wxConfigBase::EntryType EntryType;
 
+WXPLI_BOOT_ONCE_EXP(Wx);
+#define boot_Wx wxPli_boot_Wx
+
 MODULE=Wx PACKAGE=Wx
 
 BOOT:
@@ -149,14 +164,34 @@ BOOT:
   newXSproto( "Wx::_boot_Window", boot_Wx_Win, file, "$$" );
   newXSproto( "Wx::_boot_Frames", boot_Wx_Wnd, file, "$$" );
   newXSproto( "Wx::_boot_GDI", boot_Wx_GDI, file, "$$" );
+#if defined( WXPL_STATIC )
+  newXSproto( "Wx::_boot_Wx__STC", boot_Wx__STC, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__XRC", boot_Wx__XRC, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__Print", boot_Wx__Print, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__MDI", boot_Wx__MDI, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__Html", boot_Wx__Html, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__Help", boot_Wx__Help, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__Grid", boot_Wx__Grid, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__FS", boot_Wx__FS, file, "$$" );
+  newXSproto( "Wx::_boot_Wx__DND", boot_Wx__DND, file, "$$" );
+#endif
   SV* tmp = get_sv( "Wx::_exports", 1 );
   sv_setiv( tmp, (IV)(void*)&st_wxPliHelpers );
 
 void 
 Load()
   CODE:
+    static bool initialized = false;
+    if( initialized ) { XSRETURN_EMPTY; }
+    initialized = true;
+
+    // set up version as soon as possible
+    SV* tmp = get_sv( "Wx::_wx_version", 0 );
+    sv_setnv( tmp, wxMAJOR_VERSION + wxMINOR_VERSION / 1000.0 + 
+        wxRELEASE_NUMBER / 1000000.0 );
+
     if( wxTopLevelWindows.Number() > 0 )
-      return;
+        return;
 
     char** argv = 0;
     int argc = 0;
@@ -164,6 +199,10 @@ Load()
     argc = wxPli_get_args_argc_argv( &argv, 0 );
     wxEntryStart( argc, argv );
     wxPli_delete_argv( argv, 0 );
+
+void
+SetConstants()
+  CODE:
     // this is after wxEntryStart, since
     // wxInitializeStockObjects needs to be called
     // (for colours, cursors, pens, etc...)
@@ -177,6 +216,12 @@ UnLoad()
 I32
 looks_like_number( sval )
     SV* sval
+
+void
+CLONE( CLASS )
+    char* CLASS
+  CODE:
+    SetConstants();
 
 INCLUDE: XS/App.xs
 INCLUDE: XS/Caret.xs
@@ -195,10 +240,10 @@ INCLUDE: XS/Process.xs
 # this is here for debugging purpouses
 INCLUDE: XS/ClassInfo.xs
 
-#  //FIXME// tricky
-#if defined(__WXMSW__)
-#undef XS
-#define XS( name ) WXXS( name )
-#endif
+##  //FIXME// tricky
+##if defined(__WXMSW__)
+##undef XS
+##define XS( name ) WXXS( name )
+##endif
 
 MODULE=Wx PACKAGE=Wx

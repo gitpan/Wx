@@ -15,6 +15,11 @@
 
 // forward declares and typedefs a class wxClass to Wx_Class
 // and declares the string holding the class name
+#if ( defined( WXPL_EXT ) && !WXPL_MSW_EXPORTS && !defined( WXPL_STATIC ) )
+#undef _WXP_DEFINE_CLASSNAME
+#define _WXP_DEFINE_CLASSNAME 1
+#endif
+
 #if _WXP_DEFINE_CLASSNAME
 
 #define FD_TD( name ) \
@@ -90,6 +95,10 @@ FD_TD( TreeEvent );
 FD_TD( UpdateUIEvent );
 FD_TD( ProcessEvent );
 
+FD_TD( PlEvent );
+FD_TD( PlCommandEvent );
+FD_TD( PlThreadEvent );
+
 // other classes
 
 class wxPlValidator;  typedef wxPlValidator  Wx_PlValidator;
@@ -141,7 +150,7 @@ FD_TD( ControlWithItems );
 FD_TD( Cursor );
 FD_TD( DC );
 FD_TD( Dialog );
-#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
 #  if defined( __WXMSW__ ) || defined( __WXMAC__ )
 FD_TD( DirDialog );
 #  else
@@ -245,6 +254,7 @@ FD_TD( StaticText );
 FD_TD( StatusBar );
 FD_TD( StopWatch );
 FD_TD( TaskBarIcon );
+FD_TD( TextAttr );
 FD_TD( TextCtrl );
 FD_TD( TextEntryDialog );
 FD_TD( Timer );
@@ -282,9 +292,5 @@ FD_TD( OutputStream );
 #undef FD_TD_NAME
 
 typedef int Wx_KeyCode;
-
-struct sv;
-typedef struct sv SV;
-typedef SV SV_null; // equal to SV except that maps C++ 0 <-> Perl undef
 
 #endif // _WXPERL_TYPEDEF_H

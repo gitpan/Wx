@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+#define PERL_NO_GET_CONTEXT
 
 #include <wx/defs.h>
 #include <stdarg.h>
@@ -51,6 +52,9 @@ WXPL_EXTERN_C_END
 #include "cpp/v_cback.h"
 
 #undef THIS
+
+WXPLI_BOOT_ONCE(Wx_Wnd);
+#define boot_Wx_Wnd wxPli_boot_Wx_Wnd
 
 MODULE=Wx_Wnd
 

@@ -12,6 +12,7 @@
 
 inline wxPliEventCallback::wxPliEventCallback( SV* method, SV* self ) 
 {
+    dTHX;
     m_method = method;
     SvREFCNT_inc( m_method );
     m_self = self;
@@ -20,6 +21,7 @@ inline wxPliEventCallback::wxPliEventCallback( SV* method, SV* self )
 
 wxPliEventCallback::~wxPliEventCallback() 
 {
+    dTHX;
     SvREFCNT_dec( m_method );
     SvREFCNT_dec( m_self );
 }
@@ -27,17 +29,40 @@ wxPliEventCallback::~wxPliEventCallback()
 void wxPliEventCallback::Handler( wxEvent& event ) 
 {
     wxPliEventCallback* This = (wxPliEventCallback*) event.m_callbackUserData;
-    //  wxEvtHandler* That = (wxEvtHandler*)this;
 
+    dTHX;
     dSP;
 
     ENTER;
     SAVETMPS;
-  
-    wxString cName = event.GetClassInfo()->GetClassName();
-    SV* e = sv_newmortal();
 
-    sv_setref_pv( e, CHAR_P wxPli_cpp_class_2_perl( cName.c_str() ), &event );
+    // similar to wxPli_object_2_sv
+    bool clear = FALSE;
+    SV* e = 0;
+    wxClassInfo *ci = event.GetClassInfo();
+    const wxChar* classname = ci->GetClassName();
+
+#if wxUSE_UNICODE
+    if( wcsncmp( classname, wxT("wxPl"), 4 ) == 0 ) 
+#else
+    if( strnEQ( classname, "wxPl", 4 ) ) 
+#endif
+    {
+        wxPliClassInfo* cci = (wxPliClassInfo*)ci;
+        wxPliSelfRef* sr = cci->m_func( &event );
+
+        if( sr ) e = sr->m_self;
+    }
+
+    if( !e )
+    {
+        char buffer[WXPL_BUF_SIZE];
+        const char* CLASS = wxPli_cpp_class_2_perl( classname, buffer );
+
+        e = sv_newmortal();
+        sv_setref_pv( e, CHAR_P CLASS, &event );
+        clear = TRUE;
+    }
 
     PUSHMARK( SP );
     XPUSHs( This->m_self );
@@ -45,8 +70,7 @@ void wxPliEventCallback::Handler( wxEvent& event )
     PUTBACK;
 
     call_sv( This->m_method, G_DISCARD );
-    //wxTrap();
-    sv_setiv( SvRV( e ), 0 );
+    if( clear ) sv_setiv( SvRV( e ), 0 );
 
     FREETMPS;
     LEAVE;

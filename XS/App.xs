@@ -13,6 +13,22 @@
 #include <wx/app.h>
 #include "cpp/app.h"
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+#include <wx/artprov.h>
+#endif
+
+MODULE=Wx PACKAGE=Wx PREFIX=wx
+
+void
+wxPostEvent( evthnd, event )
+    Wx_EvtHandler* evthnd
+    Wx_Event* event
+  CODE:
+    wxPostEvent( evthnd, *event );
+
+void
+wxWakeUpIdle()
+
 MODULE=Wx PACKAGE=Wx::_App
 
 void
@@ -25,8 +41,11 @@ Start( app, sub )
     Wx_App* app 
     SV* sub
   CODE:
+    // for Wx::Perl::SplashFast
+#if 0
     if( wxTopLevelWindows.Number() > 0 )
       croak( "Only one Wx::App instance allowed" );
+#endif
     if( !SvROK( sub ) || SvTYPE( SvRV( sub ) ) != SVt_PVCV )
       croak( "sub must be a CODE reference" );
 
@@ -51,9 +70,6 @@ Wx_App::new()
     RETVAL = new wxPliApp( CLASS );
   OUTPUT:
     RETVAL
-
-# void
-# Wx_App::DESTROY()
 
 MODULE=Wx PACKAGE=Wx::App
 
@@ -83,7 +99,28 @@ Wx_Icon*
 Wx_App::GetStdIcon( which )
     int which
   CODE:
+#if WXPERL_W_VERSION_LE( 2, 3, 2 )
     RETVAL = new wxIcon( THIS->GetStdIcon( which ) );
+#else
+    wxString id;
+    switch( which )
+    {
+    case wxICON_EXCLAMATION:
+        id = wxART_WARNING;
+        break;
+    case wxICON_HAND:
+        id = wxART_ERROR; 
+        break;
+    case wxICON_QUESTION:
+        id = wxART_INFORMATION;
+        break;
+    case wxICON_INFORMATION:
+        id = wxART_QUESTION;
+        break;
+    };
+
+    RETVAL = new wxIcon( wxArtProvider::GetIcon( id, wxART_MESSAGE_BOX ) );
+#endif
   OUTPUT:
     RETVAL
 

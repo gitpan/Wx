@@ -15,14 +15,13 @@ package Wx::Event;
 use strict;
 use vars qw(@ISA @EXPORT_OK);
 
-use Carp;
 use Exporter;
 
 @ISA = qw(Exporter);
 @EXPORT_OK = qw();
 
 sub _id($) {
-  croak 'Undefined id'
+  Wx::_croak 'Undefined id'
     unless defined $_[0]; ref( $_[0] ) ? $_[0]->GetId() : $_[0];
 }
 
@@ -40,8 +39,8 @@ sub EVT_ACTIVATE_APP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_ACTIVATE_APP, $_[1
 # CommandEvent
 #
 
-sub EVT_COMMAND($$$) { $_[0]->Connect( $_[1], -1, $_[1], $_[2] ); }
-sub EVT_COMMAND_RANGE($$$$) { $_[0]->Connect( $_[1], $_[2], $_[3], $_[4] ); }
+sub EVT_COMMAND($$$$) { $_[0]->Connect( $_[1], -1, $_[2], $_[3] ); }
+sub EVT_COMMAND_RANGE($$$$$) { $_[0]->Connect( $_[1], $_[2], $_[3], $_[4] ); }
 sub EVT_BUTTON($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_BUTTON_CLICKED, $_[2] ); }
 sub EVT_CHECKBOX($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_CHECKBOX_CLICKED, $_[2] ); }
 sub EVT_CHOICE($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_CHOICE_SELECTED, $_[2] ); }
@@ -52,7 +51,7 @@ sub EVT_TEXT_ENTER($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_TEXT_ENT
 sub EVT_TEXT_MAXLEN($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_TEXT_MAXLEN, $_[2] ); }
 sub EVT_TEXT_URL($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_TEXT_URL, $_[2] ); }
 sub EVT_MENU($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_MENU_SELECTED, $_[2] ); }
-sub EVT_MENU_RANGE($$$$) { $_[0]->Connect( $_[1], $_[2], &Wx::wxEVT_COMMAND_MENU_RANGE, $_[3] ); }
+sub EVT_MENU_RANGE($$$$) { $_[0]->Connect( $_[1], $_[2], &Wx::wxEVT_COMMAND_MENU_SELECTED, $_[3] ); }
 sub EVT_SLIDER($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_SLIDER_UPDATED, $_[2] ); }
 sub EVT_RADIOBOX($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_RADIOBOX_SELECTED, $_[2] ); }
 sub EVT_RADIOBUTTON($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_RADIOBUTTON_SELECTED, $_[2] ); }
@@ -70,6 +69,7 @@ sub EVT_COMMAND_SET_FOCUS($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_S
 sub EVT_COMMAND_KILL_FOCUS($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_KILL_FOCUS, $_[2] ); }
 sub EVT_COMMAND_ENTER($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_ENTER, $_[2] ); }
 sub EVT_TOGGLEBUTTON($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, $_[2] ); }
+sub EVT_CHECKLISTBOX($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, $_[2] ); }
 
 #
 # CloseEvent
@@ -200,6 +200,7 @@ sub EVT_LIST_COL_BEGIN_DRAG($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND
 sub EVT_LIST_COL_DRAGGING($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_COL_DRAGGING, $_[2] ); }
 sub EVT_LIST_COL_END_DRAG($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_COL_END_DRAG, $_[2] ); }
 sub EVT_LIST_ITEM_FOCUSED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_ITEM_FOCUSED, $_[2] ); }
+sub EVT_LIST_ITEM_RIGHT_CLICK($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, $_[2] ); }
 
 #
 # MenuEvent
@@ -210,6 +211,8 @@ sub EVT_MENU_INIT($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MENU_INIT, $_[1] ); }
 sub EVT_MENU_HIGHLIGHT($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_MENU_HIGHLIGHT, $_[2] ); }
 sub EVT_POPUP_MENU($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_POPUP_MENU, $_[1] ); }
 sub EVT_CONTEXT_MENU($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_CONTEXT_MENU, $_[1] ); }
+sub EVT_MENU_OPEN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MENU_OPEN, $_[1] ); }
+sub EVT_MENU_CLOSE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MENU_CLOSE, $_[1] ); }
 
 #
 # MouseEvent
@@ -396,6 +399,9 @@ no strict;
 # Event hierarchy
 #
 
+package Wx::PlEvent;         @ISA = qw(Wx::Event);
+package Wx::PlThreadEvent;   @ISA = qw(Wx::Event);
+package Wx::PlCommandEvent;  @ISA = qw(Wx::CommandEvent);
 package Wx::ActivateEvent;   @ISA = qw(Wx::Event);
 package Wx::CommandEvent;    @ISA = qw(Wx::Event);
 package Wx::CloseEvent;      @ISA = qw(Wx::Event);

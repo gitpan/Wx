@@ -11,11 +11,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #undef bool
+//#define PERL_NO_GET_CONTEXT
 
 #include <wx/defs.h>
 
 #include <wx/window.h>
 #include <wx/layout.h>
+#include <wx/sizer.h>
 #include <stdarg.h>
 
 #include "cpp/compat.h"
@@ -53,6 +55,36 @@ WXPL_EXTERN_C_END
 #include "cpp/v_cback.h"
 
 #include "cpp/window.h"
+
+WXPLI_BOOT_ONCE(Wx_Win);
+#define boot_Wx_Win wxPli_boot_Wx_Win
+
+MODULE=Wx_Win PACKAGE=Wx PREFIX=wx
+
+Wx_Point*
+wxGetMousePosition()
+  PREINIT:
+    int x, y;
+  CODE:
+    ::wxGetMousePosition( &x, &y );
+    RETVAL = new wxPoint( x, y );
+  OUTPUT:
+    RETVAL
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+Wx_Window*
+wxGetTopLevelParent( window )
+    Wx_Window* window
+
+Wx_Window*
+wxFindWindowAtPointer( pt )
+    Wx_Point pt
+
+#endif
+
+Wx_Window*
+wxGetActiveWindow()
 
 MODULE=Wx_Win PACKAGE=Wx::Window
 
@@ -221,7 +253,7 @@ Wx_Window::GetChildren()
     EXTEND( SP, (IV) list.GetCount() );
 
     for( node = list.GetFirst(); node; node = node->GetNext() )
-      PUSHs( wxPli_object_2_sv( sv_newmortal(), node->GetData() ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ sv_newmortal(), node->GetData() ) );
 
 Wx_Size*
 Wx_Window::GetClientSize()
@@ -241,12 +273,19 @@ Wx_Window::GetClientSizeXY()
     PUSHs( sv_2mortal( newSViv( x ) ) );
     PUSHs( sv_2mortal( newSViv( y ) ) );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+Wx_Sizer*
+Wx_Window::GetContainingSizer()
+
+#endif
+
 #if wxPERL_USE_DRAG_AND_DROP
 
 Wx_DropTarget*
 Wx_Window::GetDropTarget()
   CLEANUP:
-    wxPli_object_set_deleteable( ST(0), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(0), FALSE );
 
 #endif
 
@@ -512,6 +551,14 @@ Wx_Window::Refresh( eraseBackground = TRUE, rect = 0 )
 void
 Wx_Window::ReleaseMouse()
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+bool
+Wx_Window::RemoveEventHandler( handler )
+    Wx_EvtHandler* handler
+
+#endif
+
 bool
 Wx_Window::Reparent( newParent )
     Wx_Window* newParent
@@ -589,6 +636,14 @@ void
 Wx_Window::SetConstraints( constraints )
     Wx_LayoutConstraints* constraints
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+void
+Wx_Window::SetContainingSizer( sizer )
+    Wx_Sizer* sizer
+
+#endif
+
 void
 Wx_Window::SetCursor( cursor )
     Wx_Cursor* cursor
@@ -609,7 +664,7 @@ void
 Wx_Window::SetDropTarget( target )
     Wx_DropTarget* target
   CODE:
-    wxPli_object_set_deleteable( ST(1), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(1), FALSE );
     THIS->SetDropTarget( target );
 
 #endif
@@ -705,7 +760,7 @@ Wx_Window::SetSizeXYWHF( x, y, width, height, flags = wxSIZE_AUTO )
     THIS->SetSize( x, y, width, height, flags );
 
 void
-Wx_Window::SetSizeHints( minW = -1, minH = -1, maxW = -1, maxH = -1, incW = -1, incH = -1 )
+Wx_Window::SetSizeHints( minW, minH, maxW = -1, maxH = -1, incW = -1, incH = -1 )
     int minW
     int minH
     int maxW
@@ -713,9 +768,32 @@ Wx_Window::SetSizeHints( minW = -1, minH = -1, maxW = -1, maxH = -1, incW = -1, 
     int incW
     int incH
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+void
+Wx_Window::SetVirtualSizeHints( minW, minH, maxW = -1, maxH = -1 )
+    int minW
+    int minH
+    int maxW
+    int maxH
+
+void
+Wx_Window::SetSizer( sizer, deleteOld = TRUE )
+    Wx_Sizer* sizer
+    bool deleteOld
+
+void
+Wx_Window::SetSizerAndFit( sizer, deleteOld = TRUE )
+    Wx_Sizer* sizer
+    bool deleteOld
+
+#else
+
 void
 Wx_Window::SetSizer( sizer )
     Wx_Sizer* sizer
+
+#endif
 
 void
 Wx_Window::SetTitle( title )

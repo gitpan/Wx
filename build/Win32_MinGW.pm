@@ -31,39 +31,35 @@ sub my_wx_config {
   return $t;
 }
 
-sub wx_lib {
+sub wx_contrib_lib {
   my( $this, $lib ) = @_;
   $lib =~ s/^\s*(.*?)\s*/$1/;
 
-  return ' ' . MM->catfile( wx_config( 'wxdir' ), 'lib',
+  return ' ' . MM->catfile( wx_config( 'wxdir' ),
+                            ( wx_version() < 2.003 ? 'contrib' : () ),
+                            'lib',
                             'lib' . $lib . $Config{lib_ext} ) . ' ';
 }
+
+sub res_file { "Wx_res.o" }
 
 #
 # takes parametes form make*.env
 #
+use vars qw(%config);
 sub configure {
   my( $cccflags, $ldflags, $libs );
+  my $this = shift;
+  local *config; *config = $this->SUPER::configure();
 
   my $wximplib = MM->catfile( top_dir(), qw(blib arch auto Wx Wx.a) );
-  my( %config ) =
-    ( CC => 'g++ ',
-      LD => 'g++ ',
-      CCFLAGS => " $wxConfig::extra_cflags -fvtable-thunks ",
-      LIBS => " $wxConfig::extra_libs ",
-      clean => { FILES => 'dll.base dll.exp ' },
-      INC => ' -I' . top_dir() . ' ',
-      ( building_extension() ?
-        ( DEFINE => ' -DWXPL_EXT ',
-          LDFROM => ' $(OBJECT) ' . ( $wxConfig::use_shared ? $wximplib : '' ) . ' ',
-        ) :
-        ( depend => { 'Wx_res.o' => 'Wx.rc ', },
-          LDFROM => '$(OBJECT) Wx_res.o',
-          dynamic_lib => { INST_DYNAMIC_DEP => 'Wx_res.o',
-                           OTHERLDFLAGS => " "},
-        )
-      ),
-    );
+  $config{CC} = 'g++';
+  $config{LD} = 'g++';
+  $config{CCFLAGS} .= ' -fvtable-thunks ';
+  $config{clean} = { FILES => 'dll.base dll.exp ' };
+  if( building_extension() && $wxConfig::use_dllexport ) {
+    $config{LDFROM} .= "\$(OBJECT) $wximplib ";
+  }
 
   if( $wxConfig::debug_mode ) {
     $config{CCFLAGS} .= ' -g ';
@@ -72,7 +68,7 @@ sub configure {
     $config{dynamic_lib}{OTHERLDFLAGS} .= ' -s ';
   }
 
-  $cccflags = wx_config( 'cccflags' );
+  $cccflags = wx_config( 'cxxflags' );
   $libs = wx_config( 'libs' );
 
   foreach ( split ' ', $cccflags ) {
@@ -95,25 +91,18 @@ sub configure {
 # for .rc file compilation and automatic export list generation
 #
 sub postamble {
-  my( $this ) = shift;
-  my( $wxdir ) = wx_config( 'wxdir' );
-  my( $implib ) = wx_config( 'implib' );
-  $implib =~ s/lib(\w+)\.\w+$/$1\.dll/;
-
+  my $this = shift;
+  my $wxdir = wx_config( 'wxdir' );
   my $text = $this->SUPER::postamble( @_ );
+
   $text .= <<EOT;
+
 Wx_res.o: Wx.rc
 \twindres --include-dir ${wxdir}\\include Wx.rc Wx_res.o
 
-ppmdist: pure_all ppd
-\t\$(CP) ${implib} blib\\arch\\auto\\Wx
-\tstrip blib\\arch\\auto\\Wx\\*.dll
-\t\$(TAR) \$(TARFLAGS) \$(DISTVNAME)-ppm.tar blib
-\tgzip --force --best \$(DISTVNAME)-ppm.tar
-
 EOT
 
-  $text;
+  return $text;
 }
 
 #
@@ -121,12 +110,11 @@ EOT
 #
 sub ppd {
   my $this = shift;
-  package MY;
   my $text = $this->SUPER::ppd( @_ );
 
   $text =~ tr/\{\}/##/;
 
-  return $text;
+  $text;
 }
 
 #
@@ -134,7 +122,6 @@ sub ppd {
 #
 sub dynamic_lib {
   my( $this ) = shift;
-  package MY;
   my( $text ) = $this->SUPER::dynamic_lib( @_ );
 
   return $text unless $wxConfig::use_shared && $text =~ m/dlltool/i;

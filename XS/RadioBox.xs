@@ -29,7 +29,7 @@ Wx_RadioBox::new( parent, id, label, point = wxDefaultPosition, size = wxDefault
     wxString* chs;
   CODE:
     if( choices )
-        n = wxPli_av_2_stringarray( choices, &chs );
+        n = wxPli_av_2_stringarray( aTHX_ choices, &chs );
     else {
         n = 0;
         chs = 0;
@@ -77,7 +77,7 @@ Wx_RadioBox::GetSelection()
 wxString
 Wx_RadioBox::GetStringSelection()
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 ) \
+#if WXPERL_W_VERSION_GE( 2, 3, 3 ) \
     || ( WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined(__WXGTK__) ) \
     || defined( __WXPERL_FORCE__ )
 

@@ -18,9 +18,14 @@ use ExtUtils::MakeMaker;
 
 # parse command line variables
 use vars qw($debug_mode $unicode_mode $extra_libs $extra_cflags
-            $use_shared $use_dllexport $o_help $o_mksymlinks);
+            $use_shared $use_dllexport $o_help $o_mksymlinks
+            $subdirs $o_static);
 use vars qw($Arch);
 use Getopt::Long;
+Getopt::Long::Configure( 'pass_through' );
+
+my %subdirs = map { ( $_, 1 ) }
+  ( qw(dnd filesys grid help html mdi print xrc stc) );
 
 my $result =
 GetOptions( 'debug' => \$debug_mode,
@@ -31,7 +36,32 @@ GetOptions( 'debug' => \$debug_mode,
             'use-dllexport!' => \$use_dllexport,
             'help' => \$o_help,
             'mksymlinks' => \$o_mksymlinks,
+            'static' => \$o_static,
+            '<>' => \&process_options,
           );
+
+my @my_argv;
+
+sub process_options {
+  my $i = shift;
+
+  # skip non-options
+  unless( $i =~ m/^-/ ) {
+    push @my_argv, $i;
+    return;
+  }
+
+  if( $i =~ m/^--(enable|disable)-(\w+)$/ &&
+      exists $subdirs{$2} ) {
+    $subdirs{$2} = $1 eq 'enable';
+  } else {
+    die "invalid option $i";
+  }
+}
+
+@main::ARGV = @my_argv;
+
+$extra_cflags ||= ''; $extra_libs ||= '';
 
 if( $o_help || !$result ) {
   print <<EOT;
@@ -40,10 +70,14 @@ Usage: perl Makefile.PL [options]
   --unicode            enable Unicode support ( MSW only )
   --extra-libs=s       specify extra linking flags
   --extra-cflags=s     specify extra compilation flags
-  --[no]mingw-shared   use 'g++ --shared' with MinGW ( MSW only )
-  --[no]use-dllexport  use 'dllexport' ( MSW only )
   --mksymlinks         create a symlink tree ( only if filesystem
                        supports that, of course )
+  --static             link all extensions in a single big shared
+                       object
+  --enable/disable-foo where foo is one of: dnd filesys grid help
+                                            html mdi print xrc stc
+  --[no]mingw-shared   use 'g++ --shared' with MinGW ( MSW only )
+  --[no]use-dllexport  use 'dllexport' ( MSW only )
   --help               you are reading it
 EOT
   exit 0;
@@ -60,7 +94,8 @@ sub splitpath {
 if( $o_mksymlinks ) {
   require FindBin;
   require ExtUtils::Manifest;
-  if( $] >= 5.005 ) {
+  # 5.005 does not have splitpath...
+  if( $] >= 5.006 ) {
     require File::Spec;
   } else {
     eval <<'EOT'
@@ -108,6 +143,7 @@ use wxMMUtils;
 
 # BLEAGH!!!!
 sub import {
+  undef *MY::post_initialize;
   *MY::post_initialize = \&post_initialize;
 
   wxConfig->export_to_level( 1, @_ );
@@ -158,7 +194,8 @@ sub wxWriteMakefile {
 
   foreach my $i ( keys %params ) {
     if( $i eq 'WXLIB' ) {
-      $params{LIBS} .= $Arch->wx_lib( $params{$i} );
+      $params{LIBS} .= join ' ', map { $Arch->wx_contrib_lib( $_ ) }
+        @{ ( ref( $params{$i} ) ? $params{$i} : [ $params{$i} ] ) };
       delete $params{WXLIB};
     }
 
@@ -171,8 +208,12 @@ sub wxWriteMakefile {
       if( ( $i eq 'ABSTRACT_FROM'|| $i eq 'AUTHOR' ) && $] < 5.005 );
   }
 
+  # get subdirs with a '1' value
+  $subdirs = [ grep { $subdirs{$_} == 1 } ( keys %subdirs ) ];
+
   require Any_OS; # perl 5.004_04 needs this...
-  $params{XSOPT} = ' -C++ -noprototypes ' unless exists $params{XSOPT};
+  $params{XSOPT} = ' -C++ -nolinenumbers -noprototypes '
+    unless exists $params{XSOPT};
   $params{CONFIGURE} = \&Any_OS::get_config
     unless exists $params{CONFIGURE};
   $params{TYPEMAPS} = [ MM->catfile( top_dir(), 'typemap' ) ]

@@ -43,6 +43,22 @@ Wx_Menu::AppendItem( menuItem )
   CODE:
     THIS->Append( menuItem );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+void
+Wx_Menu::AppendCheckItem( id, item, helpString = wxEmptyString )
+    int id
+    wxString item
+    wxString helpString
+
+void
+Wx_Menu::AppendRadioItem( id, item, helpString = wxEmptyString )
+    int id
+    wxString item
+    wxString helpString
+
+#endif
+
 void
 Wx_Menu::AppendSeparator()
 
@@ -105,12 +121,12 @@ Wx_Menu::FindItem( item )
         EXTEND( SP, 2 );
         SV* sm = sv_newmortal();
 
-        PUSHs( wxPli_object_2_sv( mi, ret ) );
-        PUSHs( wxPli_object_2_sv( sm, submenu ) );
+        PUSHs( wxPli_object_2_sv( aTHX_ mi, ret ) );
+        PUSHs( wxPli_object_2_sv( aTHX_ sm, submenu ) );
       }
       else {
         EXTEND( SP, 1 );
-        PUSHs( wxPli_object_2_sv( mi, ret ) );
+        PUSHs( wxPli_object_2_sv( aTHX_ mi, ret ) );
       }
     }
     else {
@@ -142,7 +158,7 @@ Wx_Menu::GetMenuItems()
     EXTEND( SP, (IV) data.GetCount() );
     for( node = data.GetFirst(); node; node = node->GetNext() )
     {
-      PUSHs( wxPli_object_2_sv( sv_newmortal(), node->GetData() ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ sv_newmortal(), node->GetData() ) );
     }
 
 wxString
@@ -152,6 +168,24 @@ bool
 Wx_Menu::Insert( pos, item )
     int pos
     Wx_MenuItem* item
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+void
+Wx_Menu::InsertCheckItem( pos, id, item, helpString )
+     size_t pos
+     int id
+     wxString item
+     wxString helpString
+
+void
+Wx_Menu::InsertRadioItem( pos, id, item, helpString )
+     size_t pos
+     int id
+     wxString item
+     wxString helpString
+
+#endif
 
 bool
 Wx_Menu::IsChecked( id )
@@ -236,12 +270,12 @@ Wx_Menu::FindItem( id )
       EXTEND( SP, 2 );
       SV* sm = sv_newmortal();
 
-      PUSHs( wxPli_object_2_sv( mi, ret ) );
-      PUSHs( wxPli_object_2_sv( sm, submenu ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ mi, ret ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ sm, submenu ) );
     }
     else {
       EXTEND( SP, 1 );
-      PUSHs( wxPli_object_2_sv( mi, ret ) );
+      PUSHs( wxPli_object_2_sv( aTHX_ mi, ret ) );
     }
 
 int
@@ -316,6 +350,19 @@ Wx_MenuBar::SetLabelTop( pos, label )
 
 MODULE=Wx PACKAGE=Wx::MenuItem
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+Wx_MenuItem*
+Wx_MenuItem::new( parentMenu = 0, id = -1, text = wxEmptyString, helpString = wxEmptyString, itemType = wxITEM_NORMAL, subMenu = 0 )
+     Wx_Menu* parentMenu
+     int id
+     wxString text
+     wxString helpString
+     wxItemKind itemType
+     Wx_Menu* subMenu
+
+#else
+
 Wx_MenuItem*
 Wx_MenuItem::new( parentMenu = 0, id = -1, text = wxEmptyString, helpString = wxEmptyString, checkable = FALSE, subMenu = 0 )
      Wx_Menu* parentMenu
@@ -324,6 +371,8 @@ Wx_MenuItem::new( parentMenu = 0, id = -1, text = wxEmptyString, helpString = wx
      wxString helpString
      bool checkable
      Wx_Menu* subMenu
+
+#endif
 
 void
 Wx_MenuItem::Check( check )
@@ -372,6 +421,13 @@ Wx_MenuItem::GetHelp()
 
 int
 Wx_MenuItem::GetId()
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+wxItemKind
+Wx_MenuItem::GetKind()
+
+#endif
 
 wxString
 Wx_MenuItem::GetLabel()

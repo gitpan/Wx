@@ -15,15 +15,21 @@ package Tests_Helper;
 use strict;
 require Exporter;
 
+use Test::More ();
+*ok = \&Test::More::ok;
+*is = \&Test::More::is;
+
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK);
 
 @ISA = qw(Exporter);
 
-@EXPORT_OK = qw(print_result test_inheritance test_inheritance_all
+@EXPORT_OK = qw(test_inheritance test_inheritance_all
+                test_inheritance_start test_inheritance_end 
                 test_app test_frame);
 
 %EXPORT_TAGS =
-  ( inheritance => [ qw(test_inheritance test_inheritance_all) ],
+  ( inheritance => [ qw(test_inheritance test_inheritance_all
+                        test_inheritance_start test_inheritance_end) ],
   );
 
 sub test_app {
@@ -67,12 +73,12 @@ sub test_inheritance {
     while ( $class ) {
       push @{$perl_inheritance{$key}}, "Wx::$class";
 
-      last unless exists $Wx::{"${class}::"}{ISA};
+      last unless exists $Wx::{"${class}::"}{ISA} && 
+        @{ $Wx::{"${class}::"}{ISA} };
+      die $class unless defined @{ $Wx::{"${class}::"}{ISA} }[0];
       $class = substr @{ $Wx::{"${class}::"}{ISA} }[0], 4;
     }
   }
-
-  my @results;
 
  CLASSES: foreach my $i ( keys %perl_inheritance ) {
     my $pi = $perl_inheritance{$i};
@@ -82,6 +88,7 @@ sub test_inheritance {
 
   COMPARE: while ( @ci ) {
       my( $c_class ) = shift @ci;
+      next if $c_class =~ m/Wx::Generic(?:ListCtrl|ImageList)/;
       next if $c_class =~ m/(?:Base|GTK)$/;
       next if $c_class =~ m/StatusBar/; #FIXME// ad hoc
       next if $c_class eq 'Wx::Object';
@@ -92,16 +99,38 @@ sub test_inheritance {
         next COMPARE if $c_class eq $p_class;
       }
 
-      push @results, 0;
-      print STDERR "\nC++: @{$ci} Perl: @{$pi}\n";
+      ok( 0, $pi->[0] . ' inheritance chain' );
+      diag( "C++ : @{$ci}" );
+      diag( "Perl: @{$pi}" );
 
       next CLASSES;
     }
 
-    push @results, 1;
+    ok( 1,  $pi->[0] . ' inheritance chain' );
+  }
+}
+
+{
+  my %classes_skip;
+
+  sub test_inheritance_start {
+    foreach my $i ( keys %Wx:: ) {
+      next unless $i =~ m/^([^_].*)::$/;
+      $classes_skip{$1} = 1;
+    }
   }
 
-  return @results;
+  sub test_inheritance_end {
+    my @classes;
+
+    foreach my $i ( keys %Wx:: ) {
+      next unless $i =~ m/^([^_].*)::$/;
+      next if exists $classes_skip{$1};
+      push @classes, $1;
+    }
+
+    test_inheritance( @classes );
+  }
 }
 
 sub test_inheritance_all {
@@ -112,14 +141,7 @@ sub test_inheritance_all {
     push @classes, $1;
   }
 
-  my @results = test_inheritance( @classes );
-
-  print_results( @results );
-}
-
-sub print_results {
-  print "1.." . ( @_ + 0 ) . "\n";
-  foreach my $i ( @_ ) { print( $i ? "ok\n" : "not ok\n" ) }
+  test_inheritance( @classes );
 }
 
 # utility

@@ -214,9 +214,9 @@ Wx_ListItemAttr::new( ... )
       Wx_Colour back = NO_INIT
       Wx_Font* font = NO_INIT
     CODE:
-      text = *(Wx_Colour *) wxPli_sv_2_object( ST(1), wxPlColourName );
-      back = *(Wx_Colour *) wxPli_sv_2_object( ST(2), wxPlColourName );
-      font = (Wx_Font *) wxPli_sv_2_object( ST(3), wxPlFontName );
+      text = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(1), wxPlColourName );
+      back = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(2), wxPlColourName );
+      font = (Wx_Font *) wxPli_sv_2_object( aTHX_ ST(3), wxPlFontName );
       RETVAL = new wxListItemAttr( text, back, *font );
     OUTPUT:
       RETVAL
@@ -382,6 +382,10 @@ Wx_ListCtrl::GetEditControl()
 Wx_ImageList*
 Wx_ListCtrl::GetImageList( which )
     int which
+  CODE:
+    RETVAL = (Wx_ImageList*)THIS->GetImageList( which );
+  OUTPUT:
+    RETVAL
 
 Wx_ListItem*
 Wx_ListCtrl::GetItem( id, col = -1 )
@@ -458,6 +462,40 @@ Wx_ListCtrl::GetItemSpacing( isSmall )
 wxString
 Wx_ListCtrl::GetItemText( item )
     long item
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+Wx_Colour*
+Wx_ListCtrl::GetItemTextColour( item )
+    long item
+  CODE:
+    RETVAL = new wxColour( THIS->GetItemTextColour( item ) );
+  OUTPUT:
+    RETVAL
+
+Wx_Colour*
+Wx_ListCtrl::GetItemBackgroundColour( item )
+    long item
+  CODE:
+    RETVAL = new wxColour( THIS->GetItemBackgroundColour( item ) );
+  OUTPUT:
+    RETVAL
+
+void
+Wx_ListCtrl::SetItemTextColour( item, colour )
+    long item
+    Wx_Colour* colour
+  CODE:
+    THIS->SetItemTextColour( item, *colour );
+
+void
+Wx_ListCtrl::SetItemBackgroundColour( item, colour )
+    long item
+    Wx_Colour* colour
+  CODE:
+    THIS->SetItemBackgroundColour( item, *colour );
+
+#endif
 
 long
 Wx_ListCtrl::GetNextItem( item, geometry = wxLIST_NEXT_ALL, state = wxLIST_STATE_DONTCARE )

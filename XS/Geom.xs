@@ -250,7 +250,8 @@ newRect( rect )
   OUTPUT:
     RETVAL
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined( __WXMAC__ )
+#if WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined( __WXMAC__ ) \
+    && !defined( __WXMOTIF__ )
 
 Wx_Region*
 newPolygon( list, fillStyle = wxODDEVEN_RULE )
@@ -260,7 +261,7 @@ newPolygon( list, fillStyle = wxODDEVEN_RULE )
     wxPoint* points;
     size_t n;
   CODE:
-    n = wxPli_av_2_pointarray( list, &points );
+    n = wxPli_av_2_pointarray( aTHX_ list, &points );
     RETVAL = new wxRegion( n, points, fillStyle );
     delete [] points;
 
@@ -367,6 +368,15 @@ Wx_Region::SubtractRect( rect )
     RETVAL = THIS->Subtract( *rect );
   OUTPUT:
     RETVAL
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 ) && !defined(__WXMOTIF__)
+
+bool
+Wx_Region::Offset( x, y )
+    wxCoord x
+    wxCoord y
+
+#endif
 
 bool
 Wx_Region::SubtractRegion( region )

@@ -4,9 +4,10 @@ use strict;
 use Config;
 use base 'Exporter';
 
-use vars qw(@EXPORT);
+use vars qw(@EXPORT @EXPORT_OK);
 @EXPORT = qw(obj_from_src top_dir building_extension
-             xs_depend merge_config wx_version wx_config);
+             xs_depend merge_config wx_version wx_config is_platform);
+@EXPORT_OK = qw(unix_top_dir);
 
 #
 # convenience function
@@ -16,9 +17,17 @@ sub wx_config {
 }
 
 #
+# is that platform/toolkit (msw, motif, gtk, mac)
+#
+sub is_platform($) {
+  my $uc = uc shift;
+  return scalar( wx_config('cxxflags' ) =~ m/__WX${uc}__/ );
+}
+
+#
 # wxWindows version as M.mmm_sss
 #
-sub wx_version {
+sub wx_version() {
   no strict 'refs';
 
   my $ver = wx_config( 'version' );
@@ -34,9 +43,24 @@ sub wx_version {
 }
 
 #
+# relative UNIX-ish path to the top dir
+#
+sub unix_top_dir() {
+  my $utop = '.';
+  my $top = MM->curdir;
+
+  until( -f MM->catfile( $top, 'Wx.pm' ) ) {
+    $top = MM->catdir( MM->updir, $top );
+    $utop = "../$utop";
+  }
+
+  return $utop;
+}
+
+#
 # relative path to the top dir ( the one containing Wx.pm )
 #
-sub top_dir {
+sub top_dir() {
   my $top = MM->curdir;
 
   until( -f MM->catfile( $top, 'Wx.pm' ) ) {
@@ -46,7 +70,7 @@ sub top_dir {
   return MM->canonpath( $top );
 }
 
-sub building_extension {
+sub building_extension() {
   return !-f 'Wx.pm';
 }
 
@@ -69,7 +93,7 @@ sub merge_config {
         my @c;
         foreach my $i ( @b ) {
           foreach my $j ( @a ) {
-            push @c, " $j $i ";
+            push @c, " $i $j $i ";
           }
         }
 
@@ -77,7 +101,7 @@ sub merge_config {
         next;
       }
 
-      if( !ref($cfg{$i}) || !ref($cfg2{$i}) ) {
+      if( ref($cfg{$i}) || ref($cfg2{$i}) ) {
         warn "non scalar key '$i'";
         $cfg{$i} = $cfg2{$i};
       } else {
@@ -120,7 +144,7 @@ sub xs_depend {
 #
 sub obj_from_src {
   my( @xs ) = @_;
-  my( $obj_ext ) = $Config{_o} || $Config{obj_ext};
+  my( $obj_ext ) = $Config{obj_ext} || $Config{_o};
 
   foreach( @xs ) {
     $_ =~ s[\.(?:xs|c|cc|cpp)$][$obj_ext]e;
@@ -172,6 +196,37 @@ sub scan_xs($$) {
   close IN;
 
   ( \@cinclude, \@xsinclude );
+}
+
+#
+# Cut'n'paste from 5.005_03 MakeMaker.pm
+#
+sub WriteEmptyMakefile {
+  if (-f 'Makefile.old') {
+    chmod 0666, 'Makefile.old';
+    unlink 'Makefile.old' or warn "unlink Makefile.old: $!";
+  }
+  rename 'Makefile', 'Makefile.old' or warn "rename Makefile Makefile.old: $!"
+    if -f 'Makefile';
+  open MF, '> Makefile' or die "open Makefile for write: $!";
+  print MF <<'EOP';
+all:
+
+clean:
+
+install:
+
+makemakerdflt:
+
+test:
+
+EOP
+  close MF or die "close Makefile for write: $!";
+}
+
+if( $] < 5.005 )
+{
+  *ExtUtils::MakeMaker::WriteEmptyMakefile = \&WriteEmptyMakefile
 }
 
 1;

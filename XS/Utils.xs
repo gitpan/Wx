@@ -54,7 +54,7 @@ MODULE=Wx PACKAGE=Wx::_SplashScreenCpp
 #endif
 
 Wx_SplashScreen*
-Wx_SplashScreen::new( bitmap, splashStyle, milliseconds, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSIMPLE_BORDER|wxFRAME_TOOL_WINDOW|wxFRAME_FLOAT_ON_PARENT )
+Wx_SplashScreen::new( bitmap, splashStyle, milliseconds, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSIMPLE_BORDER|wxFRAME_NO_TASKBAR|wxSTAY_ON_TOP )
     Wx_Bitmap* bitmap
     long splashStyle
     int milliseconds
@@ -107,6 +107,7 @@ MODULE=Wx PACKAGE=Wx::StopWatch
 Wx_StopWatch*
 Wx_StopWatch::new()
 
+## XXX threads
 void
 Wx_StopWatch::DESTROY()
 
@@ -131,6 +132,7 @@ MODULE=Wx PACKAGE=Wx::SingleInstanceChecker
 Wx_SingleInstanceChecker*
 Wx_SingleInstanceChecker::new()
 
+## XXX threads
 void
 Wx_SingleInstanceChecker::DESTROY()
 
@@ -190,6 +192,19 @@ Wx_TipProvider::SetCurrentTip( number )
   CODE:
     ((wxPliTipProvider*)THIS)->SetCurrentTip( number );
 
+MODULE=Wx PACKAGE=Wx::Thread
+
+#if wxUSE_THREADS
+
+bool
+IsMain()
+  CODE:
+    RETVAL = wxThread::IsMain();
+  OUTPUT:
+    RETVAL
+
+#endif
+
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 
 bool
@@ -202,6 +217,14 @@ Wx_TipProvider*
 wxCreateFileTipProvider( filename, currentTip )
     wxString filename
     size_t currentTip
+
+void
+wxUsleep( ms )
+    unsigned long ms
+
+void
+wxSleep( sec )
+    int sec
 
 bool
 wxYield()
@@ -237,3 +260,7 @@ wxTrap()
     // TODO
 #endif // Win/Unix
 #endif
+
+wxString
+wxGetOsDescription()
+

@@ -59,6 +59,8 @@ wxPliApp::~wxPliApp()
 
 inline bool wxPliApp::OnInit() 
 {
+    wxApp::OnInit();
+
     return FALSE;
 }
 
@@ -81,9 +83,11 @@ inline int wxPliApp::MainLoop() {
 
 int wxPliApp::OnExit()
 {
-    if( wxPliVirtualCallback_FindCallback( &m_callback, "OnExit" ) )
+    dTHX;
+    if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, "OnExit" ) )
     {
-        SV* ret = wxPliVirtualCallback_CallCallback( &m_callback, G_SCALAR );
+        SV* ret = wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,
+                                                     G_SCALAR );
         int val = SvOK( ret ) ? SvIV( ret ) : 0;
         SvREFCNT_dec( ret );
 

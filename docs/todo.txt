@@ -2,22 +2,29 @@ MISC:
 
 * tut & man in one file
 
+PRIORITY HIGH:
+
+For 0.12
+
+* Overload resolution
+  rewrite _match in C++ and move all overload resolution
+  routines to XS -> eliminate most lib/Wx/*.pm files
+
+PRIORITY NORMAL:
+
+* Threads
+   cloning of objects with a DESTROY
+
 * wxGrid
-    GetDefaultEditor
-    GetDefaultRenderer
     GetTable
-    SetDefaultEditor
-    SetDefaultRenderer
     SetTable
-    RegisterDataType
-    GetDefaultEditorForCell
-    GetDefaultRendererForCell
-    GetDefaultEditorForType
-    GetDefaultRendererForType
 
 * Wx::PlGridCellEditor/Renderer
 
-PRIORITY NORMAL:
+* wxMenu::Prepend*
+
+* wxXmlResource::LoadMenuBar
+    overload
 
 * configuration system
 
@@ -31,12 +38,6 @@ PRIORITY NORMAL:
 
 * move THIS from HV to MAGIC?
   
-* Wx::Bitmap, Wx::Icon, Wx::Cursor
-    add missing constructors ( where applicable )
-
-* Wx::ListCtrl
-    Overloaded InsertItem?
-
 * Decrease compilation time/code bloat:
     Use precompiled headers where appropriate
     Move constants out of Constants.xs when they need a separate #include
@@ -111,6 +112,34 @@ DOCUMENTATTION:
 
 * Wx::MultipleChoiceDialog
 
-* Wx::ListItem
-
 * Wx::NativeFontInfo
+
+CLASSES:
+  wxWizard
+  wxWizardPageSimple
+  wxWizardPage
+
+  wxFileHistory
+
+  wxCalendarCtrl
+  wxDirCtrl
+  wxMetafileDC
+  wxDCClipper
+  wxBufferedDC
+  wxTextValidator
+  wxGenericValidator
+
+  wxDateTime & co
+
+  wxDialUpManager
+  wxSocket* ?
+
+  wxDDE*
+  wxTCP*
+
+  Document/View
+
+  wxMimeTypesManager
+  wxFontMapper
+  wxEncodingConverter
+  wxFontEnumerator
