@@ -3,6 +3,7 @@ typemap
 typemap.xsp
 MANIFEST
 MANIFEST.SKIP
+META.yml
 README.txt
 Changes
 run
@@ -38,6 +39,7 @@ script/XSP.yp
 script/copy_files.pl
 script/make_exp_list.pl
 script/make_ovl_list.pl
+script/make_ppm.pl
 script/pipe.pl
 script/xsubppp.pl
 
@@ -50,6 +52,7 @@ t/06_loadxpm.t
 t/07_overload.t
 t/08_ovl_func.t
 t/09_create_delete.t
+t/10_oor.t
 t/Tests_Helper.pm
 
 lib/Wx/Api.pod
@@ -59,10 +62,7 @@ lib/Wx/Locale.pm
 lib/Wx/Menu.pm
 lib/Wx/RadioBox.pm
 lib/Wx/Region.pm
-lib/Wx/Sizer.pm
 lib/Wx/Timer.pm
-lib/Wx/_Constants.pm
-lib/Wx/_Functions.pm
 
 samples/controls/controls.pl
 samples/controls/icons/choice.bmp
@@ -232,7 +232,6 @@ cpp/controls.h
 cpp/dialog.h
 cpp/e_cback.h
 cpp/event.h
-cpp/evthandler.h
 cpp/frame.h
 cpp/helpers.h
 cpp/log.h
@@ -240,12 +239,9 @@ cpp/panel.h
 cpp/overload.cpp
 cpp/overload.h
 cpp/process.h
-cpp/sashwindow.h
 cpp/scrolledwindow.h
 cpp/singlechoicedialog.h
 cpp/sizer.h
-cpp/splitterwindow.h
-cpp/statusbar.h
 cpp/streams.h
 cpp/timer.h
 cpp/tipprovider.h
@@ -312,19 +308,22 @@ ext/filesys/t/01_load.t
 ext/filesys/t/02_inheritance.t
 
 ext/grid/Grid.xs
+ext/grid/Makefile.PL
+ext/grid/XS/Grid.xs
 ext/grid/XS/GridCellAttr.xs
 ext/grid/XS/GridCellEditor.xs
 ext/grid/XS/GridCellRenderer.xs
-ext/grid/Makefile.PL
-ext/grid/XS/Grid.xs
 ext/grid/XS/GridEvent.xs
+ext/grid/XS/GridTable.xsp
+ext/grid/cpp/editor.h
 ext/grid/cpp/gr_constants.cpp
 ext/grid/cpp/gr_typedef.h
+ext/grid/cpp/renderer.h
 ext/grid/lib/Wx/Grid.pm
-ext/grid/typemap
 ext/grid/t/01_load.t
 ext/grid/t/02_inheritance.t
 ext/grid/t/03_attr.t
+ext/grid/typemap
 
 ext/help/Help.xs
 ext/help/Makefile.PL
@@ -416,12 +415,16 @@ ext/pperl/splashfast/t/04_app.t
 
 ext/xrc/Makefile.PL
 ext/xrc/XRC.xs
+ext/xrc/XS/XmlDocument.xsp
+ext/xrc/XS/XmlNode.xsp
 ext/xrc/XS/XmlResource.xs
+ext/xrc/XS/XmlResourceHandler.xsp
+ext/xrc/XS/XmlSubclassFactory.xsp
 ext/xrc/cpp/xr_constants.cpp
 ext/xrc/cpp/xr_typedef.h
 ext/xrc/lib/Wx/XRC.pm
-ext/xrc/typemap
 ext/xrc/t/01_load.t
+ext/xrc/typemap
 
 ext/docview/Makefile.PL
 ext/docview/DocView.xs
@@ -448,6 +451,7 @@ demo/MDI.pm
 demo/Printing.pm
 demo/Unicode.pm
 demo/XRC.pm
+demo/XRCCustom.pm
 demo/data/fs.zip
 demo/data/html/index.html
 demo/data/html/page.html
@@ -470,6 +474,8 @@ demo/wxCheckListBox.pm
 demo/wxClipboard.pm
 demo/wxFileSystem.pm
 demo/wxGrid.pm
+demo/wxGridCER.pm
+demo/wxGridER.pm
 demo/wxHtmlDynamic.pm
 demo/wxHtmlWindow.pm
 demo/wxListCtrl.pm
@@ -482,4 +488,5 @@ demo/wxGridSizer.pm
 demo/wxFlexGridSizer.pm
 demo/wxNotebookSizer.pm
 demo/wxWizard.pm
+demo/wxScrollBar.pm
 demo/wxScrolledWindow.pm

@@ -5,7 +5,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:      1/ 5/2001
-## RCS-ID:      $Id: demo.pl,v 1.14 2003/05/18 15:04:11 mbarbon Exp $
+## RCS-ID:      $Id: demo.pl,v 1.18 2003/08/05 17:23:47 mbarbon Exp $
 ## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -208,14 +208,21 @@ my @demos =
     [ 'Non-managed windows',
       [
        [ 'HtmlWindow', demo( 'wxHtmlWindow' ) ],
-       [ 'Grid', demo( 'wxGrid' ) ],
+       [ 'Grid',
+         [
+          [ 'Simple Grid', demo( 'wxGrid' ) ],
+          [ 'Editors/Renderers', demo( 'wxGridER' ) ],
+          [ 'Custom Editors/Renderers', demo( 'wxGridCER' ) ],
+          [ 'Custom GridTable', demo( 'wxGridTable' ) ],
+         ],
+       ],
        [ 'ScrolledWindow', demo( 'wxScrolledWindow' ) ],
-       [ 'SplashScreen', external( 'splash', '.' ) ],
       ],
     ],
     [ 'Managed windows',
       [
        [ 'Wizard', demo( 'wxWizard' ) ],
+       [ 'SplashScreen', external( 'splash', '.' ) ],
       ],
     ],
     [ 'Controls',
@@ -223,6 +230,7 @@ my @demos =
        [ 'CalendarCtrl', demo( 'wxCalendarCtrl' ) ],
        [ 'CheckListBox', demo( 'wxCheckListBox' ) ],
        [ 'ListCtrl', demo( 'wxListCtrl' ) ],
+       [ 'ScrollBar', demo( 'wxScrollBar' ) ],
       ],
     ],
     [ 'Sizers',
@@ -235,7 +243,8 @@ my @demos =
     ],
     [ 'Contrib',
       [
-       [ 'XRC', demo( 'XRC' ), 2.003001 ],
+       [ 'XRC', demo( 'XRC' ) ],
+       [ 'XRC custom controls', demo( 'XRCCustom' ) ],
        [ 'STC', demo( 'wxSTC' ) ],
       ],
     ],

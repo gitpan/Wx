@@ -1,12 +1,15 @@
 PRIORITY HIGH:
 
+* remove build system hacks, fixes for wxWindows 2.5.x (look for FXME)
+* building debugging version in install.pod
+* rewrite docs in POD (?)
+
 PRIORITY NORMAL:
 
 * Overload resolution
   finish it!
 
 * store events in a C++ file and autogenerate them
-* rewrite lib/Wx/_Constants.pm in C++
 * try to have constants inlined where appropriate
 
 * wxCalendarCtrl
@@ -25,12 +28,6 @@ PRIORITY NORMAL:
 
 * Threads
     cloning of objects with a DESTROY
-
-* wxGrid
-    GetTable
-    SetTable
-
-* Wx::PlGridCellEditor/Renderer
 
 * configuration system
 
@@ -61,11 +58,13 @@ PRIORITY NORMAL:
     GetCurLine
     SendMsg
 
+* Wx::PlGridTable
+    Attribute-releated functions
+    Custom data functions
+
 PRIORITY LOW:
 
 * Wx::HtmlHelpData ?
-
-* Decent wxClassInfo initialization strategy
 
 * Wx::App methods
     CreateLogTarget
@@ -73,7 +72,6 @@ PRIORITY LOW:
 * Wx::App::new
     find a better solution yhan just 'croak' if OnInit
     returns a false value
-    fix wxMac hack
 
 * Wx::PrintData
     PostScript specific functions

@@ -62,18 +62,42 @@ wxGetActiveWindow()
 
 MODULE=Wx_Win PACKAGE=Wx::Window
 
-Wx_Window*
-Wx_Window::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr)
-    Wx_Window* parent
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::Window::new" )
+
+wxWindow*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxPliWindow( CLASS );
+  OUTPUT: RETVAL
+
+wxWindow*
+newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr )
+    PlClassName CLASS
+    wxWindow* parent
     wxWindowID id
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
     RETVAL = new wxPliWindow( CLASS, parent, id, pos, size, style, name );
-  OUTPUT:
-    RETVAL
+  OUTPUT: RETVAL
+
+bool
+wxWindow::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr)
+    wxWindow* parent
+    wxWindowID id
+    wxPoint pos
+    wxSize size
+    long style
+    wxString name
 
 void
 Wx_Window::CaptureMouse()
@@ -90,8 +114,17 @@ void
 Wx_Window::CentreOnScreen( direction = wxBOTH )
     int direction
 
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+
+void
+wxWindow::ClearBackground()
+
+#else
+
 void
 Wx_Window::Clear()
+
+#endif
 
 void
 Wx_Window::ClientToScreen( ... )
@@ -209,6 +242,34 @@ Wx_Window::FindWindow( i )
   OUTPUT:
     RETVAL
 
+wxWindow*
+FindWindowById( id, parent = NULL )
+    wxWindowID id
+    wxWindow* parent
+  CODE:
+    RETVAL = wxWindow::FindWindowById( id, parent );
+  OUTPUT:
+    RETVAL
+
+wxWindow*
+FindWindowByName( id, parent = NULL )
+    wxString id
+    wxWindow* parent
+  CODE:
+    RETVAL = wxWindow::FindWindowByName( id, parent );
+  OUTPUT:
+    RETVAL
+
+wxWindow*
+FindWindowByLabel( id, parent = NULL )
+    wxString id
+    wxWindow* parent
+  CODE:
+    RETVAL = wxWindow::FindWindowByLabel( id, parent );
+  OUTPUT:
+    RETVAL
+
+
 void
 Wx_Window::Fit()
 
@@ -294,7 +355,7 @@ Wx_Window::GetDefaultItem()
 
 #endif
 
-Wx_EvtHandler*
+wxEvtHandler*
 Wx_Window::GetEventHandler()
 
 long
@@ -537,7 +598,7 @@ Wx_Window::MovePoint( point )
   CODE:
     THIS->Move( point );
 
-Wx_EvtHandler*
+wxEvtHandler*
 Wx_Window::PopEventHandler( deleteHandler )
     bool deleteHandler
 
@@ -570,7 +631,7 @@ Wx_Window::PopupMenuXY( menu, x, y )
 
 void
 Wx_Window::PushEventHandler( handler )
-    Wx_EvtHandler* handler
+    wxEvtHandler* handler
 
 void
 Wx_Window::Raise()
@@ -587,7 +648,7 @@ Wx_Window::ReleaseMouse()
 
 bool
 Wx_Window::RemoveEventHandler( handler )
-    Wx_EvtHandler* handler
+    wxEvtHandler* handler
 
 #endif
 
@@ -719,7 +780,7 @@ Wx_Window::SetDropTarget( target )
 
 void
 Wx_Window::SetEventHandler( handler )
-    Wx_EvtHandler* handler
+    wxEvtHandler* handler
 
 void
 Wx_Window::SetExtraStyle( style )
@@ -957,7 +1018,7 @@ Wx_Window::WarpPointer( x, y )
     int y
 
 INCLUDE: XS/Accelerators.xs
-INCLUDE: XS/SplitterWindow.xs
+INCLUDE: perl script/xsubppp.pl --typemap typemap.xsp XS/SplitterWindow.xs |
 INCLUDE: XS/ScrolledWindow.xs
 INCLUDE: XS/Validators.xs
 INCLUDE: XS/Constraint.xs

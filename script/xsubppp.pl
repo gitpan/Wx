@@ -5,7 +5,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/03/2003
-## RCS-ID:      $Id: xsubppp.pl,v 1.5 2003/04/25 20:13:16 mbarbon Exp $
+## RCS-ID:      $Id: xsubppp.pl,v 1.7 2003/07/24 19:51:47 mbarbon Exp $
 ## Copyright:   (c) 2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -203,6 +203,10 @@ sub print {
   my $state = shift;
   my $out = '';
   my $pcname = $this->perl_name;
+
+  if( !defined $state->{current_module} ) {
+    die "No current module: remember to add a %module{} directive";
+  }
   my $cur_module = $state->{current_module}->to_string;
 
   $out .= <<EOT;
@@ -343,6 +347,7 @@ sub print {
 
   if( $this->code ) {
     $code = "  CODE:\n    " . join( "\n", @{$this->code} ) . "\n";
+    $output = "  OUTPUT: RETVAL\n" if $code =~ m/RETVAL/;
   }
 
   $out .= "$retstr\n";

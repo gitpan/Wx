@@ -1,96 +1,122 @@
 #############################################################################
-## Name:        SashWindow.xs
+## Name:        XS/SashWindow.xs
 ## Purpose:     XS for Wx::SashWindow
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      3/ 2/2001
-## RCS-ID:      
-## Copyright:   (c) 2001-2002 Mattia Barbon
+## Created:     03/02/2001
+## RCS-ID:      $Id: SashWindow.xs,v 1.8 2003/06/04 20:38:43 mbarbon Exp $
+## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 #include <wx/sashwin.h>
-#include "cpp/sashwindow.h"
 
 MODULE=Wx_Evt PACKAGE=Wx::SashEvent
 
-Wx_SashEvent*
-Wx_SashEvent::new( id = 0, edge = wxSASH_NONE )
+wxSashEvent*
+wxSashEvent::new( id = 0, edge = wxSASH_NONE )
     int id
     wxSashEdgePosition edge
 
 wxSashEdgePosition
-Wx_SashEvent::GetEdge()
+wxSashEvent::GetEdge()
 
-Wx_Rect*
-Wx_SashEvent::GetDragRect()
+wxRect*
+wxSashEvent::GetDragRect()
   CODE:
     RETVAL = new wxRect( THIS->GetDragRect() );
   OUTPUT:
     RETVAL
 
 wxSashDragStatus
-Wx_SashEvent::GetDragStatus()
+wxSashEvent::GetDragStatus()
 
 MODULE=Wx PACKAGE=Wx::SashWindow
 
-Wx_SashWindow*
-Wx_SashWindow::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxCLIP_CHILDREN|wxSW_3D, name = wxT("sashWindow") )
-    Wx_Window* parent
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::SashWindow::new" )
+
+wxSashWindow*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxSashWindow();
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
+
+wxSashWindow*
+newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxCLIP_CHILDREN|wxSW_3D, name = wxT("sashWindow") )
+    PlClassName CLASS
+    wxWindow* parent
     wxWindowID id
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
-    RETVAL = new wxPliSashWindow( CLASS, parent, id, pos, size, style, name );
+    RETVAL = new wxSashWindow( parent, id, pos, size, style, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 
 bool
-Wx_SashWindow::GetSashVisible( edge )
-    wxSashEdgePosition edge
-
-int
-Wx_SashWindow::GetMaximumSizeX()
-
-int
-Wx_SashWindow::GetMaximumSizeY()
-
-int
-Wx_SashWindow::GetMinimumSizeX()
-
-int
-Wx_SashWindow::GetMinimumSizeY()
+wxSashWindow::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxCLIP_CHILDREN|wxSW_3D, name = wxT("sashWindow") )
+    wxWindow* parent
+    wxWindowID id
+    wxPoint pos
+    wxSize size
+    long style
+    wxString name
 
 bool
-Wx_SashWindow::HasBorder( edge )
+wxSashWindow::GetSashVisible( edge )
+    wxSashEdgePosition edge
+
+int
+wxSashWindow::GetMaximumSizeX()
+
+int
+wxSashWindow::GetMaximumSizeY()
+
+int
+wxSashWindow::GetMinimumSizeX()
+
+int
+wxSashWindow::GetMinimumSizeY()
+
+bool
+wxSashWindow::HasBorder( edge )
     wxSashEdgePosition edge
 
 void
-Wx_SashWindow::SetMaximumSizeX( max )
+wxSashWindow::SetMaximumSizeX( max )
     int max
 
 void
-Wx_SashWindow::SetMaximumSizeY( max )
+wxSashWindow::SetMaximumSizeY( max )
     int max
 
 void
-Wx_SashWindow::SetMinimumSizeX( min )
+wxSashWindow::SetMinimumSizeX( min )
     int min
 
 void
-Wx_SashWindow::SetMinimumSizeY( min )
+wxSashWindow::SetMinimumSizeY( min )
     int min
 
 void
-Wx_SashWindow::SetSashVisible( edge, visible )
+wxSashWindow::SetSashVisible( edge, visible )
     wxSashEdgePosition edge
     bool visible
 
 void
-Wx_SashWindow::SetSashBorder( edge, border )
+wxSashWindow::SetSashBorder( edge, border )
     wxSashEdgePosition edge
     bool border
 

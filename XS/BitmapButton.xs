@@ -1,81 +1,108 @@
 #############################################################################
-## Name:        BitmapButton.xs
+## Name:        XS/BitmapButton.xs
 ## Purpose:     XS for Wx::BitmapButton
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: BitmapButton.xs,v 1.5 2003/06/04 20:38:41 mbarbon Exp $
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 MODULE=Wx PACKAGE=Wx::BitmapButton
 
-Wx_BitmapButton*
-Wx_BitmapButton::new( parent, id, bitmap, pos = wxDefaultPosition, size = wxDefaultSize, style = wxBU_AUTODRAW, validator = (wxValidator*)&wxDefaultValidator, name = wxButtonNameStr )
-    Wx_Window* parent
+#include <wx/bmpbuttn.h>
+
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::BitmapButton::new" )
+
+wxBitmapButton*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxBitmapButton();
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
+
+wxBitmapButton*
+newFull( CLASS, parent, id, bitmap, pos = wxDefaultPosition, size = wxDefaultSize, style = wxBU_AUTODRAW, validator = (wxValidator*)&wxDefaultValidator, name = wxButtonNameStr )
+    PlClassName CLASS
+    wxWindow* parent
     wxWindowID id
-    Wx_Bitmap* bitmap
-    Wx_Point pos
-    Wx_Size size
+    wxBitmap* bitmap
+    wxPoint pos
+    wxSize size
     long style
-    Wx_Validator* validator
+    wxValidator* validator
     wxString name
   CODE:
-    RETVAL = new wxPliBitmapButton( CLASS, parent, id, *bitmap, pos, size,
+    RETVAL = new wxBitmapButton( parent, id, *bitmap, pos, size,
         style, *validator, name );
-  OUTPUT:
-    RETVAL
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
 
-Wx_Bitmap*
-Wx_BitmapButton::GetBitmapDisabled()
+bool
+wxBitmapButton::Create( parent, id, bitmap, pos = wxDefaultPosition, size = wxDefaultSize, style = wxBU_AUTODRAW, validator = (wxValidator*)&wxDefaultValidator, name = wxButtonNameStr )
+    wxWindow* parent
+    wxWindowID id
+    wxBitmap* bitmap
+    wxPoint pos
+    wxSize size
+    long style
+    wxValidator* validator
+    wxString name
+  C_ARGS: parent, id, *bitmap, pos, size, style, *validator, name
+
+wxBitmap*
+wxBitmapButton::GetBitmapDisabled()
   CODE:
     RETVAL = new wxBitmap( THIS->GetBitmapDisabled() );
   OUTPUT:
     RETVAL
 
-Wx_Bitmap*
-Wx_BitmapButton::GetBitmapFocus()
+wxBitmap*
+wxBitmapButton::GetBitmapFocus()
   CODE:
     RETVAL = new wxBitmap( THIS->GetBitmapFocus() );
   OUTPUT:
     RETVAL
 
-Wx_Bitmap*
-Wx_BitmapButton::GetBitmapLabel()
+wxBitmap*
+wxBitmapButton::GetBitmapLabel()
   CODE:
     RETVAL = new wxBitmap( THIS->GetBitmapLabel() );
   OUTPUT:
     RETVAL
 
-Wx_Bitmap*
-Wx_BitmapButton::GetBitmapSelected()
+wxBitmap*
+wxBitmapButton::GetBitmapSelected()
   CODE:
     RETVAL = new wxBitmap( THIS->GetBitmapSelected() );
   OUTPUT:
     RETVAL
 
 void
-Wx_BitmapButton::SetBitmapDisabled( bitmap )
-    Wx_Bitmap* bitmap
-  CODE:
-    THIS->SetBitmapDisabled( *bitmap );
+wxBitmapButton::SetBitmapDisabled( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap
 
 void
-Wx_BitmapButton::SetBitmapLabel( bitmap )
-    Wx_Bitmap* bitmap
-  CODE:
-    THIS->SetBitmapLabel( *bitmap );
+wxBitmapButton::SetBitmapLabel( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap
 
 void
-Wx_BitmapButton::SetBitmapSelected( bitmap )
-    Wx_Bitmap* bitmap
-  CODE:
-    THIS->SetBitmapSelected( *bitmap );
+wxBitmapButton::SetBitmapSelected( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap
 
 void
-Wx_BitmapButton::SetBitmapFocus( bitmap )
-    Wx_Bitmap* bitmap
-  CODE:
-    THIS->SetBitmapFocus( *bitmap );
+wxBitmapButton::SetBitmapFocus( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap

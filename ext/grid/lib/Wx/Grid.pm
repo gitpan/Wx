@@ -19,6 +19,7 @@ use vars qw($VERSION);
 
 $VERSION = '0.01';
 
+Wx::load_dll( 'adv' );
 Wx::wx_boot( 'Wx::Grid', $VERSION );
 
 #
@@ -28,6 +29,7 @@ Wx::wx_boot( 'Wx::Grid', $VERSION );
 no strict;
 
 package Wx::Grid; @ISA = qw(Wx::ScrolledWindow);
+package Wx::GridWindow; @ISA = qw(Wx::Grid);
 package Wx::GridEvent; @ISA = qw(Wx::NotifyEvent);
 package Wx::GridSizeEvent; @ISA = qw(Wx::NotifyEvent);
 package Wx::GridRangeSelectEvent; @ISA = qw(Wx::NotifyEvent);
@@ -46,6 +48,10 @@ package Wx::GridCellTextEditor; @ISA = qw(Wx::GridCellEditor);
 package Wx::GridCellFloatEditor; @ISA = qw(Wx::GridCellEditor);
 package Wx::GridCellNumberEditor; @ISA = qw(Wx::GridCellEditor);
 package Wx::GridCellChoiceEditor; @ISA = qw(Wx::GridCellEditor);
+package Wx::PlGridCellEditor; @ISA = qw(Wx::GridCellEditor);
+
+package Wx::GridTableBase;
+package Wx::PlGridTable; @ISA = qw(Wx::GridTableBase);
 
 package Wx::Grid;
 

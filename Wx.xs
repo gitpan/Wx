@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:      1/10/2000
-// RCS-ID:      $Id: Wx.xs,v 1.50 2003/05/04 17:32:15 mbarbon Exp $
+// RCS-ID:      $Id: Wx.xs,v 1.53 2003/08/22 22:21:53 mbarbon Exp $
 // Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -33,6 +33,9 @@
 #include <wx/msw/private.h>
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    #include <wx/init.h>
+#else
 #if defined(__WXGTK__) && WXPERL_W_VERSION_GE( 2, 3, 3 )
 int  WXDLLEXPORT wxEntryStart( int& argc, char** argv );
 #else
@@ -40,6 +43,7 @@ int  WXDLLEXPORT wxEntryStart( int argc, char** argv );
 #endif
 int  WXDLLEXPORT wxEntryInitGui();
 void WXDLLEXPORT wxEntryCleanup();
+#endif
 
 #include "cpp/typedef.h"
 
@@ -51,6 +55,14 @@ void WXDLLEXPORT wxEntryCleanup();
 #include "cpp/v_cback.cpp"
 #include "cpp/overload.cpp"
 #include "cpp/ovl_const.cpp"
+
+//
+// our App
+//
+#include <wx/app.h>
+#include "cpp/app.h"
+
+IMPLEMENT_APP_NO_MAIN(wxPliApp);
 
 #undef THIS
 
@@ -86,7 +98,7 @@ extern "C" {
 extern void SetConstants();
 extern void SetConstantsOnce();
 
-#if defined(__WXMOTIF__) && !WXPERL_W_VERSION_GE( 2, 5, 1 )
+#if defined(__WXMOTIF__) && !WXPERL_W_VERSION_GE( 2, 5, 0 )
 
 #include <wx/app.h>
 #include <wx/log.h>
@@ -187,7 +199,7 @@ Load()
     tmp = get_sv( "Wx::wxVERSION", 1 );
     sv_setnv( tmp, ver );
 
-    if( wxTopLevelWindows.Number() > 0 )
+    if( wxTopLevelWindows.GetCount() > 0 )
         return;
 
     char** argv = 0;

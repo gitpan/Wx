@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Controls.xs,v 1.21 2003/05/12 17:00:23 mbarbon Exp $
+// RCS-ID:      $Id: Controls.xs,v 1.29 2003/08/16 21:26:26 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -16,37 +16,18 @@
 
 #include <wx/defs.h>
 
-#include <wx/button.h>
-#include <wx/listbox.h>
-#include <wx/radiobut.h>
-#include <wx/radiobox.h>
-#include <wx/choice.h>
-#include <wx/combobox.h>
-#include <wx/scrolbar.h>
-#include <wx/statbox.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/notebook.h>
-#include <wx/gauge.h>
-#include <wx/checklst.h>
-#include <wx/bmpbuttn.h>
-#include <wx/statbmp.h>
-#include <wx/slider.h>
-#include <wx/spinbutt.h>
-#include <wx/spinctrl.h>
-#include <wx/statline.h>
 #include <wx/imaglist.h>
+#include <wx/event.h>
+#include <wx/colour.h>
 #include <wx/listctrl.h>
 #include <wx/treectrl.h>
+#include <wx/ctrlsub.h>
 
 // needs to be here to see #defines
 #include "cpp/typedef.h"
 
 // re-include for client data
 #include "cpp/helpers.h"
-
-#include <wx/tglbtn.h>
 
 #undef THIS
 
@@ -62,15 +43,15 @@ WXPLI_BOOT_ONCE(Wx_Ctrl);
 MODULE=Wx_Ctrl PACKAGE=Wx::Control
 
 void
-Wx_Control::Command( event )
-    Wx_CommandEvent* event
+wxControl::Command( event )
+    wxCommandEvent* event
   CODE:
     THIS->Command( *event );
 
 MODULE=Wx_Ctrl PACKAGE=Wx::ControlWithItems
 
 void
-Wx_ControlWithItems::Append( ... )
+wxControlWithItems::Append( ... )
   PPCODE:
     BEGIN_OVERLOAD()
         MATCH_REDISP( wxPliOvl_s_s, AppendData )
@@ -78,44 +59,44 @@ Wx_ControlWithItems::Append( ... )
     END_OVERLOAD( Wx::ControlWithItems::Append )
 
 void
-Wx_ControlWithItems::AppendString( item )
+wxControlWithItems::AppendString( item )
     wxString item
   CODE:
     THIS->Append( item );
 
 void
-Wx_ControlWithItems::AppendData( item, data )
+wxControlWithItems::AppendData( item, data )
     wxString item
-    Wx_UserDataCD* data
+    wxPliUserDataCD* data
   CODE:
     THIS->Append( item, data );
 
 void
-Wx_ControlWithItems::Delete( n )
+wxControlWithItems::Delete( n )
     int n
 
 int
-Wx_ControlWithItems::FindString( string )
+wxControlWithItems::FindString( string )
     wxString string
 
 int
-Wx_ControlWithItems::GetCount()
+wxControlWithItems::GetCount()
 
 int
-Wx_ControlWithItems::GetSelection()
+wxControlWithItems::GetSelection()
 
 wxString
-Wx_ControlWithItems::GetString( n )
+wxControlWithItems::GetString( n )
     int n
 
 wxString
-Wx_ControlWithItems::GetStringSelection()
+wxControlWithItems::GetStringSelection()
 
-Wx_UserDataCD*
-Wx_ControlWithItems::GetClientData( n )
+wxPliUserDataCD*
+wxControlWithItems::GetClientData( n )
     int n
   CODE:
-    RETVAL = (Wx_UserDataCD*) THIS->GetClientObject( n );
+    RETVAL = (wxPliUserDataCD*) THIS->GetClientObject( n );
   OUTPUT:
     RETVAL
 
@@ -127,9 +108,9 @@ wxControlWithItems::IsEmpty()
 #endif
 
 void
-Wx_ControlWithItems::SetClientData( n, data )
+wxControlWithItems::SetClientData( n, data )
     int n
-    Wx_UserDataCD* data
+    wxPliUserDataCD* data
   CODE:
     THIS->SetClientObject( n, data );
 

@@ -4,29 +4,41 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     10/11/2000
-## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: StaticLine.xs,v 1.6 2003/06/04 20:38:43 mbarbon Exp $
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 MODULE=Wx PACKAGE=Wx::StaticLine
 
-Wx_StaticLine*
-Wx_StaticLine::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLI_HORIZONTAL, name = wxT("staticLine") )
-    Wx_Window* parent
+#include <wx/statline.h>
+
+wxStaticLine*
+wxStaticLine::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLI_HORIZONTAL, name = wxT("staticLine") )
+    wxWindow* parent
     wxWindowID id
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
-    RETVAL = new wxPliStaticLine( CLASS, parent, id, pos, size, style, name );
+    RETVAL = new wxStaticLine( parent, id, pos, size, style, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 
 bool
-Wx_StaticLine::IsVertical()
+wxStaticLine::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLI_HORIZONTAL, name = wxT("staticLine") )
+    wxWindow* parent
+    wxWindowID id
+    wxPoint pos
+    wxSize size
+    long style
+    wxString name
+
+bool
+wxStaticLine::IsVertical()
 
 int
-Wx_StaticLine::GetDefaultSize()
+wxStaticLine::GetDefaultSize()

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp,v 1.54 2003/05/04 17:38:10 mbarbon Exp $
+// RCS-ID:      $Id: helpers.cpp,v 1.59 2003/08/16 21:26:28 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -12,6 +12,10 @@
 
 #include "cpp/streams.h"
 #include "cpp/streams.cpp"
+
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    #include <wx/arrstr.h>
+#endif
 
 #define wxPL_USE_MAGIC 1
 
@@ -182,6 +186,7 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
     bool bval;
     IV ival;
     long lval;
+    unsigned long ulval;
     char* stval;
     wxChar* wstval;
     SV* svval;
@@ -189,6 +194,7 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
     void* pval;
     wxString* wxsval;
     const char* package;
+    double dval;
 
     while( *argtypes ) 
     {
@@ -205,6 +211,14 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
         case 'l':
             lval = va_arg( args, long );
             XPUSHs( sv_2mortal( newSViv( lval ) ) );
+            break;
+        case 'L':
+            ulval = va_arg( args, unsigned long );
+            XPUSHs( sv_2mortal( newSVuv( ulval ) ) );
+            break;
+        case 'd':
+            dval = va_arg( args, double );
+            XPUSHs( sv_2mortal( newSVnv( dval ) ) );
             break;
         case 'p':
             stval = va_arg( args, char* );
@@ -303,13 +317,13 @@ void* wxPli_sv_2_object( pTHX_ SV* scalar, const char* classname )
     // is it correct to use undef as 'NULL'?
     if( !SvOK( scalar ) ) 
     {
-        return 0;
+        return NULL;
     }
 
     if( !SvROK( scalar ) )
         croak( "the invocant must be a reference" );
 
-    if( /* 1 || */ sv_derived_from( scalar, CHAR_P classname ) ) 
+    if( !classname || sv_derived_from( scalar, CHAR_P classname ) ) 
     {
         SV* ref = SvRV( scalar );
 
@@ -339,7 +353,7 @@ void* wxPli_sv_2_object( pTHX_ SV* scalar, const char* classname )
             {
                 croak( "the associative array (hash) "
                        " does not have a '_WXTHIS' key" );
-                return 0;
+                return NULL; // dummy, for compiler
             }
         }
         else
@@ -349,13 +363,13 @@ void* wxPli_sv_2_object( pTHX_ SV* scalar, const char* classname )
     else 
     {
         croak( "variable is not of type %s", classname );
-        return 0;
+        return NULL; // dummy, for compiler
     }
 }
 
 SV* wxPli_non_object_2_sv( pTHX_ SV* var, void* data, const char* package )
 {
-    if( data == 0 )
+    if( data == NULL )
     {
         sv_setsv( var, &PL_sv_undef );
     }
@@ -367,9 +381,37 @@ SV* wxPli_non_object_2_sv( pTHX_ SV* var, void* data, const char* package )
     return var;
 }
 
+SV* wxPli_evthandler_2_sv( pTHX_ SV* var, wxEvtHandler* cdc )
+{
+    if( cdc == NULL )
+    {
+        sv_setsv( var, &PL_sv_undef );
+        return var;
+    }
+
+    wxPliUserDataCD* clientData = (wxPliUserDataCD*)cdc->GetClientObject();
+
+    if( clientData )
+    {     
+        SvSetSV_nosteal( var, clientData->GetData() );
+        return var;
+    }
+
+    // blech, duplicated code
+    wxClassInfo *ci = cdc->GetClassInfo();
+    const wxChar* classname = ci->GetClassName();
+
+    char buffer[WXPL_BUF_SIZE];
+    const char* CLASS = wxPli_cpp_class_2_perl( classname, buffer );
+
+    sv_setref_pv( var, CHAR_P CLASS, cdc );
+
+    return var;
+}
+
 SV* wxPli_object_2_sv( pTHX_ SV* var, wxObject* object ) 
 {
-    if( object == 0 )
+    if( object == NULL )
     {
         sv_setsv( var, &PL_sv_undef );
         return var;
@@ -377,6 +419,10 @@ SV* wxPli_object_2_sv( pTHX_ SV* var, wxObject* object )
 
     wxClassInfo *ci = object->GetClassInfo();
     const wxChar* classname = ci->GetClassName();
+    wxEvtHandler* evtHandler = wxDynamicCast( object, wxEvtHandler );
+
+    if( evtHandler && evtHandler->GetClientObject() )
+        return wxPli_evthandler_2_sv( aTHX_ var, evtHandler );
 
 #if wxUSE_UNICODE
     if( wcsncmp( classname, wxT("wxPl"), 4 ) == 0 ) 
@@ -469,6 +515,17 @@ void* wxPli_detach_object( pTHX_ SV* object )
     }
 }
 
+SV* wxPli_create_evthandler( pTHX_ wxEvtHandler* object,
+                             const char* classname )
+{
+    SV* sv = wxPli_make_object( object, classname );
+    wxPliUserDataCD* clientData = new wxPliUserDataCD( sv );
+
+    object->SetClientObject( clientData );
+
+    return sv;
+}
+
 SV* wxPli_make_object( void* object, const char* classname ) 
 {
     dTHX;
@@ -528,6 +585,22 @@ void wxPli_stringarray_push( pTHX_ const wxArrayString& strings )
     }
 
     PUTBACK;
+}
+
+AV* wxPli_objlist_2_av( pTHX_ const wxList& objs )
+{
+    AV* av = newAV();
+    size_t i;
+    wxList::Node* node;
+
+    av_extend( av, objs.GetCount() );
+    for( node = objs.GetFirst(), i = 0; node; ++i, node = node->GetNext() )
+    {
+        SV* tmp = wxPli_object_2_sv( aTHX_ sv_newmortal(), node->GetData() ); 
+        av_store( av, i, tmp );
+    }
+
+    return av;
 }
 
 AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings )

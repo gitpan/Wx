@@ -4,7 +4,7 @@
 ## Author:      Simon Flack
 ## Modified by:
 ## Created:     11/ 9/2002
-## RCS-ID:      $Id: DocManager.xs,v 1.5 2003/05/12 17:00:41 mbarbon Exp $
+## RCS-ID:      $Id: DocManager.xs,v 1.7 2003/08/16 21:26:29 mbarbon Exp $
 ## Copyright:   (c) 2002-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -42,20 +42,12 @@ Wx_DocManager::SetMaxDocsOpen(n)
 int
 Wx_DocManager::GetMaxDocsOpen()
 
-void
+SV*
 Wx_DocManager::GetDocuments()
-  PPCODE:
-    wxNode* docnode;
-    const wxList& doclist = THIS->GetDocuments();
-    AV* arrDocs = newAV();
-
-    for( docnode = doclist.GetFirst(); docnode; docnode = docnode->GetNext() )
-    {
-       SV* pldoc = wxPli_object_2_sv( aTHX_ sv_newmortal(), docnode->GetData() ); 
-       av_push( arrDocs, pldoc );
-    } 
-    SV* doc_aref = newRV( (SV*)arrDocs  );
-    PUSHs(doc_aref);
+  CODE:
+    AV* arrDocs = wxPli_objlist_2_av( aTHX_ THIS->GetDocuments() );
+    RETVAL = newRV_noinc( (SV*)arrDocs  );
+  OUTPUT: RETVAL
 
 void
 Wx_DocManager::GetTemplates()
@@ -426,8 +418,19 @@ bool
 Wx_DocManager::CloseDocuments( force = TRUE )
     bool force
 
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+
+void
+wxDocManager::ActivateView( view, activate = TRUE )
+    wxView* view
+    bool activate
+
+#else
+
 void
 Wx_DocManager::ActivateView( view, activate = TRUE, deleting = FALSE )
     Wx_View* view
     bool activate
     bool deleting
+
+#endif

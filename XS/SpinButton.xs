@@ -1,61 +1,88 @@
 #############################################################################
-## Name:        SpinButton.xs
+## Name:        XS/SpinButton.xs
 ## Purpose:     XS for Wx::SpinButton
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:      8/11/2000
-## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: SpinButton.xs,v 1.8 2003/06/04 20:38:43 mbarbon Exp $
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 #include <wx/spinctrl.h>
+#include <wx/spinbutt.h>
 
 MODULE=Wx_Evt PACKAGE=Wx::SpinEvent
 
-Wx_SpinEvent*
-Wx_SpinEvent::new( commandType = wxEVT_NULL, id = 0 )
+wxSpinEvent*
+wxSpinEvent::new( commandType = wxEVT_NULL, id = 0 )
     wxEventType commandType
     int id
 
 int
-Wx_SpinEvent::GetPosition()
+wxSpinEvent::GetPosition()
 
 void
-Wx_SpinEvent::SetPosition( pos )
+wxSpinEvent::SetPosition( pos )
     int pos
 
 MODULE=Wx PACKAGE=Wx::SpinButton
 
-Wx_SpinButton*
-Wx_SpinButton::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxT("spinButton") )
-    Wx_Window* parent
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::SpinButton::new" )
+
+wxSpinButton*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxSpinButton();
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
+
+wxSpinButton*
+newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxT("spinButton") )
+    PlClassName CLASS
+    wxWindow* parent
     wxWindowID id
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
-    RETVAL = new wxPliSpinButton( CLASS, parent, id, pos, size, style,
-        name );
+    RETVAL = new wxSpinButton( parent, id, pos, size, style, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 
-int
-Wx_SpinButton::GetMax()
+bool
+wxSpinButton::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxT("spinButton") )
+    wxWindow* parent
+    wxWindowID id
+    wxPoint pos
+    wxSize size
+    long style
+    wxString name
 
 int
-Wx_SpinButton::GetMin()
+wxSpinButton::GetMax()
 
 int
-Wx_SpinButton::GetValue()
+wxSpinButton::GetMin()
+
+int
+wxSpinButton::GetValue()
 
 void
-Wx_SpinButton::SetRange( min, max )
+wxSpinButton::SetRange( min, max )
     int min
     int max
 
 void
-Wx_SpinButton::SetValue( value )
+wxSpinButton::SetValue( value )
     int value

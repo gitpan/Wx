@@ -17,7 +17,7 @@ sub configure_core {
   $config{dynamic_lib}{INST_DYNAMIC_DEP} .= " $res";
 
   die "Unable to find setup.h directory"
-    unless $config{INC} =~ m{[/-]I(\S+lib[\\/]\w+)\b};
+    unless $config{INC} =~ m{[/-]I(\S+lib[\\/][\w\\/]+)(?:\s|$)};
   $wx_setup_dir = $1;
 
   return %config;
@@ -39,10 +39,10 @@ sub configure_ext {
   my $impbase =
     File::Basename::basename( $cfg->wx_config( 'implib' ) );
   my $rimp = File::Spec->catfile( $this->_arch_directory,
-                                  'Wx', 'build', $impbase );
+                                  'auto', 'Wx', $impbase );
   my $libs = '';
   foreach ( split /\s+/, $config{LIBS} ) {
-    m{\Q$impbase\E$} and $_ = $rimp;
+    m{${impbase}$} and $_ = $rimp;
     $libs .= "$_ ";
   }
   $config{LIBS} = $libs;
@@ -75,10 +75,9 @@ sub postamble_core {
 # for compatibility
 ppmdist : ppm
 
-ppm : pure_all ppd
+ppm : pure_all
 %s
-	$(TAR) $(TARFLAGS) $(DISTVNAME)-ppm.tar blib
-	$(COMPRESS) $(DISTVNAME)-ppm.tar
+	perl script/make_ppm.pl
 
 EOT
 }
@@ -86,17 +85,20 @@ EOT
 sub files_to_install {
   my $this = shift;
   my %files = $this->SUPER::files_to_install();
-  my $dll_full = $this->_dll_name;
-  my $implib = $this->wx_config->wx_config( 'implib' );
-  my $impbase = File::Basename::basename( $implib );
-  my $base = File::Basename::basename( $dll_full );
+  my $dlls = $this->wx_config->wx_config( 'dlls' );
   my $setup_h = File::Spec->catfile( $wx_setup_dir, 'wx', 'setup.h' );
 
-  return ( %files,
-           $dll_full => Wx::build::Utils::arch_auto_file( "Wx/$base" ),
-           $implib   => Wx::build::Utils::arch_file( "Wx/build/$impbase" ),
-           $setup_h  => Wx::build::Utils::arch_file( "Wx/build/wx/setup.h" ),
-         );
+  $files{$setup_h} = Wx::build::Utils::arch_file( "Wx/build/wx/setup.h" );
+  foreach my $dll ( map { $_->{dll} } values %$dlls ) {
+    my $base = File::Basename::basename( $dll );
+    $files{$dll} = Wx::build::Utils::arch_auto_file( "Wx/$base" );
+  }
+  foreach my $lib ( map { $_->{lib} } values %$dlls ) {
+    my $base = File::Basename::basename( $lib );
+    $files{$lib} = Wx::build::Utils::arch_auto_file( "Wx/$base" );
+  }
+
+  return %files;
 }
 
 1;

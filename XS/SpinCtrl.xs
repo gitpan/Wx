@@ -1,57 +1,90 @@
 #############################################################################
-## Name:        SpinCtrl.xs
+## Name:        XS/SpinCtrl.xs
 ## Purpose:     XS for Wx::SpinCtrl
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      8/11/2000
-## RCS-ID:      $Id: SpinCtrl.xs,v 1.6 2003/05/05 20:38:41 mbarbon Exp $
+## Created:     08/11/2000
+## RCS-ID:      $Id: SpinCtrl.xs,v 1.9 2003/06/04 20:38:43 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
+#include <wx/spinctrl.h>
+
 MODULE=Wx PACKAGE=Wx::SpinCtrl
 
-Wx_SpinCtrl*
-Wx_SpinCtrl::new( parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_ARROW_KEYS, min = 0, max = 100, initial = 0, name = wxT("spinCtrl") )
-    Wx_Window* parent
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::SpinCtrl::new" )
+
+wxSpinCtrl*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxSpinCtrl();
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
+
+wxSpinCtrl*
+newFull( CLASS, parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_ARROW_KEYS, min = 0, max = 100, initial = 0, name = wxT("spinCtrl") )
+    PlClassName CLASS
+    wxWindow* parent
     wxWindowID id
     wxString value
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     int min
     int max
     int initial
     wxString name
   CODE:
-    RETVAL = new wxPliSpinCtrl( CLASS, parent, id, value, pos, size,
+    RETVAL = new wxSpinCtrl( parent, id, value, pos, size,
         style, min, max, initial, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 
-int
-Wx_SpinCtrl::GetMin()
+bool
+wxSpinCtrl::Create( parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_ARROW_KEYS, min = 0, max = 100, initial = 0, name = wxT("spinCtrl") )
+    wxWindow* parent
+    wxWindowID id
+    wxString value
+    wxPoint pos
+    wxSize size
+    long style
+    int min
+    int max
+    int initial
+    wxString name
 
 int
-Wx_SpinCtrl::GetMax()
+wxSpinCtrl::GetMin()
 
 int
-Wx_SpinCtrl::GetValue()
+wxSpinCtrl::GetMax()
+
+int
+wxSpinCtrl::GetValue()
 
 void
-Wx_SpinCtrl::SetRange( min, max )
+wxSpinCtrl::SetRange( min, max )
     int min
     int max
 
 void
-Wx_SpinCtrl::SetValue( text )
+wxSpinCtrl::SetValue( text )
     wxString text
 
 #if !defined(__WXGTK__)
 
 void
-Wx_SpinCtrl::SetSelection( from, to )
+wxSpinCtrl::SetSelection( from, to )
     long from
     long to
 

@@ -11,7 +11,7 @@
 #############################################################################
 
 #include <wx/app.h>
-#include "cpp/app.h"
+##include "cpp/app.h"
 
 #if WXPERL_W_VERSION_GE( 2, 3, 3 )
 #include <wx/artprov.h>
@@ -21,8 +21,8 @@ MODULE=Wx PACKAGE=Wx PREFIX=wx
 
 void
 wxPostEvent( evthnd, event )
-    Wx_EvtHandler* evthnd
-    Wx_Event* event
+    wxEvtHandler* evthnd
+    wxEvent* event
   CODE:
     wxPostEvent( evthnd, *event );
 
@@ -43,7 +43,7 @@ Start( app, sub )
   CODE:
     // for Wx::Perl::SplashFast
 #if 0
-    if( wxTopLevelWindows.Number() > 0 )
+    if( wxTopLevelWindows.GetCount() > 0 )
       croak( "Only one Wx::App instance allowed" );
 #endif
     if( !SvROK( sub ) || SvTYPE( SvRV( sub ) ) != SVt_PVCV )
@@ -54,7 +54,9 @@ Start( app, sub )
     app->SetClassName( app->argv[0] );
     app->SetAppName( app->argv[0] );
 #endif
+#if !WXPERL_W_VERSION_GE( 2, 5, 0 )
     wxEntryInitGui();
+#endif
 
     SV* This = ST(0);
     
@@ -71,7 +73,12 @@ Start( app, sub )
 Wx_App*
 Wx_App::new()
   CODE:
-    RETVAL = new wxPliApp( CLASS );
+##    RETVAL = new wxPliApp( CLASS );
+#if !WXPERL_W_VERSION_GE( 2, 5, 0 )
+    if( !wxTheApp )
+        wxTheApp = new wxPliApp();
+#endif
+    RETVAL = wxTheApp;
   OUTPUT:
     RETVAL
 
@@ -86,7 +93,7 @@ Wx_App::Dispatch()
 wxString
 Wx_App::GetAppName()
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !WXPERL_W_VERSION_GE( 2, 5, 0 )
 
 bool
 Wx_App::GetAuto3D()
@@ -153,7 +160,7 @@ void
 Wx_App::SetAppName( name )
     wxString name
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !WXPERL_W_VERSION_GE( 2, 5, 0 )
 
 void
 Wx_App::SetAuto3D( auto3d )

@@ -1,11 +1,11 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        sizer.h
+// Name:        cpp/sizer.h
 // Purpose:     c++ wrapper for wxSizers
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      
-// Copyright:   (c) 2000-2002 Mattia Barbon
+// RCS-ID:      $Id: sizer.h,v 1.10 2003/08/05 17:20:35 mbarbon Exp $
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ class wxPlSizer:public wxSizer
 public:
     wxPlSizer( const char* package );
 
-    virtual void RecalcSizes();
+    DEC_V_CBACK_VOID__VOID( RecalcSizes );
     virtual wxSize CalcMin();
 };
 
@@ -27,17 +27,7 @@ inline wxPlSizer::wxPlSizer( const char* package )
     m_callback.SetSelf( wxPli_make_object( this, package ), TRUE );
 }
 
-void wxPlSizer::RecalcSizes()
-{
-    dTHX;
-
-    if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, "RecalcSizes" ) )
-    {
-        wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,
-                                           G_SCALAR|G_DISCARD );
-        return;
-    }
-}
+DEF_V_CBACK_VOID__VOID_pure( wxPlSizer, wxSizer, RecalcSizes )
 
 wxSize wxPlSizer::CalcMin()
 {

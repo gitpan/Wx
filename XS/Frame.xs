@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Frame.xs,v 1.17 2003/05/17 13:14:56 mbarbon Exp $
+## RCS-ID:      $Id: Frame.xs,v 1.19 2003/06/04 20:38:41 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -49,12 +49,22 @@ newFull( CLASS, parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize
          size, style, name );
   OUTPUT: RETVAL
 
+bool
+wxFrame::Create( parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize, style = wxDEFAULT_FRAME_STYLE, name = wxFrameNameStr )
+    wxWindow* parent
+    wxWindowID id
+    wxString title
+    wxPoint pos
+    wxSize size
+    long style
+    wxString name
+
 void
 Wx_Frame::Command( id )
     int id
 
-Wx_StatusBar*
-Wx_Frame::CreateStatusBar( number = 1, style = 0, id = -1, name = wxEmptyString )
+wxStatusBar*
+wxFrame::CreateStatusBar( number = 1, style = 0, id = -1, name = wxEmptyString )
     int number
     long style
     wxWindowID id
@@ -76,8 +86,8 @@ Wx_Frame::GetClientAreaOrigin()
 Wx_MenuBar*
 Wx_Frame::GetMenuBar()
 
-Wx_StatusBar*
-Wx_Frame::GetStatusBar()
+wxStatusBar*
+wxFrame::GetStatusBar()
 
 int
 Wx_Frame::GetStatusBarPane()
@@ -144,8 +154,8 @@ wxFrame::SetShape( region )
 #endif
 
 void
-Wx_Frame::SetStatusBar( statusBar )
-    Wx_StatusBar* statusBar
+wxFrame::SetStatusBar( statusBar )
+    wxStatusBar* statusBar
 
 void
 Wx_Frame::SetToolBar( toolbar )
@@ -189,18 +199,19 @@ MODULE=Wx PACKAGE=Wx::MiniFrame
 
 #if wxPERL_USE_MINIFRAME
 
-Wx_MiniFrame*
-Wx_MiniFrame::new( parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize, style = wxDEFAULT_FRAME_STYLE, name = wxFrameNameStr )
-    Wx_Window* parent
+wxMiniFrame*
+wxMiniFrame::new( parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize, style = wxDEFAULT_FRAME_STYLE, name = wxFrameNameStr )
+    wxWindow* parent
     wxWindowID id
     wxString title
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
-    RETVAL = new wxPliMiniFrame( CLASS, parent, id, title, pos, size, 
+    RETVAL = new wxMiniFrame( parent, id, title, pos, size, 
         style, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 

@@ -1,50 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        controls.cpp
+// Name:        cpp/controls.cpp
 // Purpose:     implementation for controls.h
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      
-// Copyright:   (c) 2000-2002 Mattia Barbon
+// RCS-ID:      $Id: controls.cpp,v 1.33 2003/07/17 22:39:02 mbarbon Exp $
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
 
 #include "cpp/constants.h"
-
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliBitmapButton, wxBitmapButton );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliButton, wxButton );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliCheckBox, wxCheckBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliCheckListBox, wxCheckListBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliChoice, wxChoice );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliComboBox, wxComboBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliListBox, wxListBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliListView, wxListView );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliNotebook, wxNotebook );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliRadioBox, wxRadioBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliRadioButton, wxRadioButton );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliScrollBar, wxScrollBar );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliSpinButton, wxSpinButton );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliSpinCtrl, wxSpinCtrl );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliStaticBitmap, wxStaticBitmap );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliStaticBox, wxStaticBox );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliStaticLine, wxStaticLine );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliStaticText, wxStaticText );
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliTextCtrl, wxTextCtrl );
-
-#if wxPERL_USE_TOGGLEBTN
-
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliToggleButton, wxToggleButton );
-
-#endif
-
-#if defined( __WXMSW__ )
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliGauge, wxGauge95 );
-#else
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliGauge, wxGauge );
-#endif
-
-WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliSlider, wxSlider );
 
 //
 // Wx::ListCtrl implementation
@@ -265,10 +231,20 @@ double treectrl_constant( const char* name, int arg )
 
       break;
   case 'T':
-    r( wxTR_HAS_BUTTONS );              // treectrl
+    r( wxTR_DEFAULT_STYLE );            // treectrl
     r( wxTR_EDIT_LABELS );              // treectrl
-    r( wxTR_MULTIPLE );                 // treectrl
+    r( wxTR_EXTENDED );                 // treectrl
+    r( wxTR_FULL_ROW_HIGHLIGHT );       // treectrl
+    r( wxTR_HAS_BUTTONS );              // treectrl
+    r( wxTR_HAS_VARIABLE_ROW_HEIGHT );  // treectrl
     r( wxTR_HIDE_ROOT );                // treectrl
+    r( wxTR_LINES_AT_ROOT );            // treectrl
+    r( wxTR_MULTIPLE );                 // treectrl
+    r( wxTR_NO_BUTTONS );               // treectrl
+    r( wxTR_NO_LINES );                 // treectrl
+    r( wxTR_ROW_LINES );                // treectrl
+    r( wxTR_SINGLE );                   // treectrl
+    r( wxTR_TWIST_BUTTONS );            // treectrl
 
     r( wxTreeItemIcon_Normal );         // treectrl
     r( wxTreeItemIcon_Selected );       // treectrl

@@ -19,6 +19,7 @@ use vars qw($VERSION);
 
 $VERSION = '0.01';
 
+Wx::load_dll( 'xrc' );
 Wx::wx_boot( 'Wx::XRC', $VERSION );
 
 # init wxModules
@@ -32,6 +33,8 @@ Wx::XmlInitResourceModule();
 #
 
 no strict;
+
+package Wx::PlXmlResourceHandler; @ISA = qw(Wx::XmlResourceHandler);
 
 use strict;
 

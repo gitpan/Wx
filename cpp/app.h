@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: app.h,v 1.15 2003/05/05 20:38:41 mbarbon Exp $
-// Copyright:   (c) 2000-2002 Mattia Barbon
+// RCS-ID:      $Id: app.h,v 1.17 2003/08/17 19:34:40 mbarbon Exp $
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -19,13 +19,14 @@ class wxPliApp:public wxApp
     WXPLI_DECLARE_DYNAMIC_CLASS( wxPliApp );
     WXPLI_DECLARE_V_CBACK();
 public:
-    wxPliApp( const char* package );
+    wxPliApp( const char* package = "Wx::App" );
     ~wxPliApp();
 
     bool OnInit();
-    int OnExit();
     int MainLoop();
+    void CleanUp() { DeletePendingObjects(); wxApp::CleanUp(); }
 
+    DEC_V_CBACK_INT__VOID( OnExit );
     DEC_V_CBACK_BOOL__BOOL( Yield );
 };
 
@@ -80,22 +81,7 @@ inline int wxPliApp::MainLoop() {
     return retval;
 }
 
-int wxPliApp::OnExit()
-{
-    dTHX;
-    if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, "OnExit" ) )
-    {
-        SV* ret = wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,
-                                                     G_SCALAR );
-        int val = SvOK( ret ) ? SvIV( ret ) : 0;
-        SvREFCNT_dec( ret );
-
-        return val;
-    }
-    else
-        return wxApp::OnExit();
-}
-
+DEF_V_CBACK_INT__VOID( wxPliApp, wxApp, OnExit );
 DEF_V_CBACK_BOOL__BOOL( wxPliApp, wxApp, Yield );
 
 WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliApp, wxApp );

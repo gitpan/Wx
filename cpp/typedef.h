@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: typedef.h,v 1.42 2003/05/05 20:38:41 mbarbon Exp $
+// RCS-ID:      $Id: typedef.h,v 1.48 2003/06/04 20:38:44 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -43,16 +43,12 @@ FD_TD( ListEvent );
 FD_TD( MenuEvent );
 FD_TD( MouseEvent );
 FD_TD( MoveEvent );
-FD_TD( NotebookEvent );
 FD_TD( NotifyEvent );
 FD_TD( PaintEvent );
-FD_TD( SashEvent );
 FD_TD( ScrollWinEvent );
 FD_TD( SizeEvent );
-FD_TD( SpinEvent );
 FD_TD( SplitterEvent );
 FD_TD( SysColourChangedEvent );
-FD_TD( TextUrlEvent );
 FD_TD( TimerEvent );
 FD_TD( TreeEvent );
 FD_TD( UpdateUIEvent );
@@ -75,18 +71,13 @@ FD_TD( AcceleratorEntry );
 FD_TD( AcceleratorTable );
 FD_TD( App );
 FD_TD( Bitmap );
-FD_TD( BitmapButton );
 FD_TD( BitmapHandler );
 FD_TD( BoxSizer );
 FD_TD( Brush );
 FD_TD( BusyCursor );
 FD_TD( BusyInfo );
-FD_TD( Button );
 FD_TD( Caret );
 FD_TD( CaretSuspend );
-FD_TD( CheckBox );
-FD_TD( CheckListBox );
-FD_TD( Choice );
 FD_TD( ClassInfo );
 FD_TD( ClientDC );
 FD_TD( Colour );
@@ -98,11 +89,9 @@ FD_TD_NAME( ColourDialog, GenericColourDialog );
 FD_TD( ColourDialog );
 #endif
 
-FD_TD( ComboBox );
 FD_TD( Config );
 FD_TD( ConfigBase );
 FD_TD( Control );
-FD_TD( ControlWithItems );
 FD_TD( Cursor );
 FD_TD( DC );
 FD_TD( Dialog );
@@ -113,7 +102,6 @@ FD_TD_NAME( DirDialog, GenericDirDialog );
 #endif
 FD_TD( DrawObject );
 FD_TD( DropTarget );
-FD_TD( EvtHandler );
 FD_TD( FileConfig );
 FD_TD( FileDialog );
 FD_TD( FindReplaceData );
@@ -131,7 +119,6 @@ FD_TD( FontDialog );
 FD_TD( FontEnumerator )
 FD_TD( FontMapper )
 FD_TD( Frame );
-FD_TD( Gauge );
 FD_TD( GridSizer );
 FD_TD( Icon );
 FD_TD( Image );
@@ -140,11 +127,9 @@ FD_TD( ImageList );
 FD_TD( IndividualLayoutConstraint );
 FD_TDS( LanguageInfo )
 FD_TD( LayoutConstraints );
-FD_TD( ListBox );
 FD_TD( ListCtrl );
 FD_TD( ListItem );
 FD_TD( ListItemAttr );
-FD_TD( ListView );
 FD_TD( Locale );
 FD_TD( Log );
 FD_TD( LogGui );
@@ -163,10 +148,8 @@ FD_TD_NAME( MessageDialog, GenericMessageDialog );
 FD_TD( MessageDialog );
 #endif
 
-FD_TD( MiniFrame );
 FD_TD( MultiChoiceDialog );
 FD_TDS( NativeFontInfo );
-FD_TD( Notebook );
 FD_TD( NotebookSizer );
 FD_TD( Object );
 FD_TD( PaintDC );
@@ -176,32 +159,21 @@ FD_TD( Pen );
 FD_TD( Point );
 FD_TD( Process );
 FD_TD( ProgressDialog );
-FD_TD( RadioBox );
-FD_TD( RadioButton );
 FD_TD( Rect );
 FD_TD( RegConfig );
 FD_TD( Region );
-FD_TD( SashWindow );
 FD_TD( ScreenDC );
-FD_TD( ScrollBar );
 FD_TD( ScrolledWindow );
 FD_TD( SingleChoiceDialog );
 FD_TD( SingleInstanceChecker );
 FD_TD( Size );
 FD_TD( Sizer );
 FD_TD( SizerItem );
-FD_TD( Slider );
-FD_TD( SpinButton );
-FD_TD( SpinCtrl );
 FD_TD( SplashScreen );
 FD_TD( SplitterWindow );
-FD_TD( StaticBitmap );
-FD_TD( StaticBox );
 FD_TD( StaticBoxSizer );
 FD_TD( StaticCtrl );
 FD_TD( StaticLine );
-FD_TD( StaticText );
-FD_TD( StatusBar );
 FD_TD( StopWatch );
 FD_TD( TaskBarIcon );
 FD_TD( TextAttr );
@@ -209,7 +181,6 @@ FD_TD( TextCtrl );
 FD_TD( TextEntryDialog );
 FD_TD( Timer );
 FD_TD( TipProvider );
-FD_TD( ToggleButton );
 FD_TD( ToolBar );
 FD_TD( ToolBarBase );
 FD_TD( ToolBarToolBase );

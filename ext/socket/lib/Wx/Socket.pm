@@ -19,12 +19,12 @@ use vars qw($VERSION);
 
 $VERSION = '0.01';
 
+Wx::load_dll( 'net' );
 Wx::wx_boot( 'Wx::Socket', $VERSION );
 
 no strict ;
 package Wx::SocketClient ; @ISA = qw(Wx::SocketBase) ;
 package Wx::SocketServer ; @ISA = qw(Wx::SocketBase) ;
-package Wx::SocketBase ; @ISA = qw(Wx::Socket Wx::Object) ;
 package Wx::SocketEvent ; @ISA = qw(Wx::Event) ;
 use strict ;
 

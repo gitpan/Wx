@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        TreeCtrl.xs
+## Name:        XS/TreeCtrl.xs
 ## Purpose:     XS for Wx::TreeCtrl
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      4/ 2/2001
-## RCS-ID:      $Id: TreeCtrl.xs,v 1.18 2003/05/05 20:38:41 mbarbon Exp $
+## Created:     04/02/2001
+## RCS-ID:      $Id: TreeCtrl.xs,v 1.21 2003/08/16 21:26:28 mbarbon Exp $
 ## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -100,6 +100,9 @@ Wx_TreeEvent::GetItem()
   OUTPUT:
     RETVAL
 
+int
+Wx_TreeEvent::GetKeyCode()
+
 Wx_TreeItemId*
 Wx_TreeEvent::GetOldItem()
   CODE:
@@ -122,8 +125,25 @@ Wx_TreeEvent::GetLabel()
 
 MODULE=Wx PACKAGE=Wx::TreeCtrl
 
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::TreeCtrl::new" )
+
+wxTreeCtrl*
+newDefault( CLASS )
+    PlClassName CLASS
+  CODE:
+    RETVAL = new wxPliTreeCtrl( CLASS );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
+  OUTPUT: RETVAL
+
 Wx_TreeCtrl*
-Wx_TreeCtrl::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
+newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
+    PlClassName CLASS
     Wx_Window* parent
     wxWindowID id
     Wx_Point pos
@@ -136,6 +156,17 @@ Wx_TreeCtrl::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, sty
         style, *validator, name );
   OUTPUT:
     RETVAL
+
+bool
+wxTreeCtrl::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
+    wxWindow* parent
+    wxWindowID id
+    wxPoint pos
+    wxSize size
+    long style
+    wxValidator* validator
+    wxString name
+  C_ARGS: parent, id, pos, size, style, *validator, name
 
 Wx_TreeItemId*
 Wx_TreeCtrl::AddRoot( text, image = -1, selImage = -1, data = 0 )
@@ -273,15 +304,25 @@ void
 Wx_TreeCtrl::GetFirstChild( item )
     Wx_TreeItemId* item
   PREINIT:
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    void* cookie;
+#else
     long cookie;
+#endif
   PPCODE:
     wxTreeItemId ret = THIS->GetFirstChild( *item, cookie );
+#if !WXPERL_W_VERSION_GE( 2, 5, 0 )
     if( !ret.IsOk() ) cookie = -1;
+#endif
     EXTEND( SP, 2 );
     PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                                   new wxTreeItemId( ret ),
                                   "Wx::TreeItemId" ) );
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    PUSHs( sv_2mortal( newSViv( PTR2IV( cookie ) ) ) );
+#else
     PUSHs( sv_2mortal( newSViv( cookie ) ) );
+#endif
 
 Wx_TreeItemId*
 Wx_TreeCtrl::GetFirstVisibleItem()
@@ -325,6 +366,24 @@ Wx_TreeCtrl::GetLastChild( item )
   OUTPUT:
     RETVAL
 
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+
+void
+Wx_TreeCtrl::GetNextChild( item, cookie )
+    Wx_TreeItemId* item
+    IV cookie
+  PREINIT:
+    void* realcookie = INT2PTR( void*, cookie );
+  PPCODE:
+    wxTreeItemId ret = THIS->GetNextChild( *item, realcookie );
+    EXTEND( SP, 2 );
+    PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
+                                  new wxTreeItemId( ret ),
+                                  "Wx::TreeItemId" ) );
+    PUSHs( sv_2mortal( newSViv( PTR2IV( realcookie ) ) ) );
+
+#else
+
 void
 Wx_TreeCtrl::GetNextChild( item, cookie )
     Wx_TreeItemId* item
@@ -336,6 +395,8 @@ Wx_TreeCtrl::GetNextChild( item, cookie )
                                   new wxTreeItemId( ret ),
                                   "Wx::TreeItemId" ) );
     PUSHs( sv_2mortal( newSViv( cookie ) ) );
+
+#endif
 
 Wx_TreeItemId*
 Wx_TreeCtrl::GetNextSibling( item )

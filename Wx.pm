@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:      1/10/2000
-## RCS-ID:      $Id: Wx.pm,v 1.58 2003/05/05 20:38:34 mbarbon Exp $
+## RCS-ID:      $Id: Wx.pm,v 1.63 2003/08/17 19:34:29 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.15';
+$VERSION = '0.16';
 
 sub BEGIN{
   @EXPORT_OK = qw(wxPOINT wxSIZE wxTheApp);
@@ -88,6 +88,38 @@ sub _croak {
   goto &Carp::croak;
 }
 
+# Blech! (again...)
+# wxWindows DLLs need to be installed in the same directory as Wx.dll,
+# but then LoadLibrary can't find them unless they are already loaded,
+# so we explicitly load them (on Win32 and wxWindows 2.5.x+) just before
+# calling Wx::wx_boot. Finding the library requires determining the path
+# and the correct name
+my( $wx_path, $wx_pre, $wx_post );
+
+sub load_dll {
+  return if $^O ne 'MSWin32' || Wx::wxVERSION() < 2.005;
+
+  unless( $wx_path ) {
+    foreach ( @INC ) {
+      if( -f "$_/auto/Wx/Wx.dll" ) {
+        $wx_path = "$_/auto/Wx";
+        my $lib = ( glob "$wx_path/wx*html*.dll" )[0];
+        $lib =~ s{.*[/\\]([^/\\]+)$}{$1};
+        $lib =~ m/^wx(?:msw)([^_]+)_html_([^\.]+)\.dll/i
+          or die "PANIC: name scheme for '$lib'";
+        $wx_pre = $1;
+        $wx_post = $2;
+        last;
+      }
+    }
+  }
+
+  foreach my $path ( "$wx_path/wxmsw${wx_pre}_$_[0]_${wx_post}.dll",
+                     "$wx_path/wxbase${wx_pre}_$_[0]_${wx_post}.dll" ) {
+      -f $path and DynaLoader::dl_load_file( $path, 0 ) and last;
+  }
+}
+
 #
 # XSLoader/DynaLoader wrapper
 #
@@ -136,14 +168,16 @@ no strict 'refs';
 use strict 'refs';
 *Wx::Size::x = \&Wx::Size::width;
 
-require Wx::_Constants;
-
 Load();
 SetConstants();
 SetConstantsOnce();
 SetOvlConstants();
 SetEvents();
 SetInheritance();
+
+sub END {
+  UnsetConstants();
+}
 
 #
 # set up wxUNIVERSAL, wxGTK, wxMSW, etc
@@ -162,14 +196,13 @@ require Wx::Locale;
 require Wx::Menu;
 require Wx::RadioBox;
 require Wx::Region;
-require Wx::Sizer;
 require Wx::Timer;
 require Wx::Wx_Exp;
-require Wx::_Functions;
 # for Wx::Stream & co.
-if( $] >= 5.005 ) { require Tie::Handle; }
+require Tie::Handle;
 
 package Wx::GDIObject; # warning for non-existent package
+package Wx::Object;    # likewise
 
 #
 # overloading for Wx::TreeItemId
@@ -179,6 +212,79 @@ package Wx::TreeItemId;
 use overload '<=>'      => \&tiid_spaceship,
              'bool'     => sub { $_[0]->IsOk },
              'fallback' => 1;
+
+#
+# Various functions
+#
+
+package Wx;
+
+# easier to implement than to wrap
+sub GetMultipleChoices {
+  my( $message, $caption, $choices, $parent, $x, $y, $centre,
+      $width, $height ) = @_;
+
+  my( $dialog ) = Wx::MultiChoiceDialog->new
+    ( $parent, $message, $caption, $choices );
+
+  if( $dialog->ShowModal() == &Wx::wxID_OK ) {
+    my( @s ) = $dialog->GetSelections();
+    $dialog->Destroy();
+    return @s;
+  }
+
+  return;
+}
+
+sub LogTrace {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogTrace( $t );
+}
+
+sub LogTraceMask {
+  my( $m ) = shift;
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogTraceMask( $m, $t );
+}
+
+sub LogStatus {
+  my( $t );
+
+  if( ref( $_[0] ) && $_[0]->isa( 'Wx::Frame' ) ) {
+    my( $f ) = shift;
+
+    $t = sprintf( shift, @_ );
+    $t =~ s/\%/\%\%/g; wxLogStatusFrame( $f, $t );
+  } else {
+    $t = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogStatus( $t );
+  }
+}
+
+sub LogError {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogError( $t );
+}
+
+sub LogFatalError {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogFatalError( $t );
+}
+
+sub LogWarning {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogWarning( $t );
+}
+
+sub LogMessage {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogMessage( $t );
+}
+
+sub LogVerbose {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogVerbose( $t );
+}
+
+sub LogSysError {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogSysError( $t ); 
+}
+
+sub LogDebug {
+  my( $t ) = sprintf( shift, @_ ); $t =~ s/\%/\%\%/g; wxLogDebug( $t ); 
+}
 
 1;
 
