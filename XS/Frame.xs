@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     29/10/2000
 ## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -112,6 +112,15 @@ Wx_Frame::SetIcon( icon )
     Wx_Icon* icon
   CODE:
     THIS->SetIcon( *icon );
+
+#if WXPERL_W_VERSION_GE( 2, 4, 0 )
+
+void
+wxFrame::SetIcons( icons )
+    wxIconBundle* icons
+  C_ARGS: *icons
+
+#endif
 
 void
 Wx_Frame::SetMenuBar( menubar )

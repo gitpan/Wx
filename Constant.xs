@@ -377,7 +377,9 @@ static wxPlINH inherit[] =
     I( StatusBar,       Window )
 #endif
 
-#if defined(__WXMOTIF__) || defined(__WXMAC__)
+#if defined(__WXMOTIF__) && WXPERL_W_VERSION_GE( 2, 5, 0 )
+    // wxCursor inherits from wxObject
+#elif defined(__WXMOTIF__) || defined(__WXMAC__)
     I( Cursor,          Bitmap )
 #elif !defined(__WXGTK__)
     I( Cursor,          GDIObject )
@@ -462,7 +464,7 @@ void SetInheritance()
         strcat( buffer, "::ISA" );
 
         AV* isa = get_av( buffer, 1 );
-        av_store( isa, 0, newSVpv( inherit[i].base, 0 ) );
+        av_store( isa, 0, newSVpv( CHAR_P inherit[i].base, 0 ) );
     }
 }
 
@@ -1959,6 +1961,8 @@ void SetConstants()
     sv_setiv( tmp, 3 );
 #elif defined(__WXMAC__)
     sv_setiv( tmp, 4 );
+#elif defined(__WXX11__)
+    sv_setiv( tmp, 5 );
 #else
     #error must add case
 #endif

@@ -6,13 +6,14 @@
 ## Modified by:
 ## Created:      1/10/2000
 ## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 package core;
 
+use 5.005_03;
 use strict;
 
 use FindBin;
@@ -26,7 +27,7 @@ wxWriteMakefile( NAME          => 'Wx',
                  ABSTRACT_FROM => 'Wx.pm',
                  AUTHOR        => 'Mattia Barbon <mbarbon@dsi.unive.it>',
                  VERSION_FROM  => 'Wx.pm',
-                 PREREQ_PM     => { 'File::Spec::Functions'  => 0.01,
+                 PREREQ_PM     => { 'File::Spec::Functions'  => 0.82,
                                     'Test::More'             => 0.45,
                                     'Test::Harness'          => 2.26,
                                     'Data::Dumper'           => 0,

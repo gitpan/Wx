@@ -10,10 +10,30 @@
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
+%{
 #include <wx/sizer.h>
 #include <wx/statbox.h>
 #include <wx/notebook.h>
 #include "cpp/sizer.h"
+%}
+
+%module{Wx};
+
+%name{Wx::Sizer} class wxSizer
+{
+    %name{ShowWindow} void Show( wxWindow* window, bool show = TRUE );
+    %name{ShowSizer} void Show( wxSizer* sizer, bool show = TRUE );
+};
+
+%{
+
+void
+wxSizer::Show( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wwin_b, ShowWindow, 1 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wszr_b, ShowSizer, 1 )
+    END_OVERLOAD( Wx::Sizer::Show )
 
 MODULE=Wx PACKAGE=Wx::Sizer
 
@@ -477,3 +497,5 @@ Wx_PlSizer::new()
     RETVAL = new wxPlSizer( CLASS );
   OUTPUT:
     RETVAL
+
+%}

@@ -1,5 +1,6 @@
 Makefile.PL
 typemap
+typemap.xsp
 MANIFEST
 MANIFEST.SKIP
 README.txt
@@ -31,10 +32,14 @@ docs/bugs.txt
 docs/install.txt
 docs/todo.txt
 
+script/XSpp.pod
+script/XSP.pm
+script/XSP.yp
 script/copy_files.pl
 script/make_exp_list.pl
 script/make_ovl_list.pl
 script/pipe.pl
+script/xsubppp.pl
 
 t/01_load.t
 t/02_inheritance.t
@@ -49,7 +54,6 @@ t/Tests_Helper.pm
 
 lib/Wx/App.pm
 lib/Wx/Event.pm
-lib/Wx/ImageList.pm
 lib/Wx/Locale.pm
 lib/Wx/Menu.pm
 lib/Wx/RadioBox.pm
@@ -172,6 +176,7 @@ XS/Frame.xs
 XS/Gauge.xs
 XS/Geom.xs
 XS/Icon.xs
+XS/IconBundle.xsp
 XS/Image.xs
 XS/ImageList.xs
 XS/ListBox.xs
@@ -260,6 +265,22 @@ cpp/wxapi.h
 
 ext/Makefile.PL
 ext/pperl/Makefile.PL
+
+ext/calendar/Calendar.pm
+ext/calendar/Calendar.xs
+ext/calendar/Makefile.PL
+ext/calendar/t/01_load.t
+ext/calendar/t/02_inheritance.t
+ext/calendar/typemap
+ext/calendar/XS/CalendarCtrl.xsp
+ext/calendar/XS/CalendarDateAttr.xsp
+
+ext/datetime/DateTime.pm
+ext/datetime/DateTime.xs
+ext/datetime/Makefile.PL
+ext/datetime/t/01_load.t
+ext/datetime/typemap
+ext/datetime/XS/DateTime.xsp
 
 ext/dnd/DND.xs
 ext/dnd/Makefile.PL
@@ -445,6 +466,7 @@ demo/data/quotes.gif
 demo/data/update.gif
 demo/demo.pl
 demo/splash.pl
+demo/wxCalendarCtrl.pm
 demo/wxCheckListBox.pm
 demo/wxClipboard.pm
 demo/wxFileSystem.pm

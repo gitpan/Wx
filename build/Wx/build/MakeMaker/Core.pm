@@ -18,7 +18,8 @@ use vars qw(@EXPORT @subdirs);
 
 my @top_level_xs = qw(Wx.xs Constant.xs Controls.xs Event.xs
                       Frames.xs GDI.xs Window.xs);
-@subdirs = qw(socket dnd filesys grid help html mdi print xrc stc docview);
+@subdirs = qw(socket dnd filesys grid help html mdi print xrc stc docview
+              calendar datetime);
 my %subdirs;
 
 Wx::build::MakeMaker::_set_is_wxPerl_tree( 1 );
@@ -100,7 +101,7 @@ Wx::build::Options->write_config_file( 'Opt' );
 sub wxWriteMakefile {
   my %params = @_;
 
-  $params{XSOPT}     = ' -C++ -nolinenumbers -noprototypes ';
+  $params{XSOPT}     = ' -nolinenumbers -noprototypes ';
   $params{CONFIGURE} = \&Wx::build::MakeMaker::configure;
   $params{OBJECT}    = join ' ', obj_from_src( @top_level_xs ), '';
 

@@ -32,13 +32,13 @@ use strict;
 require Exporter;
 
 use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
-  $_platform $_universal $_msw $_gtk $_motif $_mac $_wx_version $_static
+  $_platform $_universal $_msw $_gtk $_motif $_mac $_x11 $_wx_version $_static
   $_unicode);
 
-$_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4;
+$_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 sub BEGIN{
   @EXPORT_OK = qw(wxPOINT wxSIZE);
@@ -98,7 +98,7 @@ sub END {
 sub _match(\@$;$$) { &_xsmatch( [@{shift()}],@_ ) }
 #*_match = \&_xsmatch;
 
-=for comment
+=begin comment
 
 sub _match(\@$;$$) {
   my( $args, $sig, $required, $dots ) = @_;
@@ -134,6 +134,8 @@ sub _match(\@$;$$) {
 
   return 1;
 }
+
+=end comment
 
 =cut
 
@@ -203,12 +205,12 @@ eval( "sub wxMOTIF() { $_platform == $_motif }" );
 eval( "sub wxMSW() { $_platform == $_msw }" );
 eval( "sub wxGTK() { $_platform == $_gtk }" );
 eval( "sub wxMAC() { $_platform == $_mac }" );
+eval( "sub wxX11() { $_platform == $_x11 }" );
 eval( "sub wxVERSION() { $_wx_version }" );
 eval( "sub wxUNICODE() { $_unicode }" );
 
 require Wx::App;
 require Wx::Event;
-require Wx::ImageList;
 require Wx::Locale;
 require Wx::Menu;
 require Wx::RadioBox;

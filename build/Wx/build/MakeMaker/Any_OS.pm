@@ -12,6 +12,13 @@ my $ovl = lib_file( 'Wx/_Ovl.pm' );
 my $ovlc = File::Spec->catfile( qw(cpp ovl_const.cpp) );
 my $ovlh = File::Spec->catfile( qw(cpp ovl_const.h) );
 
+# try workarounding 5.005_3 crash....
+# *catdir = File::Spec->can( 'catdir' );
+# *updir = File::Spec->can( 'updir' );
+# *curdir = File::Spec->can( 'curdir' );
+# *catfile = File::Spec->can( 'catfile' );
+# *canonpath = File::Spec->can( 'canonpath' );
+
 sub configure_core {
   my $this = shift;
   my $cfg =
@@ -131,6 +138,9 @@ copy_files :
 \t\$(PERL) script/copy_files.pl files.lst
 \t\$(TOUCH) copy_files
 
+parser :
+	yapp -v -s -o script/XSP.pm script/XSP.yp
+
 EOT
 
   $text;
@@ -187,7 +197,7 @@ sub files_with_constants {
   my $wanted = sub {
     my $name = $File::Find::name;
 
-    m/\.(?:pm|xs|cpp|h)$/i && do {
+    m/\.(?:pm|xsp?|cpp|h)$/i && do {
       local *IN;
       my $line;
 
@@ -225,7 +235,7 @@ sub files_with_overload {
       }
     };
 
-    m/\.xs$/i && do {
+    m/\.xsp?$/i && do {
       my $line;
       local *IN;
 
