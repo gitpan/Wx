@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     27/ 7/2001
-## RCS-ID:      
-## Copyright:   (c) 2001-2002 Mattia Barbon
+## RCS-ID:      $Id: XmlResource.xs,v 1.7 2003/05/17 20:17:17 mbarbon Exp $
+## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -18,19 +18,9 @@
 
 MODULE=Wx PACKAGE=Wx::XmlResource
 
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 Wx_XmlResource*
 Wx_XmlResource::new( flags = wxXRC_USE_LOCALE )
     int flags
-
-#else
-
-Wx_XmlResource*
-Wx_XmlResource::new( use_locale = TRUE )
-    bool use_locale
-
-#endif
 
 ## XXX threads
 void
@@ -57,6 +47,14 @@ Wx_XmlResource::LoadMenu( name )
 Wx_MenuBar*
 Wx_XmlResource::LoadMenuBar( name )
     wxString name
+
+wxMenuBar*
+wxXmlResource::LoadMenuBarOnParent( parent, name )
+    wxWindow* parent
+    wxString name
+  CODE:
+    RETVAL = THIS->LoadMenuBar( parent, name );
+  OUTPUT: RETVAL
 
 Wx_ToolBar*
 Wx_XmlResource::LoadToolBar( parent, name )
@@ -122,14 +120,17 @@ Wx_XmlResource::AttachUnknownControl( name, control, parent = 0 )
     Wx_Window* parent
 
 int
+wxXmlResource::GetFlags()
+
+void
+wxXmlResource::SetFlags( flags )
+    int flags
+
+int
 GetXRCID( str_id )
     wxChar* str_id
   CODE:
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
     RETVAL = wxXmlResource::GetXRCID( str_id );
-#else
-    RETVAL = wxXmlResource::GetXMLID( str_id );
-#endif
   OUTPUT:
     RETVAL
 
@@ -155,3 +156,6 @@ Wx_XmlResource::CompareVersion( major, minor, release, revision )
 ##    Wx_XmlResource* res
 ##  CODE:
 ##    wxXmlResource::Set( res );
+
+## void
+## wxXmlResource::UpdateResources()

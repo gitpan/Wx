@@ -4,25 +4,23 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     30/11/2000
-## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: Locale.xs,v 1.19 2003/05/12 17:00:41 mbarbon Exp $
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 #include <wx/intl.h>
 
-#if WXPERL_W_VERSION_GE( 2, 3, 1 )
-
 MODULE=Wx PACKAGE=Wx::LanguageInfo
 
-Wx_LanguageInfo*
-Wx_LanguageInfo::new( language, canonicalName, winLang, winSublang, description )
+wxLanguageInfo*
+wxLanguageInfo::new( language, canonicalName, winLang, winSublang, descr )
     int language
     wxString canonicalName
     int winLang
     int winSublang
-    wxString description
+    wxString descr
   CODE:
     RETVAL = new wxLanguageInfo;
     RETVAL->Language = language;
@@ -31,14 +29,15 @@ Wx_LanguageInfo::new( language, canonicalName, winLang, winSublang, description 
     RETVAL->WinLang = winLang;
     RETVAL->WinSublang = winSublang;
 #endif
-    RETVAL->Description = description;
-  OUTPUT:
-    RETVAL
+    RETVAL->Description = descr;
+  OUTPUT: RETVAL
 
 void
-Wx_LanguageInfo::DESTROY()
-
-#endif
+DESTROY( THIS )
+    wxLanguageInfo* THIS
+  CODE:
+    if( wxPli_object_is_deleteable( aTHX_ ST(0) ) )
+        delete THIS;
 
 MODULE=Wx PACKAGE=Wx::Locale
 
@@ -76,8 +75,6 @@ newLong( name, shorts = 0, locale = 0, loaddefault = TRUE, convertencoding = FAL
   OUTPUT:
     RETVAL
 
-#if WXPERL_W_VERSION_GE( 2, 3, 1 )
-
 Wx_Locale*
 newShort( language, flags = wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING )
     int language
@@ -86,8 +83,6 @@ newShort( language, flags = wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING )
     RETVAL = new wxLocale( language, flags );
   OUTPUT:
     RETVAL
-
-#endif
 
 ## XXX threads
 void
@@ -101,15 +96,11 @@ void
 Wx_Locale::AddCatalogLookupPathPrefix( prefix )
     wxString prefix
 
-#if WXPERL_W_VERSION_GE( 2, 3, 1 )
-
 void
 AddLanguage( info )
     Wx_LanguageInfo* info
   CODE:
     wxLocale::AddLanguage( *info );
-
-#endif
 
 const wxChar*
 Wx_Locale::GetLocale()
@@ -121,8 +112,6 @@ const wxChar*
 Wx_Locale::GetString( string, domain = 0 )
     const wxChar* string
     const wxChar* domain
-
-#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 int
 GetSystemLanguage()
@@ -140,10 +129,6 @@ Wx_Locale::GetSysName()
 wxString
 Wx_Locale::GetCanonicalName()
 
-#endif
-
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 wxFontEncoding
 GetSystemEncoding()
   CODE:
@@ -158,8 +143,6 @@ GetSystemEncodingName()
   OUTPUT:
     RETVAL
 
-#endif
-
 bool
 Wx_Locale::IsLoaded( domain )
     const wxChar* domain
@@ -173,11 +156,6 @@ const wxChar*
 wxGetTranslation( string )
     const wxChar* string
   CODE:
-#if wxUSE_UNICODE && WXPERL_W_VERSION_LE( 2, 3, 2 )
-    wxMB2WXbuf ret = wxGetTranslation( string );
-    RETVAL = ret.data();
-#else
     RETVAL = wxGetTranslation( string );
-#endif
   OUTPUT:
     RETVAL

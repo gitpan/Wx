@@ -5,8 +5,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:      1/ 5/2001
-## RCS-ID:      
-## Copyright:   (c) 2001 Mattia Barbon
+## RCS-ID:      $Id: demo.pl,v 1.14 2003/05/18 15:04:11 mbarbon Exp $
+## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -74,7 +74,7 @@ sub run {
   my $this = shift;
 
   chdir $this->{DIRECTORY};
-  Wx::ExecuteCommand( "perl -Mblib ${$this}{NAME}.pl", 0 );
+  Wx::ExecuteCommand( "perl ${$this}{NAME}.pl", 0 );
 }
 
 sub load {}
@@ -209,6 +209,7 @@ my @demos =
       [
        [ 'HtmlWindow', demo( 'wxHtmlWindow' ) ],
        [ 'Grid', demo( 'wxGrid' ) ],
+       [ 'ScrolledWindow', demo( 'wxScrolledWindow' ) ],
        [ 'SplashScreen', external( 'splash', '.' ) ],
       ],
     ],
@@ -339,7 +340,7 @@ sub new {
   $this->load_demo( $demos[0][1] );
 
   # on MSW only, create task bar icon
-  if( $Wx::_platform == $Wx::_msw ) {
+  if( Wx::wxMSW() ) {
     my $tmp = Wx::TaskBarIcon->new();
     $tmp->SetIcon( Wx::GetWxPerlIcon( 1 ), "Click on me!" );
     $this->{TASKBARICON} = $tmp;
@@ -395,7 +396,7 @@ sub populate_demo_list_helper {
   my $id;
 
   foreach my $i ( @{$_[0]} ) {
-    next if( defined $i->[2] && $i->[2] >= $Wx::_wx_version );
+    next if( defined $i->[2] && $i->[2] >= Wx::wxVERSION() );
     if( ref( $i->[1] ) eq 'ARRAY' ) {
       $id = $tree->AppendItem( $parent_id, $i->[0], -1, -1, d( undef ) );
       populate_demo_list_helper( $tree, $id, $i->[1] );

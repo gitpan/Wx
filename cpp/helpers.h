@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      
-// Copyright:   (c) 2000-2002 Mattia Barbon
+// RCS-ID:      $Id: helpers.h,v 1.53 2003/05/05 20:38:41 mbarbon Exp $
+// Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -103,10 +103,10 @@ inline AV* wxPli_avref_2_av( SV* sv )
     if( SvROK( sv ) )
     {
         SV* rv = SvRV( sv );
-        return SvTYPE( rv ) == SVt_PVAV ? (AV*)rv : (AV*)0;
+        return SvTYPE( rv ) == SVt_PVAV ? (AV*)rv : NULL;
     }
 
-    return (AV*)0;
+    return NULL;
 }
 
 //
@@ -143,6 +143,10 @@ SV* FUNCPTR( wxPli_make_object )( void* object, const char* cname );
 bool FUNCPTR( wxPli_object_is_deleteable )( pTHX_ SV* object );
 void FUNCPTR( wxPli_object_set_deleteable )( pTHX_ SV* object,
                                              bool deleteable );
+// in both attach and detach, object is a _reference_ to a
+// blessed thing
+void FUNCPTR( wxPli_attach_object )( pTHX_ SV* object, void* ptr );
+void* FUNCPTR( wxPli_detach_object )( pTHX_ SV* object );
 
 const char* FUNCPTR( wxPli_get_class )( pTHX_ SV* ref );
 
@@ -259,6 +263,8 @@ struct wxPliHelpers
                                                 char buffer[WXPL_BUF_SIZE] );
     void ( * m_wxPli_push_arguments )( pTHX_ SV*** stack,
                                        const char* argtypes, ... );
+    void ( * m_wxPli_attach_object )( pTHX_ SV* object, void* ptr );
+    void* ( * m_wxPli_detach_object )( pTHX_ SV* object );
 };
 
 #define DEFINE_PLI_HELPERS( name ) \
@@ -270,7 +276,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
  &wxPliVirtualCallback_FindCallback, &wxPliVirtualCallback_CallCallback, \
  &wxPli_object_is_deleteable, &wxPli_object_set_deleteable, &wxPli_get_class, \
  &wxPli_get_wxwindowid, &wxPli_av_2_stringarray, &wxPliInputStream_ctor, \
- &wxPli_cpp_class_2_perl, &wxPli_push_arguments };
+ &wxPli_cpp_class_2_perl, &wxPli_push_arguments, &wxPli_attach_object, \
+ &wxPli_detach_object };
 
 #if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
 
@@ -297,7 +304,9 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
   wxPli_av_2_stringarray = name->m_wxPli_av_2_stringarray; \
   wxPliInputStream_ctor = name->m_wxPliInputStream_ctor; \
   wxPli_cpp_class_2_perl = name->m_wxPli_cpp_class_2_perl; \
-  wxPli_push_arguments = name->m_wxPli_push_arguments;
+  wxPli_push_arguments = name->m_wxPli_push_arguments; \
+  wxPli_attach_object = name->m_wxPli_attach_object; \
+  wxPli_detach_object = name->m_wxPli_detach_object; \
 
 #else
 
@@ -529,24 +538,6 @@ public:                                                                 \
 WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPli##name, wx##name );
 
 typedef SV SV_null; // equal to SV except that maps C++ 0 <-> Perl undef
-
-// this should really, really, really be in compat.h,
-// but requires perl.h to be included
-#if WXPERL_P_VERSION_GE( 5, 4, 0 ) && !WXPERL_P_VERSION_GE( 5, 4, 5 )
-
-inline SV* newSVpvn( const char* sxx, size_t len )
-{
-    if( len > 0 )
-        return newSVpv( CHAR_P sxx, len );
-    else
-    {
-        SV* sv = newSViv( 0 );
-        sv_setpvn( sv, sxx, len );
-        return sv;
-    }
-}
-
-#endif
 
 #endif // __CPP_HELPERS_H
 

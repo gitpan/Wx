@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: Sizer.xs,v 1.16 2003/05/11 20:04:49 mbarbon Exp $
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -19,13 +19,33 @@
 
 %module{Wx};
 
+%typemap{wxFlexSizerGrowMode}{simple};
+
 %name{Wx::Sizer} class wxSizer
 {
     %name{ShowWindow} void Show( wxWindow* window, bool show = TRUE );
     %name{ShowSizer} void Show( wxSizer* sizer, bool show = TRUE );
 };
 
+%name{Wx::FlexGridSizer} class wxFlexGridSizer
+{
+#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    void AddGrowableCol( size_t index, int proportion = 0 );
+    void AddGrowableRow( size_t index, int proportion = 0 );
+
+    void SetFlexibleDirection( int direction );
+    int GetFlexibleDirection();
+
+    void SetNonFlexibleGrowMode(wxFlexSizerGrowMode mode);
+    wxFlexSizerGrowMode GetNonFlexibleGrowMode();
+#else
+    void AddGrowableCol( size_t index );
+    void AddGrowableRow( size_t index );
+#endif
+};
+
 %{
+MODULE=Wx PACKAGE=Wx::Sizer
 
 void
 wxSizer::Show( ... )
@@ -35,12 +55,19 @@ wxSizer::Show( ... )
         MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wszr_b, ShowSizer, 1 )
     END_OVERLOAD( Wx::Sizer::Show )
 
-MODULE=Wx PACKAGE=Wx::Sizer
-
 void
 Wx_Sizer::Destroy()
   CODE:
     delete THIS;
+
+void
+wxSizer::Add( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wwin_n_n_n_s, AddWindow, 1 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wszr_n_n_n_s, AddSizer, 1 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_n_n_n_n_n_s, AddSpace, 2 )
+    END_OVERLOAD( Wx::Sizer::Add )
 
 void
 Wx_Sizer::AddWindow( window, option = 0, flag = 0, border = 0, data = 0 )
@@ -73,16 +100,12 @@ Wx_Sizer::AddSpace( width, height, option = 0, flag = 0, border = 0, data = 0 )
   CODE:
     THIS->Add( width, height, option, flag, border, data );
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 )
-
 void
 Wx_Sizer::Clear( deleteWindows = TRUE )
     bool deleteWindows
 
 void
 Wx_Sizer::DeleteWindows()
-
-#endif
 
 Wx_Size*
 Wx_Sizer::CalcMin()
@@ -95,13 +118,9 @@ void
 Wx_Sizer::Fit( window )
     Wx_Window* window
 
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 void
 Wx_Sizer::FitInside( window )
     Wx_Window* window
-
-#endif
 
 void
 Wx_Sizer::GetChildren()
@@ -278,13 +297,9 @@ void
 Wx_Sizer::SetSizeHints( window )
     Wx_Window* window
 
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 void
 Wx_Sizer::SetVirtualSizeHints( window )
     Wx_Window* window
-
-#endif
 
 MODULE=Wx PACKAGE=Wx::BoxSizer
 
@@ -361,14 +376,6 @@ Wx_FlexGridSizer::new( rows, cols, vgap = 0, hgap = 0 )
     int hgap
 
 void
-Wx_FlexGridSizer::AddGrowableCol( index )
-    size_t index
-
-void
-Wx_FlexGridSizer::AddGrowableRow( index )
-    size_t index
-
-void
 Wx_FlexGridSizer::RemoveGrowableCol( index )
     size_t index
 
@@ -403,6 +410,15 @@ Wx_SizerItem::GetMinSize()
     RETVAL = new wxSize( THIS->GetMinSize() );
   OUTPUT:
     RETVAL
+
+void
+wxSizerItem::SetRatio( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT( wxPliOvl_n, SetRatioFloat, 1 )
+        MATCH_REDISP_COUNT( wxPliOvl_n_n, SetRatioWH, 2 )
+        MATCH_REDISP_COUNT( wxPliOvl_wsiz, SetRatioSize, 1 )
+    END_OVERLOAD( Wx::SizerItem::SetRatio )
 
 void
 Wx_SizerItem::SetRatioWH( width, height )

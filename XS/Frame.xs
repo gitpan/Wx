@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      
+## RCS-ID:      $Id: Frame.xs,v 1.17 2003/05/17 13:14:56 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -19,20 +19,35 @@
 
 MODULE=Wx PACKAGE=Wx::Frame
 
-Wx_Frame*
-Wx_Frame::new( parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize, style = wxDEFAULT_FRAME_STYLE, name = wxFrameNameStr )
- # this is not completely correct, but should be harmless
-    Wx_Window* parent
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_ANY_REDISP( newFull )
+    END_OVERLOAD( "Wx::Frame::new" )
+
+wxFrame*
+newDefault( CLASS )
+    char* CLASS
+  CODE:
+    RETVAL = new wxPliFrame( CLASS );
+  OUTPUT: RETVAL
+
+wxFrame*
+newFull( CLASS, parent, id, title, pos = wxDefaultPosition, size = wxDefaultSize, style = wxDEFAULT_FRAME_STYLE, name = wxFrameNameStr )
+    char* CLASS
+    wxWindow* parent
     wxWindowID id
     wxString title
-    Wx_Point pos
-    Wx_Size size
+    wxPoint pos
+    wxSize size
     long style
     wxString name
   CODE:
-    RETVAL = new wxPliFrame( CLASS , parent, id, title, pos, size, style, name );
-  OUTPUT:
-    RETVAL
+    RETVAL = new wxPliFrame( CLASS , parent, id, title, pos,
+         size, style, name );
+  OUTPUT: RETVAL
 
 void
 Wx_Frame::Command( id )
@@ -64,12 +79,8 @@ Wx_Frame::GetMenuBar()
 Wx_StatusBar*
 Wx_Frame::GetStatusBar()
 
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 int
 Wx_Frame::GetStatusBarPane()
-
-#endif
 
 Wx_ToolBar*
 Wx_Frame::GetToolBar()
@@ -85,7 +96,7 @@ bool
 Wx_Frame::IsMaximized()
 
 #if defined( __WXMSW__ ) || \
- ( defined( __WXGTK__ ) && WXPERL_W_VERSION_GE( 2, 3, 1 ) ) \
+ ( defined( __WXGTK__ ) ) \
  || defined( __WXPERL_FORCE__ )
 
 bool
@@ -113,18 +124,24 @@ Wx_Frame::SetIcon( icon )
   CODE:
     THIS->SetIcon( *icon );
 
-#if WXPERL_W_VERSION_GE( 2, 4, 0 )
-
 void
 wxFrame::SetIcons( icons )
     wxIconBundle* icons
   C_ARGS: *icons
 
-#endif
-
 void
 Wx_Frame::SetMenuBar( menubar )
     Wx_MenuBar* menubar
+
+#if (WXPERL_W_VERSION_GE( 2, 4, 1 ) && !defined(__WXMOTIF__)) \
+    || WXPERL_W_VERSION_GE( 2, 5, 0 )
+
+void
+wxFrame::SetShape( region )
+  wxRegion* region
+  C_ARGS: *region
+
+#endif
 
 void
 Wx_Frame::SetStatusBar( statusBar )
@@ -139,13 +156,9 @@ Wx_Frame::SetStatusText( text, number = 0 )
     wxString text
     int number
 
-#if WXPERL_W_VERSION_GE( 2, 3, 3 )
-
 void
 Wx_Frame::SetStatusBarPane( n )
     int n
-
-#endif
 
 void
 Wx_Frame::SetStatusWidths( ... )
@@ -162,7 +175,7 @@ Wx_Frame::SetStatusWidths( ... )
     delete [] w;
 
 #if defined( __WXMSW__ ) || \
- ( defined( __WXGTK__ ) && WXPERL_W_VERSION_GE( 2, 3, 1 ) ) \
+ ( defined( __WXGTK__ ) ) \
  || defined( __WXPERL_FORCE__ )
 
 bool
