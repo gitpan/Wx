@@ -3,8 +3,8 @@
 ## Purpose:     main wxPerl module
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      1/10/2000
-## RCS-ID:      $Id: Wx.pm,v 1.66 2003/09/12 22:08:45 mbarbon Exp $
+## Created:     01/10/2000
+## RCS-ID:      $Id: Wx.pm,v 1.70 2004/02/28 22:58:57 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 sub BEGIN{
   @EXPORT_OK = qw(wxPOINT wxSIZE wxTheApp);
@@ -89,12 +89,17 @@ sub _croak {
 }
 
 # Blech! (again...)
-# wxWindows DLLs need to be installed in the same directory as Wx.dll,
+# wxWidgets DLLs need to be installed in the same directory as Wx.dll,
 # but then LoadLibrary can't find them unless they are already loaded,
-# so we explicitly load them (on Win32 and wxWindows 2.5.x+) just before
+# so we explicitly load them (on Win32 and wxWidgets 2.5.x+) just before
 # calling Wx::wx_boot. Finding the library requires determining the path
 # and the correct name
 my( $wx_path, $wx_pre, $wx_post );
+
+sub _load_file {
+  Wx::wxVERSION() < 2.005 ? DynaLoader::dl_load_file( $_[0], 0 ) :
+                            Wx::_load_plugin( $_[0] );
+}
 
 sub load_dll {
   return if $^O ne 'MSWin32' || Wx::wxVERSION() < 2.005;
@@ -118,7 +123,7 @@ sub load_dll {
 
   foreach my $path ( "$wx_path/wxmsw${wx_pre}_$_[0]_${wx_post}.dll",
                      "$wx_path/wxbase${wx_pre}_$_[0]_${wx_post}.dll" ) {
-      -f $path and DynaLoader::dl_load_file( $path, 0 ) and last;
+      -f $path and Wx::_load_file( $path ) and last;
   }
 }
 
@@ -215,6 +220,12 @@ use overload '<=>'      => \&tiid_spaceship,
              'bool'     => sub { $_[0]->IsOk },
              'fallback' => 1;
 
+package Wx::Font;
+
+use overload '<=>'      => \&font_spaceship,
+             'bool'     => sub { $_[0]->Ok },
+             'fallback' => 1;
+
 #
 # Various functions
 #
@@ -294,7 +305,7 @@ __END__
 
 =head1 NAME
 
-Wx - interface to the wxWindows GUI toolkit
+Wx - interface to the wxWidgets GUI toolkit
 
 =head1 SYNOPSIS
 
@@ -302,10 +313,15 @@ Wx - interface to the wxWindows GUI toolkit
 
 =head1 DESCRIPTION
 
-The Wx module is a wrapper for the wxWindows GUI toolkit.
+The Wx module is a wrapper for the wxWidgets (formerly known as wxWindows)
+GUI toolkit.
 
 This module comes with extensive documentation in HTML format; you
 can download it from http://wxperl.sourceforge.net/
+
+=head1 INSTALLATION
+
+Please see F<docs/install.txt> in source package.
 
 =head1 Windows XP look
 

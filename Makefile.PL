@@ -5,7 +5,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Makefile.PL,v 1.34 2003/08/23 13:02:46 mbarbon Exp $
+## RCS-ID:      $Id: Makefile.PL,v 1.38 2004/04/10 15:35:51 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -31,13 +31,29 @@ wxWriteMakefile( NAME          => 'Wx',
                                     'Test::More'             => 0.45,
                                     'Test::Harness'          => 2.26,
                                     'Data::Dumper'           => 0,
+                                    'ExtUtils::MakeMaker'    => 6.17,
                                    },
                  PMLIBDIRS     => [ 'lib', 'build' ],
-                 WX_CORE_LIB   => 'adv core base',
+                 WX_CORE_LIB   => ( $^O eq 'darwin' ? 'adv html core base' :
+                                                      'adv core base' ),
 #                 ( $wxConfig::o_static ?
 #                   ( WXLIB => [ 'wxxrc', 'stc' ] ) :
 #                   () ),
                );
+
+END {
+    print <<EOT;
+
+======================================================================
+For installation instructions and further help please see
+docs/install.txt
+
+For command line switches help use:
+perl Makefile.PL --help
+======================================================================
+
+EOT
+}
 
 # local variables:
 # mode: cperl

@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        PrintPreview.xs
+## Name:        ext/print/XS/PrintPreview.xs
 ## Purpose:     XS for Wx::PrintPreview
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      2/ 6/2001
-## RCS-ID:      
+## Created:     02/06/2001
+## RCS-ID:      $Id: PrintPreview.xs,v 1.5 2004/03/01 21:24:10 mbarbon Exp $
 ## Copyright:   (c) 2001 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -14,49 +14,49 @@
 
 MODULE=Wx PACKAGE=Wx::PrintPreview
 
-Wx_PrintPreview*
-Wx_PrintPreview::new( printout, printoutForPrinting, data = 0 )
-    Wx_Printout* printout
-    Wx_Printout* printoutForPrinting
-    Wx_PrintData* data
+wxPrintPreview*
+wxPrintPreview::new( printout, printoutForPrinting, data = 0 )
+    wxPrintout* printout
+    wxPrintout* printoutForPrinting
+    wxPrintData* data
 
 void
-Wx_PrintPreview::Destroy()
+wxPrintPreview::Destroy()
   CODE:
     delete THIS;
 
-Wx_Window*
-Wx_PrintPreview::GetCanvas()
+wxWindow*
+wxPrintPreview::GetCanvas()
 
 int
-Wx_PrintPreview::GetCurrentPage()
+wxPrintPreview::GetCurrentPage()
 
-Wx_Frame*
-Wx_PrintPreview::GetFrame()
-
-int
-Wx_PrintPreview::GetMaxPage()
+wxFrame*
+wxPrintPreview::GetFrame()
 
 int
-Wx_PrintPreview::GetMinPage()
+wxPrintPreview::GetMaxPage()
 
-# Wx_PrintData*
-# Wx_PrintPreview::GetPrintData()
+int
+wxPrintPreview::GetMinPage()
+
+# wxPrintData*
+# wxPrintPreview::GetPrintData()
 #   CODE:
 #     RETVAL = &THIS->GetPrintData();
 #  #UTPUT:
 #    RETVAL
 
-Wx_Printout*
-Wx_PrintPreview::GetPrintout()
+wxPrintout*
+wxPrintPreview::GetPrintout()
 
-Wx_Printout*
-Wx_PrintPreview::GetPrintoutForPrinting()
+wxPrintout*
+wxPrintPreview::GetPrintoutForPrinting()
 
 bool
-Wx_PrintPreview::Ok()
+wxPrintPreview::Ok()
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
 
 bool
 wxPrintPreview::PaintPage( canvas, dc )
@@ -67,7 +67,7 @@ wxPrintPreview::PaintPage( canvas, dc )
 #else
 
 bool
-Wx_PrintPreview::PaintPage( window, dc )
+wxPrintPreview::PaintPage( window, dc )
     wxWindow* window
     wxDC* dc
   C_ARGS: window, *dc
@@ -75,10 +75,10 @@ Wx_PrintPreview::PaintPage( window, dc )
 #endif
 
 bool
-Wx_PrintPreview::Print( prompt )
+wxPrintPreview::Print( prompt )
     bool prompt
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
 
 void
 wxPrintPreview::SetCanvas( canvas )
@@ -93,17 +93,17 @@ wxPrintPreview::SetCanvas( window )
 #endif
 
 void
-Wx_PrintPreview::SetCurrentPage( pageNum )
+wxPrintPreview::SetCurrentPage( pageNum )
     int pageNum
 
 void
-Wx_PrintPreview::SetFrame( frame )
-    Wx_Frame* frame
+wxPrintPreview::SetFrame( frame )
+    wxFrame* frame
 
 void
-Wx_PrintPreview::SetPrintout( printout )
-    Wx_Printout* printout
+wxPrintPreview::SetPrintout( printout )
+    wxPrintout* printout
 
 void
-Wx_PrintPreview::SetZoom( percent )
+wxPrintPreview::SetZoom( percent )
     int percent

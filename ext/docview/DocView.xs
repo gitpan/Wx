@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        docview.xs
-// Purpose:     XS for wxWindows Document/View Framework
+// Name:        ext/docview/DocView.xs
+// Purpose:     XS for wxWidgets Document/View Framework
 // Author:      Simon Flack
 // Modified by:
-// Created:     11/ 9/2002
-// RCS-ID:      
+// Created:     11/09/2002
+// RCS-ID:      $Id: DocView.xs,v 1.4 2004/02/29 14:30:35 mbarbon Exp $
 // Copyright:   (c) 2002 Simon Flack
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -13,8 +13,6 @@
 #define PERL_NO_GET_CONTEXT
 
 #include "cpp/wxapi.h"
-#include "cpp/typedef.h"
-#include "cpp/dv_typedef.h"
 #include "cpp/docview.h"
 
 #undef THIS

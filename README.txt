@@ -1,17 +1,18 @@
-wxPerl is a wrapper built around the wxWindows GUI toolkit
+wxPerl is a wrapper built around the wxWidgets
+(formerly known as wxWindows) GUI toolkit
 
-Copyright (c) 2000-2003 Mattia Barbon.
+Copyright (c) 2000-2004 Mattia Barbon.
 This package is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-You need wxWindows in order to build wxPerl (see http://www.wxwindows.org/).
+You need wxWidgets in order to build wxPerl (see http://www.wxwindows.org/).
 You can use GTK, Win32, Mac OS X and Motif as windowing toolkits for wxPerl.
 
 Please read the DEPRECATIONS section at the bottom!
 
 INSTALLATION:
 
-Build and install wxWindows
+Build and install wxWidgets
 
 perl Makefile.PL
 make
@@ -23,25 +24,20 @@ in case of problems please consult the FAQ section therein.
 
 TESTED PLATFORMS:
 
-Perl            | OS            | wxWindows      | Compiler
+Perl            | OS            | wxWidgets      | Compiler
 ----------------+---------------+----------------+-------------------
 ActivePerl 6xx  | Windows 2000  |                | MSVC 5
-           8xx  |               | wxMSW 2.4.0    | MSVC 6
-5.6.1           |               |                | MinGW GCC
+           8xx  |               | wxMSW 2.4.2    | MSVC 6
+5.6.1           |               | wxMSW 2.5.1    | MinGW GCC
 5.8.0           |               |                |
 ----------------+---------------+----------------+-------------------
-5.005_03 [1]    | Debian 3.0    |                | GCC 2.95.2
-5.8.0           | RedHat 8.0    | wxGTK 2.4.0    | GCC 3.2
-5.6.1           |               | wxMotif 2.4.0  |
+5.8.0           | RedHat 8.0    | wxGTK 2.4.2    | GCC 3.2
+5.6.1           | Debian 3.0    | wxMotif 2.5.1  | GCC 2.95.2
 ----------------+---------------+----------------+-------------------  
-5.8.0           | Mac OS X 10.2 | wxMac 2.4.0    | GCC 3.1
+5.8.0           | Mac OS X 10.2 | wxMac 2.5.1    | GCC 3.1
 ----------------+---------------+----------------+-------------------
 
 wxPerl has also been reported to work on FreeBSD and IRIX.
-
-[1] 5.005_03 crashes at "perl Makefile.PL" time (at least under Linux)
-    workarounds: "perl -d Makefile.PL" and then type "r", or run it under
-    valgrind (no, it's not a joke...)
 
 DEPRECATIONS
 

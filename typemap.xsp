@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/03/2003
-## RCS-ID:      $Id: typemap.xsp,v 1.7 2003/07/25 20:36:15 mbarbon Exp $
-## Copyright:   (c) 2003 Mattia Barbon
+## RCS-ID:      $Id: typemap.xsp,v 1.10 2004/01/25 08:06:13 mbarbon Exp $
+## Copyright:   (c) 2003-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -15,12 +15,17 @@
 %typemap{char}{simple};
 %typemap{short}{simple};
 %typemap{int}{simple};
+%typemap{unsigned}{simple};
 %typemap{long}{simple};
 %typemap{float}{simple};
 %typemap{double}{simple};
 
 %typemap{size_t}{simple};
 %typemap{time_t}{simple};
+
+%typemap{wxUint32}{simple};
+
+%typemap{wxImageList*}{simple};
 
 %typemap{wxWindowID}{simple};
 %typemap{wxCoord}{simple};
@@ -37,8 +42,11 @@
 %typemap{wxPoint}{parsed}{%wxPoint%};
 %typemap{const wxArtClient&}{parsed}{%wxString%};
 %typemap{wxBitmap}{reference};
+%typemap{wxCursor}{reference};
 %typemap{wxIcon}{reference};
 %typemap{wxFont}{reference};
+%typemap{wxFont*}{simple};
+%typemap{wxDC*}{simple};
 
 %typemap{wxDateTime*}{simple};
 %typemap{wxDateTime&}{reference};

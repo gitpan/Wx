@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        Event.pm
+## Name:        lib/Wx/Event.pm
 ## Purpose:     Wx::*Event classes and EVT_* macros
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Event.pm,v 1.38 2003/11/23 07:51:44 mbarbon Exp $
+## RCS-ID:      $Id: Event.pm,v 1.41 2004/01/18 08:19:20 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -170,6 +170,13 @@ sub EVT_JOY_MOVE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_JOY_MOVE, $_[1] ); }
 sub EVT_JOY_ZMOVE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_JOY_ZMOVE, $_[1] ); }
 
 #
+# ListbookEvent
+#
+
+sub EVT_LISTBOOK_PAGE_CHANGING($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LISTBOOK_PAGE_CHANGING, $_[2] ); }
+sub EVT_LISTBOOK_PAGE_CHANGED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, $_[2] ); }
+
+#
 # ListEvent
 #
 
@@ -248,6 +255,7 @@ sub EVT_MOUSE_EVENTS($$) {
 #
 
 sub EVT_MOVE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MOVE, $_[1] ); }
+sub EVT_MOVING($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MOVING, $_[1] ); }
 
 #
 # NotebookEvent
@@ -280,6 +288,7 @@ sub EVT_SASH_DRAGGED_RANGE($$$$) { $_[0]->Connect( $_[1], $_[2], &Wx::wxEVT_SASH
 #
 
 sub EVT_SIZE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SIZE, $_[1] ); }
+sub EVT_SIZING($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SIZING, $_[1] ); }
 
 #
 # ScrollEvent
@@ -409,10 +418,37 @@ sub EVT_CALENDAR_MONTH($$$);
 sub EVT_CALENDAR_YEAR($$$);
 sub EVT_CALENDAR_WEEKDAY_CLICKED($$$);
 
+sub EVT_STC_CHANGE($$$);
+sub EVT_STC_STYLENEEDED($$$);
+sub EVT_STC_CHARADDED($$$);
+sub EVT_STC_SAVEPOINTREACHED($$$);
+sub EVT_STC_SAVEPOINTLEFT($$$);
+sub EVT_STC_ROMODIFYATTEMPT($$$);
+sub EVT_STC_KEY($$$);
+sub EVT_STC_DOUBLECLICK($$$);
+sub EVT_STC_UPDATEUI($$$);
+sub EVT_STC_MODIFIED($$$);
+sub EVT_STC_MACRORECORD($$$);
+sub EVT_STC_MARGINCLICK($$$);
+sub EVT_STC_NEEDSHOWN($$$);
+sub EVT_STC_POSCHANGED($$$);
+sub EVT_STC_PAINTED($$$);
+sub EVT_STC_USERLISTSELECTION($$$);
+sub EVT_STC_URIDROPPED($$$);
+sub EVT_STC_DWELLSTART($$$);
+sub EVT_STC_DWELLEND($$$);
+sub EVT_STC_START_DRAG($$$);
+sub EVT_STC_DRAG_OVER($$$);
+sub EVT_STC_DO_DROP($$$);
+sub EVT_STC_ZOOM($$$);
+sub EVT_STC_HOTSPOT_CLICK($$$);
+sub EVT_STC_HOTSPOT_DCLICK($$$);
+sub EVT_STC_CALLTIP_CLICK($$$);
+
 1;
 
 __END__
 
-# Local variables: #
-# mode: cperl #
-# End: #
+# local variables:
+# mode: cperl
+# end:

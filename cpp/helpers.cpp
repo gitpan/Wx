@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        helpers.cpp
+// Name:        cpp/helpers.cpp
 // Purpose:     implementation for helpers.h
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp,v 1.60 2003/09/03 20:23:45 mbarbon Exp $
+// RCS-ID:      $Id: helpers.cpp,v 1.62 2004/04/10 20:35:39 mbarbon Exp $
 // Copyright:   (c) 2000-2003 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -13,7 +13,7 @@
 #include "cpp/streams.h"
 #include "cpp/streams.cpp"
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
     #include <wx/arrstr.h>
 #endif
 
@@ -582,6 +582,20 @@ void wxPli_stringarray_push( pTHX_ const wxArrayString& strings )
         PUSHs( sv_2mortal( newSVpvn( CHAR_P strings[i].c_str(),
                                      strings[i].size() ) ) );
 #endif
+    }
+
+    PUTBACK;
+}
+
+void wxPli_intarray_push( pTHX_ const wxArrayInt& ints )
+{
+    dSP;
+
+    size_t mx = ints.GetCount();
+    EXTEND( SP, int(mx) );
+    for( size_t i = 0; i < mx; ++i )
+    {
+        PUSHs( sv_2mortal( newSViv( ints[i] ) ) );
     }
 
     PUTBACK;

@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        st_constants.cpp
+// Name:        ext/stc/cpp/st_constants.cpp
 // Purpose:     constants for Wx::STC
 // Author:      Marcus Friedlaender and Mattia Barbon
-// Created:     23/ 5/2002
-// RCS-ID:      $Id: st_constants.cpp,v 1.7 2003/05/05 20:38:42 mbarbon Exp $
-// Copyright:   (c) 2002-2003 Marcus Friedlaender and Mattia Barbon
+// Created:     23/05/2002
+// RCS-ID:      $Id: st_constants.cpp,v 1.13 2004/03/20 17:53:21 mbarbon Exp $
+// Copyright:   (c) 2002-2004 Marcus Friedlaender and Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -148,6 +148,9 @@ double stc_constant( const char* name, int arg )
         r( wxSTC_CMD_LINEDOWNEXTEND );
         r( wxSTC_CMD_LINEUP );
         r( wxSTC_CMD_LINEUPEXTEND );
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+        r( wxSTC_CMD_LINECOPY );
+#endif
         r( wxSTC_CMD_CHARLEFT );
         r( wxSTC_CMD_CHARLEFTEXTEND );
         r( wxSTC_CMD_CHARRIGHT );
@@ -200,6 +203,21 @@ double stc_constant( const char* name, int arg )
         r( wxSTC_CMD_WORDPARTRIGHTEXTEND );
         r( wxSTC_CMD_DELLINELEFT );
         r( wxSTC_CMD_DELLINERIGHT );
+        r( wxSTC_CSS_DEFAULT );
+        r( wxSTC_CSS_TAG );
+        r( wxSTC_CSS_CLASS );
+        r( wxSTC_CSS_PSEUDOCLASS );
+        r( wxSTC_CSS_UNKNOWN_PSEUDOCLASS );
+        r( wxSTC_CSS_OPERATOR );
+        r( wxSTC_CSS_IDENTIFIER );
+        r( wxSTC_CSS_UNKNOWN_IDENTIFIER );
+        r( wxSTC_CSS_VALUE );
+        r( wxSTC_CSS_COMMENT );
+        r( wxSTC_CSS_ID );
+        r( wxSTC_CSS_IMPORTANT );
+        r( wxSTC_CSS_DIRECTIVE );
+        r( wxSTC_CSS_DOUBLESTRING );
+        r( wxSTC_CSS_SINGLESTRING );
         break;
     case 'D':
         r( wxSTC_DIFF_DEFAULT );
@@ -395,6 +413,7 @@ double stc_constant( const char* name, int arg )
         r( wxSTC_KEY_DIVIDE );
         break;
     case 'L':
+        r( wxSTC_LEX_CSS );
         r( wxSTC_LEX_PERL );
         r( wxSTC_LEX_XML );
         r( wxSTC_LEX_HTML );
@@ -610,25 +629,41 @@ double stc_constant( const char* name, int arg )
         r( wxSTC_SCMOD_CTRL );
         r( wxSTC_SCMOD_ALT );
         r( wxSTC_SCRIPTOL_DEFAULT );
-        r( wxSTC_SCRIPTOL_COMMENT );
         r( wxSTC_SCRIPTOL_COMMENTLINE );
-        r( wxSTC_SCRIPTOL_COMMENTDOC );
         r( wxSTC_SCRIPTOL_NUMBER );
-        r( wxSTC_SCRIPTOL_WORD );
         r( wxSTC_SCRIPTOL_STRING );
         r( wxSTC_SCRIPTOL_CHARACTER );
-        r( wxSTC_SCRIPTOL_UUID );
         r( wxSTC_SCRIPTOL_PREPROCESSOR );
         r( wxSTC_SCRIPTOL_OPERATOR );
         r( wxSTC_SCRIPTOL_IDENTIFIER );
         r( wxSTC_SCRIPTOL_STRINGEOL );
-        r( wxSTC_SCRIPTOL_VERBATIM );
-        r( wxSTC_SCRIPTOL_REGEX );
-        r( wxSTC_SCRIPTOL_COMMENTLINEDOC );
-        r( wxSTC_SCRIPTOL_WORD2 );
-        r( wxSTC_SCRIPTOL_COMMENTDOCKEYWORD );
-        r( wxSTC_SCRIPTOL_COMMENTDOCKEYWORDERROR );
-        r( wxSTC_SCRIPTOL_COMMENTBASIC );
+
+        r( wxEVT_STC_CHANGE );
+        r( wxEVT_STC_STYLENEEDED );
+        r( wxEVT_STC_CHARADDED );
+        r( wxEVT_STC_SAVEPOINTREACHED );
+        r( wxEVT_STC_SAVEPOINTLEFT );
+        r( wxEVT_STC_ROMODIFYATTEMPT );
+        r( wxEVT_STC_KEY );
+        r( wxEVT_STC_DOUBLECLICK );
+        r( wxEVT_STC_UPDATEUI );
+        r( wxEVT_STC_MODIFIED );
+        r( wxEVT_STC_MACRORECORD );
+        r( wxEVT_STC_MARGINCLICK );
+        r( wxEVT_STC_NEEDSHOWN );
+        r( wxEVT_STC_POSCHANGED );
+        r( wxEVT_STC_PAINTED );
+        r( wxEVT_STC_USERLISTSELECTION );
+        r( wxEVT_STC_URIDROPPED );
+        r( wxEVT_STC_DWELLSTART );
+        r( wxEVT_STC_DWELLEND );
+        r( wxEVT_STC_START_DRAG );
+        r( wxEVT_STC_DRAG_OVER );
+        r( wxEVT_STC_DO_DROP );
+        r( wxEVT_STC_ZOOM );
+        r( wxEVT_STC_HOTSPOT_CLICK );
+        r( wxEVT_STC_HOTSPOT_DCLICK );
+        r( wxEVT_STC_CALLTIP_CLICK );
         break;
     case 'T':
         r( wxSTC_TIME_FOREVER );
@@ -640,6 +675,10 @@ double stc_constant( const char* name, int arg )
     case 'W':
         r( wxSTC_WRAP_NONE );
         r( wxSTC_WRAP_WORD );
+
+        r( wxSTC_WS_INVISIBLE );
+        r( wxSTC_WS_VISIBLEALWAYS );
+        r( wxSTC_WS_VISIBLEAFTERINDENT );
         break;
     }
 #undef r

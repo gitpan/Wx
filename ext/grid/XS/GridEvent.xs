@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        GridEvent.xs
+## Name:        ext/grid/XS/GridEvent.xs
 ## Purpose:     XS for Wx::Grid*Event
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      8/12/2001
-## RCS-ID:      $Id: GridEvent.xs,v 1.4 2003/05/05 20:38:42 mbarbon Exp $
+## Created:     08/12/2001
+## RCS-ID:      $Id: GridEvent.xs,v 1.6 2004/02/29 14:30:40 mbarbon Exp $
 ## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -12,11 +12,11 @@
 
 MODULE=Wx PACKAGE=Wx::GridEvent
 
-Wx_GridEvent*
-Wx_GridEvent::new( id, type, obj, row = -1, col = -1, x = -1, y = -1, sel = TRUE, control = TRUE, shift = TRUE, alt = TRUE, meta = TRUE )
+wxGridEvent*
+wxGridEvent::new( id, type, obj, row = -1, col = -1, x = -1, y = -1, sel = TRUE, control = TRUE, shift = TRUE, alt = TRUE, meta = TRUE )
     int id
     wxEventType type
-    Wx_Object* obj
+    wxObject* obj
     int row
     int col
     int x
@@ -28,40 +28,40 @@ Wx_GridEvent::new( id, type, obj, row = -1, col = -1, x = -1, y = -1, sel = TRUE
     bool meta
 
 int
-Wx_GridEvent::GetRow()
+wxGridEvent::GetRow()
 
 int
-Wx_GridEvent::GetCol()
+wxGridEvent::GetCol()
 
-Wx_Point*
-Wx_GridEvent::GetPosition()
+wxPoint*
+wxGridEvent::GetPosition()
   CODE:
     RETVAL = new wxPoint( THIS->GetPosition() );
   OUTPUT:
     RETVAL
 
 bool
-Wx_GridEvent::Selecting()
+wxGridEvent::Selecting()
 
 bool
-Wx_GridEvent::ControlDown()
+wxGridEvent::ControlDown()
 
 bool
-Wx_GridEvent::AltDown()
+wxGridEvent::AltDown()
 
 bool
-Wx_GridEvent::MetaDown()
+wxGridEvent::MetaDown()
 
 bool
-Wx_GridEvent::ShiftDown()
+wxGridEvent::ShiftDown()
 
 MODULE=Wx PACKAGE=Wx::GridSizeEvent
 
-Wx_GridSizeEvent*
-Wx_GridSizeEvent::new( id, type, obj, rowOrCol = -1, x = -1, y = -1, control = TRUE, shift = TRUE, alt = TRUE, meta = TRUE )
+wxGridSizeEvent*
+wxGridSizeEvent::new( id, type, obj, rowOrCol = -1, x = -1, y = -1, control = TRUE, shift = TRUE, alt = TRUE, meta = TRUE )
     int id
     wxEventType type
-    Wx_Object* obj
+    wxObject* obj
     int rowOrCol
     int x
     int y
@@ -71,36 +71,36 @@ Wx_GridSizeEvent::new( id, type, obj, rowOrCol = -1, x = -1, y = -1, control = T
     bool meta
 
 int
-Wx_GridSizeEvent::GetRowOrCol()
+wxGridSizeEvent::GetRowOrCol()
 
-Wx_Point*
-Wx_GridSizeEvent::GetPosition()
+wxPoint*
+wxGridSizeEvent::GetPosition()
   CODE:
     RETVAL = new wxPoint( THIS->GetPosition() );
   OUTPUT:
     RETVAL
 
 bool
-Wx_GridSizeEvent::ControlDown()
+wxGridSizeEvent::ControlDown()
 
 bool
-Wx_GridSizeEvent::AltDown()
+wxGridSizeEvent::AltDown()
 
 bool
-Wx_GridSizeEvent::MetaDown()
+wxGridSizeEvent::MetaDown()
 
 bool
-Wx_GridSizeEvent::ShiftDown()
+wxGridSizeEvent::ShiftDown()
 
 MODULE=Wx PACKAGE=Wx::GridRangeSelectEvent
 
-Wx_GridRangeSelectEvent*
-Wx_GridRangeSelectEvent::new( id, type, obj, topLeft, bottomRight, sel = TRUE, control = FALSE, shift = FALSE, alt = FALSE, meta = FALSE )
+wxGridRangeSelectEvent*
+wxGridRangeSelectEvent::new( id, type, obj, topLeft, bottomRight, sel = TRUE, control = FALSE, shift = FALSE, alt = FALSE, meta = FALSE )
     int id
     wxEventType type
-    Wx_Object* obj
-    Wx_GridCellCoords* topLeft
-    Wx_GridCellCoords* bottomRight
+    wxObject* obj
+    wxGridCellCoords* topLeft
+    wxGridCellCoords* bottomRight
     bool sel
     bool control
     bool shift
@@ -112,75 +112,75 @@ Wx_GridRangeSelectEvent::new( id, type, obj, topLeft, bottomRight, sel = TRUE, c
   OUTPUT:
     RETVAL
 
-Wx_GridCellCoords*
-Wx_GridRangeSelectEvent::GetTopLeftCoords()
+wxGridCellCoords*
+wxGridRangeSelectEvent::GetTopLeftCoords()
   CODE:
     RETVAL = new wxGridCellCoords( THIS->GetTopLeftCoords() );
   OUTPUT:
     RETVAL
 
-Wx_GridCellCoords*
-Wx_GridRangeSelectEvent::GetBottomRightCoords()
+wxGridCellCoords*
+wxGridRangeSelectEvent::GetBottomRightCoords()
   CODE:
     RETVAL = new wxGridCellCoords( THIS->GetBottomRightCoords() );
   OUTPUT:
     RETVAL
 
 int
-Wx_GridRangeSelectEvent::GetTopRow()
+wxGridRangeSelectEvent::GetTopRow()
 
 int
-Wx_GridRangeSelectEvent::GetBottomRow()
+wxGridRangeSelectEvent::GetBottomRow()
 
 int
-Wx_GridRangeSelectEvent::GetLeftCol()
+wxGridRangeSelectEvent::GetLeftCol()
 
 int
-Wx_GridRangeSelectEvent::GetRightCol()
+wxGridRangeSelectEvent::GetRightCol()
 
 bool
-Wx_GridRangeSelectEvent::Selecting()
+wxGridRangeSelectEvent::Selecting()
 
 bool
-Wx_GridRangeSelectEvent::ControlDown()
+wxGridRangeSelectEvent::ControlDown()
 
 bool
-Wx_GridRangeSelectEvent::MetaDown()
+wxGridRangeSelectEvent::MetaDown()
 
 bool
-Wx_GridRangeSelectEvent::AltDown()
+wxGridRangeSelectEvent::AltDown()
 
 bool
-Wx_GridRangeSelectEvent::ShiftDown()
+wxGridRangeSelectEvent::ShiftDown()
 
 MODULE=Wx PACKAGE=Wx::GridEditorCreatedEvent
 
-Wx_GridEditorCreatedEvent*
-Wx_GridEditorCreatedEvent::new( id, type, obj, row, col, ctrl )
+wxGridEditorCreatedEvent*
+wxGridEditorCreatedEvent::new( id, type, obj, row, col, ctrl )
     int id
     wxEventType type
-    Wx_Object* obj
+    wxObject* obj
     int row
     int col
-    Wx_Control* ctrl
+    wxControl* ctrl
 
 int
-Wx_GridEditorCreatedEvent::GetRow()
+wxGridEditorCreatedEvent::GetRow()
 
 int
-Wx_GridEditorCreatedEvent::GetCol()
+wxGridEditorCreatedEvent::GetCol()
 
-Wx_Control*
-Wx_GridEditorCreatedEvent::GetControl()
+wxControl*
+wxGridEditorCreatedEvent::GetControl()
 
 void
-Wx_GridEditorCreatedEvent::SetRow( row )
+wxGridEditorCreatedEvent::SetRow( row )
     int row
 
 void
-Wx_GridEditorCreatedEvent::SetCol( col )
+wxGridEditorCreatedEvent::SetCol( col )
     int col
 
 void
-Wx_GridEditorCreatedEvent::SetControl( control )
-    Wx_Control* control
+wxGridEditorCreatedEvent::SetControl( control )
+    wxControl* control

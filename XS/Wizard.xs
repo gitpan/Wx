@@ -4,14 +4,17 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     28/08/2002
-## RCS-ID:      $Id: Wizard.xs,v 1.10 2003/08/17 19:34:40 mbarbon Exp $
-## Copyright:   (c) 2002-2003 Mattia Barbon
+## RCS-ID:      $Id: Wizard.xs,v 1.14 2004/04/10 20:33:04 mbarbon Exp $
+## Copyright:   (c) 2002-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 ## bug in 2.2
 #include <wx/bitmap.h> 
+#include <wx/panel.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/wizard.h>
 #include <wx/sizer.h>
 #include "cpp/overload.h"
@@ -29,24 +32,33 @@ wxWizard::new( ... )
 
 wxWizard*
 newEmpty( CLASS )
-    SV* CLASS
+    PlClassName CLASS
   CODE:
-    RETVAL = new wxWizard();
+    RETVAL = new wxPliWizard( CLASS );
   OUTPUT:
     RETVAL
 
 wxWizard*
 newFull( CLASS, parent, id = -1, title = wxEmptyString, bitmap = (wxBitmap*)&wxNullBitmap, pos = wxDefaultPosition )
-    SV* CLASS
+    PlClassName CLASS
     wxWindow* parent
     wxWindowID id
     wxString title
     wxBitmap* bitmap
     wxPoint pos
   CODE:
-    RETVAL = new wxWizard( parent, id, title, *bitmap, pos );
+    RETVAL = new wxPliWizard( CLASS, parent, id, title, *bitmap, pos );
   OUTPUT:
     RETVAL
+
+bool
+wxWizard::Create( parent, id = -1, title = wxEmptyString, bitmap = (wxBitmap*)&wxNullBitmap, pos = wxDefaultPosition )
+    wxWindow* parent
+    wxWindowID id
+    wxString title
+    wxBitmap* bitmap
+    wxPoint pos
+  C_ARGS: parent, id, title, *bitmap, pos
 
 bool
 wxWizard::RunWizard( page )
@@ -66,7 +78,7 @@ void
 wxWizard::SetPageSize( size )
     wxSize size
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
 
 wxSizer*
 wxWizard::GetPageAreaSizer()

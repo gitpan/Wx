@@ -132,7 +132,9 @@ samples/listctrl/bitmaps/toolword.xpm
 samples/listctrl/listctrl.pl
 
 samples/socket/wxSocketClient.pl
+samples/socket/wxSocketClientDatagram.pl
 samples/socket/wxSocketServer.pl
+samples/socket/wxSocketServerDatagram.pl
 
 Wx.pm
 Wx.rc
@@ -151,6 +153,7 @@ XS/Accelerators.xs
 XS/App.xs
 XS/Bitmap.xs
 XS/BitmapButton.xs
+XS/BookCtrl.xsp
 XS/Brush.xs
 XS/Button.xs
 XS/Caret.xs
@@ -174,10 +177,12 @@ XS/FontMapper.xs
 XS/Frame.xs
 XS/Gauge.xs
 XS/Geom.xs
+XS/GridBagSizer.xsp
 XS/Icon.xs
 XS/IconBundle.xsp
 XS/Image.xs
 XS/ImageList.xs
+XS/Listbook.xsp
 XS/ListBox.xs
 XS/ListCtrl.xs
 XS/Locale.xs
@@ -300,7 +305,6 @@ ext/filesys/Makefile.PL
 ext/filesys/XS/FSFile.xs
 ext/filesys/XS/FileSystem.xs
 ext/filesys/XS/FileSystemHandler.xs
-ext/filesys/cpp/fs_typedef.h
 ext/filesys/cpp/fshandler.h
 ext/filesys/lib/Wx/FS.pm
 ext/filesys/typemap
@@ -318,12 +322,12 @@ ext/grid/XS/GridTable.xsp
 ext/grid/XS/GridTableMessage.xsp
 ext/grid/cpp/editor.h
 ext/grid/cpp/gr_constants.cpp
-ext/grid/cpp/gr_typedef.h
 ext/grid/cpp/renderer.h
 ext/grid/lib/Wx/Grid.pm
 ext/grid/t/01_load.t
 ext/grid/t/02_inheritance.t
 ext/grid/t/03_attr.t
+ext/grid/t/04_api.t
 ext/grid/typemap
 
 ext/help/Help.xs
@@ -339,14 +343,18 @@ ext/help/t/02_inheritance.t
 
 ext/html/Html.xs
 ext/html/Makefile.PL
+ext/html/XS/HtmlCell.xsp
 ext/html/XS/HtmlEasyPrinting.xs
 ext/html/XS/HtmlHelpController.xs
+ext/html/XS/HtmlParser.xsp
+ext/html/XS/HtmlTag.xsp
+ext/html/XS/HtmlTagHandler.xsp
 ext/html/XS/HtmlWindow.xs
 ext/html/cpp/ht_constants.cpp
-ext/html/cpp/ht_typedef.h
 ext/html/cpp/htmlwindow.h
 ext/html/lib/Wx/Html.pm
 ext/html/typemap
+ext/html/typemap.xsp
 ext/html/t/01_load.t
 ext/html/t/02_inheritance.t
 
@@ -354,7 +362,6 @@ ext/mdi/MDI.xs
 ext/mdi/Makefile.PL
 ext/mdi/XS/MDIChildFrame.xs
 ext/mdi/XS/MDIParentFrame.xs
-ext/mdi/cpp/md_typedef.h
 ext/mdi/cpp/mdi.h
 ext/mdi/lib/Wx/MDI.pm
 ext/mdi/t/01_load.t
@@ -373,7 +380,6 @@ ext/print/XS/PrintPreview.xs
 ext/print/XS/Printer.xs
 ext/print/XS/Printout.xs
 ext/print/cpp/pr_constants.cpp
-ext/print/cpp/pr_typedef.h
 ext/print/cpp/printout.h
 ext/print/lib/Wx/Print.pm
 ext/print/typemap
@@ -382,6 +388,8 @@ ext/print/t/02_inheritance.t
 
 ext/socket/Makefile.PL
 ext/socket/Socket.xs
+ext/socket/XS/DatagramSocket.xsp
+ext/socket/XS/SockAddress.xsp
 ext/socket/XS/SocketBase.xs
 ext/socket/XS/SocketClient.xs
 ext/socket/XS/SocketEvent.xs
@@ -396,8 +404,8 @@ ext/socket/typemap
 ext/stc/Makefile.PL
 ext/stc/STC.xs
 ext/stc/XS/StyledTextCtrl.xs
+ext/stc/XS/StyledTextEvent.xsp
 ext/stc/cpp/st_constants.cpp
-ext/stc/cpp/st_typedef.h
 ext/stc/lib/Wx/STC.pm
 ext/stc/t/01_load.t
 ext/stc/t/02_inheritance.t
@@ -422,7 +430,6 @@ ext/xrc/XS/XmlResource.xs
 ext/xrc/XS/XmlResourceHandler.xsp
 ext/xrc/XS/XmlSubclassFactory.xsp
 ext/xrc/cpp/xr_constants.cpp
-ext/xrc/cpp/xr_typedef.h
 ext/xrc/lib/Wx/XRC.pm
 ext/xrc/t/01_load.t
 ext/xrc/typemap
@@ -439,7 +446,6 @@ ext/docview/XS/DocChildFrame.xs
 ext/docview/XS/DocMDIParentFrame.xs
 ext/docview/XS/DocMDIChildFrame.xs
 ext/docview/cpp/docview.h
-ext/docview/cpp/dv_typedef.h
 ext/docview/cpp/dv_constants.cpp
 ext/docview/lib/Wx/DocView.pm
 ext/docview/typemap
@@ -479,6 +485,7 @@ demo/wxGridCER.pm
 demo/wxGridER.pm
 demo/wxGridTable.pm
 demo/wxHtmlDynamic.pm
+demo/wxHtmlTag.pm
 demo/wxHtmlWindow.pm
 demo/wxListCtrl.pm
 demo/wxLocale.pm

@@ -16,6 +16,7 @@ sub configure_core {
   $config{depend}      = { $res => 'Wx.rc ' };
   $config{LDFROM}     .= "\$(OBJECT) $res ";
   $config{dynamic_lib}{INST_DYNAMIC_DEP} .= " $res";
+  $config{clean}{FILES} .= " $res";
 
   die "Unable to find setup.h directory"
     unless $config{INC} =~ m{[/-]I(\S+lib[\\/][\w\\/]+)(?:\s|$)};
@@ -76,6 +77,10 @@ sub files_to_install {
   my %files = $this->SUPER::files_to_install();
   my $dlls = $this->wx_config->wx_config( 'dlls' );
   my $setup_h = File::Spec->catfile( $wx_setup_dir, 'wx', 'setup.h' );
+  my $build_cfg = File::Spec->catfile( $wx_setup_dir, 'build.cfg' );
+
+  $files{$build_cfg} = Wx::build::Utils::arch_file( "Wx/build/build.cfg" )
+    if -f $build_cfg;
 
   $files{$setup_h} = Wx::build::Utils::arch_file( "Wx/build/wx/setup.h" );
   foreach my $dll ( map { $_->{dll} } values %$dlls ) {

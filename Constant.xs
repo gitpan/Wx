@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.95 2003/11/23 07:43:27 mbarbon Exp $
-// Copyright:   (c) 2000-2003 Mattia Barbon
+// RCS-ID:      $Id: Constant.xs,v 1.103 2004/04/10 20:32:34 mbarbon Exp $
+// Copyright:   (c) 2000-2004 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,7 @@
 #include <wx/filedlg.h>
 #include <wx/colordlg.h>
 #include <wx/textdlg.h>
+#include <wx/checkbox.h>
 #include <wx/choicdlg.h>
 #include <wx/msgdlg.h>
 #include <wx/gdicmn.h>
@@ -52,8 +53,14 @@
 #include <wx/filefn.h>
 
 #include "cpp/wxapi.h"
+#include "cpp/setup.h"
+
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+#include <wx/listbook.h>
+#endif
 
 #include <wx/tglbtn.h>
+#include <wx/timer.h>
 #include <wx/splash.h>
 #include <wx/fdrepdlg.h>
 #include <wx/list.h>
@@ -218,7 +225,14 @@ static wxPlINH inherit[] =
     I( ControlWithItems,Control )
     I( Choice,          ControlWithItems )
     I( ListBox,         ControlWithItems )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    I( BookCtrl,        Control )
+    I( Notebook,        BookCtrl )
+    I( Listbook,        BookCtrl )
+#else
     I( Notebook,        Control )
+#endif
+    I( NumberEntryDialog, Dialog )
     I( ToolBarBase,     Control )
     I( ToolBarSimple,   Control )
     I( StaticBitmap,    Control )
@@ -305,13 +319,15 @@ static wxPlINH inherit[] =
     I( StaticBoxSizer,  BoxSizer )
     I( GridSizer,       Sizer )
     I( FlexGridSizer,   GridSizer )
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+    I( GridBagSizer,    FlexGridSizer )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
     I( NotebookSizer,   BookCtrlSizer )
 #else
     I( NotebookSizer,   Sizer )
 #endif
     I( BookCtrlSizer,   Sizer )
     I( PlSizer,         Sizer )
+    I( GBSizerItem,     SizerItem )
 
     I( TaskBarIcon,     EvtHandler )
     I( Process,         EvtHandler )
@@ -323,7 +339,7 @@ static wxPlINH inherit[] =
     ///////////////////////////////////////////
     // Conditional part
     ///////////////////////////////////////////
-#define HAS_TLW    !defined(__WXMOTIF__) || WXPERL_W_VERSION_GE( 2, 5, 0 )
+#define HAS_TLW    !defined(__WXMOTIF__) || WXPERL_W_VERSION_GE( 2, 5, 1 )
 
 #if HAS_TLW
     I( Frame,           TopLevelWindow )
@@ -364,7 +380,7 @@ static wxPlINH inherit[] =
 #endif
 
 #if defined(__WXGTK__) || \
-    ( defined( __WXMAC__ ) && WXPERL_W_VERSION_GE( 2, 5, 0 ) )
+    ( defined( __WXMAC__ ) && WXPERL_W_VERSION_GE( 2, 5, 1 ) )
     I( ComboBox,        Control )
 #else
     I( ComboBox,        Choice )
@@ -378,7 +394,7 @@ static wxPlINH inherit[] =
     I( StatusBar,       Window )
 #endif
 
-#if defined(__WXMOTIF__) && WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if defined(__WXMOTIF__) && WXPERL_W_VERSION_GE( 2, 5, 1 )
     // wxCursor inherits from wxObject
 #elif defined(__WXMOTIF__) || defined(__WXMAC__)
     I( Cursor,          Bitmap )
@@ -424,7 +440,13 @@ static wxPlINH inherit[] =
     I( MenuEvent,       Event )
     I( MouseEvent,      Event )
     I( MoveEvent,       Event )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    I( BookCtrlEvent,   NotifyEvent )
+    I( NotebookEvent,   BookCtrlEvent )
+    I( ListbookEvent,   BookCtrlEvent )
+#else
     I( NotebookEvent,   NotifyEvent )
+#endif
     I( NotifyEvent,     CommandEvent )
     I( PaintEvent,      Event )
     I( ProcessEvent,    Event )
@@ -562,6 +584,16 @@ static double constant( const char *name, int arg )
     r( wxCHANGE_DIR );                  // filedlg
     r( wxCLIP_SIBLINGS );               // window
 
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxCHK_2STATE );                  // checkbox
+    r( wxCHK_3STATE );                  // checkbox
+    r( wxCHK_ALLOW_3RD_STATE_FOR_USER );// checkbox
+
+    r( wxCHK_UNCHECKED );               // checkbox
+    r( wxCHK_CHECKED );                 // checkbox
+    r( wxCHK_UNDETERMINED );            // checkbox    
+#endif
+
     r( wxCLEAR );                       // dc
     r( wxCOPY );                        // dc
 
@@ -602,7 +634,7 @@ static double constant( const char *name, int arg )
 #define wxCenterX wxCentreX
 #define wxCenterY wxCentreY
 
-#if !WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if !WXPERL_W_VERSION_GE( 2, 5, 1 )
     #define wxCLOSE_BOX 0
 #endif
     r( wxCLOSE_BOX );                   // frame
@@ -632,6 +664,10 @@ static double constant( const char *name, int arg )
   case 'E':
     r( wxEQUIV );                       // dc
 
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED );
+    r( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGING );
+#endif
     r( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED );
     r( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING );
     r( wxEVT_COMMAND_BUTTON_CLICKED );
@@ -777,6 +813,10 @@ static double constant( const char *name, int arg )
     r( wxEVT_INIT_DIALOG );
     r( wxEVT_IDLE );
     r( wxEVT_UPDATE_UI );
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxEVT_MOVING );
+    r( wxEVT_SIZING );
+#endif
 
     r( wxEVT_END_PROCESS );
 
@@ -811,7 +851,7 @@ static double constant( const char *name, int arg )
     r( wxFLOOD_SURFACE );               // dc
     r( wxFLOOD_BORDER );                // dc
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
     r( wxFLEX_GROWMODE_NONE );          // sizer
     r( wxFLEX_GROWMODE_SPECIFIED );     // sizer
     r( wxFLEX_GROWMODE_ALL );           // sizer
@@ -879,6 +919,9 @@ static double constant( const char *name, int arg )
     r( wxFULLSCREEN_NOCAPTION );        // frame dialog
     r( wxFULLSCREEN_ALL );              // frame dialog
 
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxFULL_REPAINT_ON_RESIZE );      // window
+#endif
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
@@ -1081,6 +1124,16 @@ static double constant( const char *name, int arg )
     r( wxLB_NEEDED_SB );                // listbox
     r( wxLB_OWNERDRAW );                // listbox
     r( wxLB_SORT );                     // listbox
+
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxLB_DEFAULT );                  // listbook
+    r( wxLB_TOP );                      // listbook
+    r( wxLB_BOTTOM );                   // listbook
+    r( wxLB_LEFT );                     // listbook
+    r( wxLB_RIGHT );                    // listbook
+    r( wxLB_ALIGN_MASK );               // listbook
+#endif
+
     r( wxLEFT );                        // sizer layout constraints
     r( wxLIGHT );                       // font
 
@@ -1614,7 +1667,7 @@ static double constant( const char *name, int arg )
     r( wxTB_3DBUTTONS );                // toolbar
     r( wxTB_TEXT );                     // toolbar
     r( wxTB_NOICONS );                  // toolbar
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
     r( wxTB_HORZ_TEXT );                // toolbar
 #endif
     r( wxTE_PROCESS_ENTER );            // textctrl
@@ -1630,9 +1683,18 @@ static double constant( const char *name, int arg )
     r( wxTE_CENTRE );                   // textctrl
     r( wxTE_CENTER );                   // textctrl
     r( wxTE_AUTO_URL );                 // textctrl
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxTE_HT_UNKNOWN );               // textctrl
+    r( wxTE_HT_BEFORE );                // textctrl
+    r( wxTE_HT_ON_TEXT );               // textctrl
+    r( wxTE_HT_BELOW );                 // textctrl
+    r( wxTE_HT_BEYOND );                // textctrl
+#endif
     r( wxTHICK_FRAME );                 // frame dialog
     r( wxTINY_CAPTION_HORIZ );
     r( wxTINY_CAPTION_VERT );
+    r( wxTIMER_CONTINUOUS );
+    r( wxTIMER_ONE_SHOT );
     r( wxTOP );                         // sizer layout constraints
     r( wxTRANSPARENT_WINDOW );          // window
     r( wxTRANSPARENT );                 // dc brush pen
@@ -2058,7 +2120,7 @@ _get_packages()
 #if wxPERL_USE_MDI
     "use Wx::MDI;"
 #endif
-#if wxPERL_USE_PRINT
+#if wxPERL_USE_PRINTING_ARCHITECTURE
     "use Wx::Print;"
 #endif
 #if wxPERL_USE_SOCKET

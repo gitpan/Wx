@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 
-use Test::More 'tests' => 1;
+use Test::More ( $^O eq 'MSWin32' ) ?
+               ( 'skip_all' => 'Test is fragile...' ) :
+               ( 'tests' => 1 );
 
 use Wx::Perl::SplashFast;
 use Wx;

@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        Log.xs
+## Name:        XS/Log.xs
 ## Purpose:     XS for Wx::Log and derived classes
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Log.xs,v 1.15 2003/05/05 20:38:41 mbarbon Exp $
+## RCS-ID:      $Id: Log.xs,v 1.18 2004/03/02 20:20:59 mbarbon Exp $
 ## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -16,7 +16,7 @@
 MODULE=Wx PACKAGE=Wx::Log
 
 void
-Wx_Log::Destroy()
+wxLog::Destroy()
   CODE:
     delete THIS;
 
@@ -45,16 +45,16 @@ IsAllowedTraceMask( mask )
   OUTPUT:
     RETVAL
 
-Wx_Log*
+wxLog*
 GetActiveTarget()
   CODE:
     RETVAL = wxLog::GetActiveTarget();
   OUTPUT:
     RETVAL
 
-Wx_Log*
+wxLog*
 SetActiveTarget( target )
-    Wx_Log* target
+    wxLog* target
   CODE:
     RETVAL = wxLog::SetActiveTarget( target );
   OUTPUT:
@@ -66,27 +66,27 @@ DontCreateOnDemand()
     wxLog::DontCreateOnDemand();
 
 void
-Wx_Log::Flush()
+wxLog::Flush()
 
 void
-Wx_Log::FlushActive()
+wxLog::FlushActive()
 
 bool
-Wx_Log::HasPendingMessages()
+wxLog::HasPendingMessages()
 
 void
-Wx_Log::SetVerbose( verbose = TRUE )
+wxLog::SetVerbose( verbose = TRUE )
     bool verbose
 
 bool
-Wx_Log::GetVerbose()
+wxLog::GetVerbose()
 
 void
-Wx_Log::SetTimestamp( format )
+wxLog::SetTimestamp( format )
     const wxChar* format
 
 const wxChar*
-Wx_Log::GetTimestamp()
+wxLog::GetTimestamp()
 
 void
 SetTraceMask( mask )
@@ -112,28 +112,28 @@ wxPlLog::new()
 
 MODULE=Wx PACKAGE=Wx::LogTextCtrl
 
-Wx_LogTextCtrl*
-Wx_LogTextCtrl::new( ctrl )
-    Wx_TextCtrl* ctrl
+wxLogTextCtrl*
+wxLogTextCtrl::new( ctrl )
+    wxTextCtrl* ctrl
 
 MODULE=Wx PACKAGE=Wx::LogNull
 
-Wx_LogNull*
-Wx_LogNull::new()
+wxLogNull*
+wxLogNull::new()
 
 void
-Wx_LogNull::DESTROY()
+wxLogNull::DESTROY()
 
 MODULE=Wx PACKAGE=Wx::LogGui
 
-Wx_LogGui*
-Wx_LogGui::new()
+wxLogGui*
+wxLogGui::new()
 
 MODULE=Wx PACKAGE=Wx::LogWindow
 
-Wx_LogWindow*
-Wx_LogWindow::new( parent, title, show = TRUE, passtoold = TRUE )
-    Wx_Frame* parent
+wxLogWindow*
+wxLogWindow::new( parent, title, show = TRUE, passtoold = TRUE )
+    wxFrame* parent
     wxString title
     bool show
     bool passtoold
@@ -199,7 +199,7 @@ wxLogDebug( string )
 
 void
 wxLogStatusFrame( frame, string )
-    Wx_Frame* frame
+    wxFrame* frame
     const wxChar* string
   CODE:
     wxLogStatus( frame, string );
@@ -208,9 +208,13 @@ void
 wxLogStatus( string )
     const wxChar* string
 
+#if WXPERL_W_VERSION_LE( 2, 5, 0 )
+
 void
 wxLogTrace( string )
     const wxChar* string
+
+#endif
 
 void
 wxLogTraceMask( mask, string )

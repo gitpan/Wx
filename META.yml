@@ -1,16 +1,15 @@
-name: Wx
-version: 0.18
-license: perl
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Wx
+version:      0.19
+version_from: Wx.pm
+installdirs:  site
+requires:
+    Data::Dumper:                  0
+    ExtUtils::MakeMaker:           6.17
+    File::Spec::Functions:         0.82
+    Test::Harness:                 2.26
+    Test::More:                    0.45
+
 distribution_type: module
-build_requires:
-  File::Spec::Functions: 0.82
-  Test::More: 0.46
-  Test::Harness: 2.26
-  Data::Dumper: 0
-dynamic_config: 1
-private:
-  directory:
-    - demo
-    - samples
-    - script
-generated_by: Mattia Barbon, by hand
+generated_by: ExtUtils::MakeMaker version 6.21

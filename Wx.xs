@@ -3,8 +3,8 @@
 // Purpose:     main XS module
 // Author:      Mattia Barbon
 // Modified by:
-// Created:      1/10/2000
-// RCS-ID:      $Id: Wx.xs,v 1.54 2003/10/19 20:14:54 mbarbon Exp $
+// Created:     01/10/2000
+// RCS-ID:      $Id: Wx.xs,v 1.58 2004/04/10 15:35:51 mbarbon Exp $
 // Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -15,12 +15,9 @@
 
 #include <stddef.h>
 #include "cpp/compat.h"
-#if !WXPERL_W_VERSION_GE( 2, 3, 0 )
-#include <wx/defs.h>
-#endif
 
 // THIS IS AN HACK!
-#if defined(_MSC_VER) && WXPERL_W_VERSION_GE( 2, 3, 2 )
+#if defined(_MSC_VER)
 #define STRICT
 #endif
 
@@ -28,12 +25,16 @@
 
 #include <wx/window.h>
 #include <wx/module.h>
+// FIXME hack
+#ifdef __DARWIN__
+#include <wx/html/htmlwin.h>
+#endif
 
 #if defined(__WXMSW__)
 #include <wx/msw/private.h>
 #endif
 
-#if WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
     #include <wx/init.h>
 #else
 #if defined(__WXGTK__) && WXPERL_W_VERSION_GE( 2, 3, 3 )
@@ -98,7 +99,7 @@ extern "C" {
 extern void SetConstants();
 extern void SetConstantsOnce();
 
-#if defined(__WXMOTIF__) && !WXPERL_W_VERSION_GE( 2, 5, 0 )
+#if defined(__WXMOTIF__) && !WXPERL_W_VERSION_GE( 2, 5, 1 )
 
 #include <wx/app.h>
 #include <wx/log.h>
@@ -246,6 +247,23 @@ void
 UnLoad()
   CODE:
     wxEntryCleanup();
+
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+
+#include <wx/dynload.h>
+
+bool
+_load_plugin( string )
+    wxString string
+  CODE:
+#ifdef __DARWIN__
+    delete new wxHtmlWindow();
+#endif
+    RETVAL = wxPluginManager::LoadLibrary( string, wxDL_VERBATIM );
+  OUTPUT:
+    RETVAL
+
+#endif
 
 bool
 _xsmatch( avref, proto, required = -1, allow_more = FALSE )

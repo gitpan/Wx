@@ -1,11 +1,11 @@
 #############################################################################
-## Name:        Timer.xs
+## Name:        XS/Timer.xs
 ## Purpose:     XS for Wx::Timer
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:     14/ 2/2001
-## RCS-ID:      
-## Copyright:   (c) 2001-2002 Mattia Barbon
+## Created:     14/02/2001
+## RCS-ID:      $Id: Timer.xs,v 1.9 2004/02/29 14:43:24 mbarbon Exp $
+## Copyright:   (c) 2001-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -16,11 +16,11 @@
 MODULE=Wx PACKAGE=Wx::TimerEvent
 
 int
-Wx_TimerEvent::GetInterval()
+wxTimerEvent::GetInterval()
 
 MODULE=Wx PACKAGE=Wx::Timer
 
-Wx_Timer*
+wxTimer*
 newDefault( Class )
     SV* Class
   PREINIT:
@@ -30,7 +30,7 @@ newDefault( Class )
   OUTPUT:
     RETVAL
 
-Wx_Timer*
+wxTimer*
 newEH( Class, owner, id = -1 )
     SV* Class
     wxEvtHandler* owner
@@ -43,29 +43,36 @@ newEH( Class, owner, id = -1 )
     RETVAL
 
 void
-Wx_Timer::Destroy()
+wxTimer::Destroy()
   CODE:
     delete THIS;
 
 int
-Wx_Timer::GetInterval()
+wxTimer::GetInterval()
+
+#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+
+int
+wxTimer::GetId()
+
+#endif
 
 bool
-Wx_Timer::IsOneShot()
+wxTimer::IsOneShot()
 
 bool
-Wx_Timer::IsRunning()
+wxTimer::IsRunning()
 
 void
-Wx_Timer::SetOwner( owner, id = -1 )
+wxTimer::SetOwner( owner, id = -1 )
     wxEvtHandler* owner
     int id
 
 bool
-Wx_Timer::Start( milliseconds = -1, oneshot = FALSE )
+wxTimer::Start( milliseconds = -1, oneshot = FALSE )
     int milliseconds
     bool oneshot
 
 void
-Wx_Timer::Stop()
+wxTimer::Stop()
 
