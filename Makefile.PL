@@ -14,8 +14,8 @@
 use strict;
 
 use Config;
-
-use lib 'build';
+use FindBin;
+use lib "${FindBin::RealBin}/build";
 use wxConfig;
 use wxMMUtils;
 
@@ -28,7 +28,6 @@ $File::Find::dont_use_nlink = 1 if ( stat('.') )[3] <= 1;
 
 use vars qw(@top_level_xs);
 
-# @top_level_xs = glob( "*.xs" );
 @top_level_xs = qw(Wx.xs Constant.xs Controls.xs Event.xs
                    Frames.xs GDI.xs Window.xs);
 
@@ -36,7 +35,8 @@ wxWriteMakefile( NAME => 'Wx',
                  ABSTRACT_FROM => 'Wx.pm',
                  AUTHOR => 'Mattia Barbon <mbarbon@dsi.unive.it>',
                  VERSION_FROM => 'Wx.pm',
-                 DIR => [ MM->catdir( qw(ext mdi) ),
+                 DIR => [ MM->catdir( qw(ext grid) ),
+                          MM->catdir( qw(ext mdi) ),
                           MM->catdir( qw(ext dnd) ),
                           MM->catdir( qw(ext html) ),
                           MM->catdir( qw(ext help) ),

@@ -38,6 +38,11 @@
 #include <wx/button.h>
 #include <wx/dataobj.h>
 #include <wx/clipbrd.h>
+#include <wx/confbase.h>
+#if defined(__WXMSW__)
+#include <wx/taskbar.h>
+#endif
+#include <wx/process.h>
 
 #include "cpp/compat.h"
 #include "cpp/chkconfig.h"
@@ -74,40 +79,15 @@ WXPL_EXTERN_C_END
 #include "cpp/constants.h"
 #include <wx/listimpl.cpp>
 
-// this breaks due ( presumably ) to static initialization
-// undefined order on Cygwin, so roll our own
-// list...
 WX_DECLARE_LIST( PL_CONST_FUNC, wxPlConstantFunctions );
 WX_DEFINE_LIST( wxPlConstantFunctions );
 
-// this use of static is deprecated in favour of anonymous namespace
-#if 0
-struct MyList {
-    MyList* m_next;
-    double (**m_data)( const char*, int );
-};
-
-static MyList** s_functions()
-    { static MyList* var = 0; return &var; }
-
-void wxPli_add_constant_function( double (**f)( const char*, int ) )
-{
-    MyList* elem = new MyList;
-    MyList** head = s_functions();
-
-    elem->m_next = *head;
-    elem->m_data = f;
-    *head = elem;
-}
-
-void wxPli_remove_constant_function( double (**f)( const char*, int ) )
-{
-    wxASSERT(0);
-}
-#endif
-//#if 0
 static wxPlConstantFunctions& s_functions()
-    { static wxPlConstantFunctions var; return var; }
+{
+    static wxPlConstantFunctions* var = new wxPlConstantFunctions;
+
+    return *var;
+}
 
 void wxPli_add_constant_function( double (**f)( const char*, int ) )
 {
@@ -118,7 +98,6 @@ void wxPli_remove_constant_function( double (**f)( const char*, int ) )
 {
     s_functions().DeleteObject( f );
 }
-//#endif
 
 // !package: Wx
 // !tag:
@@ -134,11 +113,11 @@ static double constant( const char *name, int arg )
 
   switch( fl ) {
   case 'A':
-    r( wxALIGN_LEFT );                  // sizer statictext
-    r( wxALIGN_CENTRE );                // sizer statictext
-    r( wxALIGN_RIGHT );                 // sizer statictext
-    r( wxALIGN_TOP );                   // sizer
-    r( wxALIGN_BOTTOM );                // sizer
+    r( wxALIGN_LEFT );                  // sizer grid statictext
+    r( wxALIGN_CENTRE );                // sizer grid statictext
+    r( wxALIGN_RIGHT );                 // sizer grid statictext
+    r( wxALIGN_TOP );                   // sizer grid
+    r( wxALIGN_BOTTOM );                // sizer grid
     r( wxALIGN_CENTER_VERTICAL );       // sizer
     r( wxALIGN_CENTER_HORIZONTAL );     // sizer
     r( wxALL );                         // sizer
@@ -181,6 +160,10 @@ static double constant( const char *name, int arg )
     r( wxBU_BOTTOM );                   // button
     r( wxBU_AUTODRAW );                 // button
     r( wxBU_RIGHT );                    // button
+
+    // !export: Type_Boolean
+    if( strEQ( name, "Type_Boolean" ) )
+        return wxConfigBase::Type_Boolean;
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
     r( wxBU_EXACTFIT );                 // button
 #endif
@@ -208,12 +191,16 @@ static double constant( const char *name, int arg )
     r( wxCLIP_CHILDREN );               // window
     r( wxCHOICEDLG_STYLE );
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
-    r( wxCHANGE_DIR );
+    r( wxCHANGE_DIR );                  // filedlg
     r( wxCLIP_SIBLINGS );               // window
 #endif
 
     r( wxCLEAR );                       // dc
     r( wxCOPY );                        // dc
+
+    r( wxCONFIG_USE_LOCAL_FILE );       // config
+    r( wxCONFIG_USE_GLOBAL_FILE );      // config
+    r( wxCONFIG_USE_RELATIVE_PATH );    // config
 
     r( wxCURSOR_ARROW );                // cursor
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
@@ -302,6 +289,16 @@ static double constant( const char *name, int arg )
     r( wxEVT_COMMAND_SPLITTER_DOUBLECLICKED );
 
     r( wxEVT_TIMER );
+
+#if defined(__WXMSW__)
+    r( wxEVT_TASKBAR_MOVE );
+    r( wxEVT_TASKBAR_LEFT_DOWN );
+    r( wxEVT_TASKBAR_LEFT_UP );
+    r( wxEVT_TASKBAR_RIGHT_DOWN );
+    r( wxEVT_TASKBAR_RIGHT_UP );
+    r( wxEVT_TASKBAR_LEFT_DCLICK );
+    r( wxEVT_TASKBAR_RIGHT_DCLICK );
+#endif
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
     r( wxEVT_COMMAND_FIND );
     r( wxEVT_COMMAND_FIND_NEXT );
@@ -472,6 +469,10 @@ static double constant( const char *name, int arg )
     r( wxFONTENCODING_CP1250 );         // font
     r( wxFONTENCODING_CP1251 );         // font
     r( wxFONTENCODING_CP1252 );         // font
+
+    // !export: Type_Float
+    if( strEQ( name, "Type_Float" ) )
+        return wxConfigBase::Type_Float;
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
@@ -561,6 +562,10 @@ static double constant( const char *name, int arg )
     r( wxITALIC );                      // font
 
     r( wxInRegion );                    // region
+
+    // !export: Type_Integer
+    if( strEQ( name, "Type_Integer" ) )
+        return wxConfigBase::Type_Integer;
     break;
   case 'J':
     r( wxJOIN_BEVEL );                  // pen
@@ -652,6 +657,14 @@ static double constant( const char *name, int arg )
         r( WXK_NUMLOCK );               // keycode
         r( WXK_SCROLL  );               // keycode
     }
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    r( wxKILL_OK );                     // process
+    r( wxKILL_BAD_SIGNAL );             // process
+    r( wxKILL_ACCESS_DENIED );          // process
+    r( wxKILL_NO_PROCESS );             // process
+    r( wxKILL_ERROR );                  // process
+#endif
     break;
   case 'L':
     r( wxLB_SINGLE );                   // listbox
@@ -1023,6 +1036,23 @@ static double constant( const char *name, int arg )
     r( wxSIZE_USE_EXISTING );           // window
     r( wxSIZE_ALLOW_MINUS_ONE );        // window
 
+    r( wxSIGNONE );                     // process
+    r( wxSIGHUP );                      // process
+    r( wxSIGINT );                      // process
+    r( wxSIGQUIT );                     // process
+    r( wxSIGILL );                      // process
+    r( wxSIGTRAP );                     // process
+    r( wxSIGABRT );                     // process
+    r( wxSIGEMT );                      // process
+    r( wxSIGFPE );                      // process
+    r( wxSIGKILL );                     // process
+    r( wxSIGBUS );                      // process
+    r( wxSIGSEGV );                     // process
+    r( wxSIGSYS );                      // process
+    r( wxSIGPIPE );                     // process
+    r( wxSIGALRM );                     // process
+    r( wxSIGTERM );                     // process
+
     r( wxSP_HORIZONTAL );               // spinbutton
     r( wxSP_VERTICAL );                 // spinbutton
     r( wxSP_ARROW_KEYS );               // spinbutton spinctrl
@@ -1161,7 +1191,9 @@ static double constant( const char *name, int arg )
     r( wxSYS_CAN_DRAW_FRAME_DECORATIONS );
     r( wxSYS_CAN_ICONIZE_FRAME );
 #endif
-
+    // !export: Type_String
+    if( strEQ( name, "Type_String" ) )
+        return wxConfigBase::Type_String;
     break;
   case 'T':
     r( wxTAB_TRAVERSAL );               // panel
@@ -1188,6 +1220,9 @@ static double constant( const char *name, int arg )
     break;
   case 'U':
     r( wxUnconstrained );               // layout constraints
+    // !export: Type_Unknown
+    if( strEQ( name, "Type_Unknown" ) )
+        return wxConfigBase::Type_Unknown;
 
     r( wxUSER_DASH );                   // pen
     break;
@@ -1216,16 +1251,10 @@ static double constant( const char *name, int arg )
 #undef r
   // now search for modules...
   {
-//#if 0
     wxPlConstantFunctions::Node* node;
-//#endif
-#if 0
-    MyList* node;
-#endif
     PL_CONST_FUNC* func;
     double ret;
 
-//#if 0
     for( node = s_functions().GetFirst(); node; node = node->GetNext() )
     {
       func = node->GetData();
@@ -1234,17 +1263,7 @@ static double constant( const char *name, int arg )
         return ret;
     }
   }
-//#endif
-#if 0
-    for( node = *s_functions(); node; node = node->m_next )
-    {
-      func = node->m_data;
-      ret = (*func)( name, arg );
-      if( !errno )
-        return ret;
-    }
-  }
-#endif
+
   WX_PL_CONSTANT_CLEANUP();
 /*
  not_there:
@@ -1446,6 +1465,13 @@ void SetConstants()
     sv_setiv( tmp, 2 );
 #else
     sv_setiv( tmp, 3 );
+#endif
+
+    tmp = get_sv( "Wx::_universal", 0 );
+#if defined(__WXUNIVERSAL__)
+    sv_setiv( tmp, 1 );
+#else
+    sv_setiv( tmp, 0 );
 #endif
 }
 

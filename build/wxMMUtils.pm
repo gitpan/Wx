@@ -69,7 +69,7 @@ sub merge_config {
         my @c;
         foreach my $i ( @b ) {
           foreach my $j ( @a ) {
-            push @c, " $i $j ";
+            push @c, " $j $i ";
           }
         }
 
@@ -81,7 +81,7 @@ sub merge_config {
         warn "non scalar key '$i'";
         $cfg{$i} = $cfg2{$i};
       } else {
-        $cfg{$1} .= ' ' . $cfg2{$i};
+        $cfg{$i} .= ' ' . $cfg2{$i};
       }
     } else {
       $cfg{$i} = $cfg2{$i};

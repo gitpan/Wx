@@ -13,19 +13,16 @@
 #include "cpp/streams.h"
 #include "cpp/streams.cpp"
 
-// for some strange reason this is not called under MinGW
-// so the HMODULE is retrieved from DynaLoader
-// ( BTW this is bad since NOTHING guarantees that the handle from
-//   DynaLoader is the HMODULE of the library: it happens to work... )
 #ifdef __WXMSW__
-/*
-BOOL WINAPI DllMain ( HANDLE hModule, DWORD fdwReason, LPVOID lpReserved )
+
+extern "C" 
+BOOL WINAPI DllMain( HANDLE hModule, DWORD fdwReason, LPVOID lpReserved )
 {
     if( fdwReason == DLL_PROCESS_ATTACH )
         wxSetInstance( (HINSTANCE)hModule );
     return TRUE;
 }
-*/
+
 #endif
 
 wxPliUserDataCD::~wxPliUserDataCD()
@@ -150,6 +147,7 @@ void wxPli_push_args( SV*** psp, const char* argtypes, va_list& args )
         case 's':
             svval = va_arg( args, SV* );
             XPUSHs( svval );
+            break;
         case 'O':
             oval = va_arg( args, wxObject* );
             XPUSHs( wxPli_object_2_sv( sv_newmortal(), oval ) );
@@ -175,6 +173,13 @@ void wxPli_push_args( SV*** psp, const char* argtypes, va_list& args )
 static SV* _key;
 static U32 _hash;
 
+static U32 calc_hash( const char* key, size_t klen )
+{
+    U32 h;
+    PERL_HASH( h, (char*)key, klen );
+    return h;
+}
+
 // precalculate key and hash value for "_WXTHIS"
 class wxHashModule:public wxModule {
     DECLARE_DYNAMIC_CLASS( wxHashModule );
@@ -183,17 +188,12 @@ public:
 
     bool OnInit()
     {
-        _key = newSVpv( "_WXTHIS", 7 );
-        _hash = 0;
+        const char* kname = "_WXTHIS";
+        const int klen = 7;
+        _key = newSVpvn( CHAR_P kname, klen );
+        _hash = calc_hash( kname, klen );
 
-        HV* hv = newHV();
-        HE* he = hv_store_ent( hv, _key, _key, 0 );
-
-        if( he ) _hash = HeHASH( he );
-        hv_undef( hv );
-        SvREFCNT_dec( hv );
-
-        return true;
+        return TRUE;
     };
 
     void OnExit()
@@ -365,6 +365,27 @@ void wxPli_object_set_deleteable( SV* object, bool deleteable )
     }
 }
 
+AV* wxPli_stringarray_2_av( const wxArrayString& strings )
+{
+    AV* av = newAV();
+    size_t i, n = strings.GetCount();
+    SV* tmp;
+
+    av_extend( av, n );
+    for( i = 0; i < n; ++i )
+    {
+#if wxUSE_UNICODE
+        tmp = newSVpv( strings[i].mb_str(wxConvUTF8), 0 );
+        SvUTF8_on( tmp );
+#else
+        tmp = newSVpv( CHAR_P strings[i].c_str(), 0 );
+#endif
+        av_store( av, i, tmp );
+    }
+
+    return av;
+}
+
 int wxPli_av_2_svarray( SV* avref, SV*** array )
 {
     SV** arr;
@@ -484,6 +505,34 @@ int wxPli_av_2_stringarray( SV* avref, wxString** array )
     {
         t = *av_fetch( av, i, 0 );
         WXSTRING_INPUT( arr[i], const char*, t );
+    }
+
+    *array = arr;
+
+    return n;
+}
+
+int wxPli_av_2_charparray( SV* avref, char*** array )
+{
+    char** arr;
+    int n, i;
+    AV* av;
+    SV* t;
+
+    if( !SvROK( avref ) || 
+        ( SvTYPE( (SV*) ( av = (AV*) SvRV( avref ) ) ) != SVt_PVAV ) )
+    {
+        croak( "the value is not an array reference" );
+        return 0;
+    }
+    
+    n = av_len( av ) + 1;
+    arr = new char*[ n ];
+
+    for( i = 0; i < n; ++i )
+    {
+        t = *av_fetch( av, i, 0 );
+        arr[i] = strdup( SvPV_nolen( t ) );
     }
 
     *array = arr;
@@ -838,6 +887,12 @@ void wxPli_sv_2_ostream( SV* scalar, wxPliOutputStream& stream )
 
 void wxPli_stream_2_sv( SV* scalar, wxStreamBase* stream, const char* package )
 {
+    if( !stream )
+    {
+        SvSetSV_nosteal( scalar, &PL_sv_undef );
+        return;
+    }
+
     static SV* tie = eval_pv
         ( "sub { local *o; my $c = shift; tie *o, $c, @_; return \\*o }", 1 );
     static SV* dummy = SvREFCNT_inc( tie );

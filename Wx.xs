@@ -45,7 +45,11 @@ WXPL_EXTERN_C_END
 #include <wx/msw/private.h>
 #endif
 
+#if defined(__WXGTK__) && WXPERL_W_VERSION_GE( 2, 3, 3 )
+int  WXDLLEXPORT wxEntryStart( int& argc, char** argv );
+#else
 int  WXDLLEXPORT wxEntryStart( int argc, char** argv );
+#endif
 int  WXDLLEXPORT wxEntryInitGui();
 void WXDLLEXPORT wxEntryCleanup();
 
@@ -133,6 +137,9 @@ void wxEntryCleanup()
 
 DEFINE_PLI_HELPERS( st_wxPliHelpers );
 
+#include <wx/confbase.h>
+typedef wxConfigBase::EntryType EntryType;
+
 MODULE=Wx PACKAGE=Wx
 
 BOOT:
@@ -144,24 +151,6 @@ BOOT:
   newXSproto( "Wx::_boot_GDI", boot_Wx_GDI, file, "$$" );
   SV* tmp = get_sv( "Wx::_exports", 1 );
   sv_setiv( tmp, (IV)(void*)&st_wxPliHelpers );
-
-#if defined(__WXMSW__)
-
-void
-_SetInstance( instance )
-    int instance
-  CODE:
-    wxSetInstance( (HINSTANCE)instance );
-
-#else
-
-void
-_SetInstance( instance )
-    int instance
-  CODE:
-    instance = instance;
-
-#endif
 
 void 
 Load()
@@ -199,6 +188,9 @@ INCLUDE: XS/Locale.xs
 INCLUDE: XS/Utils.xs
 INCLUDE: XS/Timer.xs
 INCLUDE: XS/Stream.xs
+INCLUDE: XS/TaskBarIcon.xs
+INCLUDE: XS/Config.xs
+INCLUDE: XS/Process.xs
 
 # this is here for debugging purpouses
 INCLUDE: XS/ClassInfo.xs
@@ -206,7 +198,7 @@ INCLUDE: XS/ClassInfo.xs
 #  //FIXME// tricky
 #if defined(__WXMSW__)
 #undef XS
-#define XS( name ) __declspec(dllexport) void name( pTHXo_ CV* cv )
+#define XS( name ) WXXS( name )
 #endif
 
 MODULE=Wx PACKAGE=Wx

@@ -1,3 +1,22 @@
+MISC:
+
+* tut & man in one file
+
+* wxGrid
+    GetDefaultEditor
+    GetDefaultRenderer
+    GetTable
+    SetDefaultEditor
+    SetDefaultRenderer
+    SetTable
+    RegisterDataType
+    GetDefaultEditorForCell
+    GetDefaultRendererForCell
+    GetDefaultEditorForType
+    GetDefaultRendererForType
+
+* Wx::PlGridCellEditor/Renderer
+
 PRIORITY NORMAL:
 
 * configuration system
@@ -10,7 +29,7 @@ PRIORITY NORMAL:
 * Wx::DataObject
     Wx::PlDataObject
 
-* move THIS from HV to the MAGIC?
+* move THIS from HV to MAGIC?
   
 * Wx::Bitmap, Wx::Icon, Wx::Cursor
     add missing constructors ( where applicable )
@@ -53,9 +72,6 @@ PRIORITY LOW:
     find a better solution yhan just 'croak' if OnInit
     returns a false value
 
-* ::wxCreateFileTipProvider, ::wxShowTip
-    implement
-
 * Wx::Help
     enable all Wx::*Help* available in the current setup
 
@@ -90,8 +106,6 @@ PRIORITY LOW:
     Wx::Pen
 
 DOCUMENTATTION:
-
-* Wx::MDIParentFrame
 
 -- not documented in wxWindows --
 

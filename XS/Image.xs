@@ -189,11 +189,7 @@ SV*
 Wx_Image::GetData()
   CODE:
     STRLEN len = THIS->GetWidth() * THIS->GetHeight() * 3;
-#if WXPERL_P_VERSION_GE( 5, 5, 0 ) || WXPERL_P_VERSION_GE( 5, 4, 5 )
     RETVAL = newSVpvn( (char*)THIS->GetData(), len );
-#else
-    RETVAL = newSVpv( (char*)THIS->GetData(), len );
-#endif
   OUTPUT:
     RETVAL
 
@@ -547,6 +543,15 @@ MODULE=Wx PACKAGE=Wx::XPMHandler
 
 Wx_XPMHandler*
 Wx_XPMHandler::new()
+
+#endif
+
+MODULE=Wx PACKAGE=Wx::IFFHandler
+
+#if wxPERL_USE_IFF
+
+Wx_IFFHandler*
+Wx_IFFHandler::new()
 
 #endif
 

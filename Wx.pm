@@ -21,15 +21,15 @@ require Exporter;
 require DynaLoader;
 
 use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
-  $_platform $_msw $_gtk $_motif $_wx_version);
+  $_platform $_universal $_msw $_gtk $_motif $_wx_version);
 
 $_msw = 1; $_gtk = 2; $_motif = 3;
 
 @ISA = qw(Exporter DynaLoader);
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 sub BEGIN{
-  @EXPORT_OK = qw(wxPOINT wxSIZE);
+  @EXPORT_OK = qw(wxPOINT wxSIZE wxUNIVERSAL);
   %EXPORT_TAGS = ( );
 }
 
@@ -102,8 +102,6 @@ sub _ovl_error {
 
 bootstrap Wx $VERSION;
 
-_SetInstance( $DynaLoader::dl_librefs[ $#DynaLoader::dl_librefs ] );
-
 {
   _boot_Constant( 'Wx', $VERSION );
   _boot_Events( 'Wx', $VERSION );
@@ -112,6 +110,9 @@ _SetInstance( $DynaLoader::dl_librefs[ $#DynaLoader::dl_librefs ] );
   _boot_Frames( 'Wx', $VERSION );
   _boot_GDI( 'Wx', $VERSION );
 }
+
+# set up wxUNIVERSAL, wxGTK, wxMSW, etc
+eval( $_universal ? "sub wxUNIVERSAL() { 1 }" : "sub wxUNIVERSAL() { 0 }" );
 
 require Wx::_Constants;
 

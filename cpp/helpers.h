@@ -72,10 +72,13 @@ WXPLDLL void FUNCPTR( wxPli_object_set_deleteable )( SV* object,
 WXPLDLL const char* FUNCPTR( wxPli_get_class )( SV* ref );
 
 WXPLDLL wxWindowID FUNCPTR( wxPli_get_wxwindowid )( SV* var );
-WXPLDLL int wxPli_av_2_stringarray( SV* avref, wxString** array );
+WXPLDLL int FUNCPTR( wxPli_av_2_stringarray )( SV* avref, wxString** array );
+WXPLDLL int wxPli_av_2_charparray( SV* avref, char*** array );
 WXPLDLL int wxPli_av_2_uchararray( SV* avref, unsigned char** array );
 WXPLDLL int wxPli_av_2_svarray( SV* avref, SV*** array );
 WXPLDLL int FUNCPTR( wxPli_av_2_intarray )( SV* avref, int** array );
+
+WXPLDLL AV* wxPli_stringarray_2_av( const wxArrayString& strings );
 
 void wxPli_delete_argv( void* argv, bool unicode );
 int wxPli_get_args_argc_argv( void* argv, bool unicode );
@@ -140,6 +143,7 @@ struct wxPliHelpers
     void ( * m_wxPli_object_set_deleteable )( SV* object, bool deleteable );
     const char* ( * m_wxPli_get_class )( SV* ref );
     wxWindowID ( * m_wxPli_get_wxwindowid )( SV* var );
+    int ( * m_wxPli_av_2_stringarray )( SV* avref, wxString** array );
 };
 
 #define DEFINE_PLI_HELPERS( name ) \
@@ -150,7 +154,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
  &wxPli_add_constant_function, &wxPli_remove_constant_function, \
  &wxPliVirtualCallback_FindCallback, &wxPliVirtualCallback_CallCallback, \
  &wxPli_object_is_deleteable, &wxPli_object_set_deleteable, &wxPli_get_class, \
- &wxPli_get_wxwindowid };
+ &wxPli_get_wxwindowid, &wxPli_av_2_stringarray };
 
 #define INIT_PLI_HELPERS( name ) \
   SV* wxpli_tmp = get_sv( "Wx::_exports", 1 ); \
@@ -171,7 +175,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
   wxPli_object_is_deleteable = name->m_wxPli_object_is_deleteable; \
   wxPli_object_set_deleteable = name->m_wxPli_object_set_deleteable; \
   wxPli_get_class = name->m_wxPli_get_class; \
-  wxPli_get_wxwindowid = name->m_wxPli_get_wxwindowid;
+  wxPli_get_wxwindowid = name->m_wxPli_get_wxwindowid; \
+  wxPli_av_2_stringarray = name->m_wxPli_av_2_stringarray;
 
 int wxCALLBACK ListCtrlCompareFn( long item1, long item2, long comparefn );
 
@@ -450,6 +455,24 @@ public:                                                                 \
 
 #define WXPLI_DEFINE_CLASS( name ) \
 WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPli##name, wx##name );
+
+// this should really, really, really be in compat.h,
+// but requires perl.h to be included
+#if WXPERL_P_VERSION_GE( 5, 4, 0 ) && !WXPERL_P_VERSION_GE( 5, 4, 5 )
+
+inline SV* newSVpvn( const char* sxx, size_t len )
+{
+    if( len > 0 )
+        return newSVpv( CHAR_P sxx, len );
+    else
+    {
+        SV* sv = newSViv( 0 );
+        sv_setpvn( sv, sxx, len );
+        return sv;
+    }
+}
+
+#endif
 
 // Local variables: //
 // mode: c++ //

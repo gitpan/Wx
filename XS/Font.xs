@@ -58,7 +58,7 @@ Wx_Font::GetFaceName()
 int
 Wx_Font::GetFamily()
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && WXPERL_W_VERSION_LE( 2, 3, 2 ) || defined( __WXPERL_FORCE__ )
 
 int
 Wx_Font::GetFontId()
@@ -86,6 +86,16 @@ Wx_Font::GetUnderlined()
 
 int
 Wx_Font::GetWeight()
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+bool
+Wx_Font::IsFixedWidth()
+
+bool
+Wx_Font::Ok()
+
+#endif
 
 void
 SetDefaultEncoding( encoding )

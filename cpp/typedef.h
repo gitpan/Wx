@@ -88,6 +88,7 @@ FD_TD( TextUrlEvent );
 FD_TD( TimerEvent );
 FD_TD( TreeEvent );
 FD_TD( UpdateUIEvent );
+FD_TD( ProcessEvent );
 
 // other classes
 
@@ -133,17 +134,28 @@ FD_TD( ColourDialog );
 #endif
 
 FD_TD( ComboBox );
+FD_TD( Config );
+FD_TD( ConfigBase );
 FD_TD( Control );
 FD_TD( ControlWithItems );
 FD_TD( Cursor );
 FD_TD( DC );
 FD_TD( Dialog );
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+#  if defined( __WXMSW__ ) || defined( __WXMAC__ )
 FD_TD( DirDialog );
+#  else
+FD_TD_NAME( DirDialog, GenericDirDialog );
+#  endif
+#else
+FD_TD( DirDialog );
+#endif
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 FD_TD( DrawObject );
 #endif
 FD_TD( DropTarget );
 FD_TD( EvtHandler );
+FD_TD( FileConfig );
 FD_TD( FileDialog );
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
 FD_TD( FindReplaceData );
@@ -153,7 +165,7 @@ FD_TD( FlexGridSizer );
 FD_TD( Font );
 FD_TD( FontData );
 
-#if defined( __WXMOTIF__ ) || defined( __WXMAC__ )
+#if defined( __WXMOTIF__ ) || defined( __WXMAC__ ) || defined(__WXUNIVERSAL__)
 FD_TD_NAME( FontDialog, GenericFontDialog );
 #else
 FD_TD( FontDialog );
@@ -197,15 +209,18 @@ FD_TD( MultiChoiceDialog );
 FD_TDS( NativeFontInfo );
 FD_TD( Notebook );
 FD_TD( NotebookSizer );
+FD_TD( Object );
 FD_TD( PaintDC );
 FD_TD( Palette );
 FD_TD( Panel );
 FD_TD( Pen );
 FD_TD( Point );
+FD_TD( Process );
 FD_TD( ProgressDialog );
 FD_TD( RadioBox );
 FD_TD( RadioButton );
 FD_TD( Rect );
+FD_TD( RegConfig );
 FD_TD( Region );
 FD_TD( SashWindow );
 FD_TD( ScreenDC );
@@ -229,6 +244,7 @@ FD_TD( StaticLine );
 FD_TD( StaticText );
 FD_TD( StatusBar );
 FD_TD( StopWatch );
+FD_TD( TaskBarIcon );
 FD_TD( TextCtrl );
 FD_TD( TextEntryDialog );
 FD_TD( Timer );
@@ -253,6 +269,7 @@ FD_TD( GIFHandler );
 FD_TD( JPEGHandler );
 FD_TD( TIFFHandler );
 FD_TD( XPMHandler );
+FD_TD( IFFHandler );
 
 FD_TD( StreamBase );
 FD_TD( InputStream );

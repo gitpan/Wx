@@ -118,6 +118,27 @@ sub EVT_KEY_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_KEY_DOWN, $_[1] ); }
 sub EVT_KEY_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_KEY_UP, $_[1] ); }
 
 #
+# Grid*Event
+#
+
+sub EVT_GRID_CELL_LEFT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_LEFT_CLICK, $_[1] ); }
+sub EVT_GRID_CELL_RIGHT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_RIGHT_CLICK, $_[1] ); }
+sub EVT_GRID_CELL_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_LEFT_DCLICK, $_[1] ); }
+sub EVT_GRID_CELL_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_RIGHT_DCLICK, $_[1] ); }
+sub EVT_GRID_LABEL_LEFT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_LEFT_CLICK, $_[1] ); }
+sub EVT_GRID_LABEL_RIGHT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_RIGHT_CLICK, $_[1] ); }
+sub EVT_GRID_LABEL_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_LEFT_DCLICK, $_[1] ); }
+sub EVT_GRID_LABEL_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_RIGHT_DCLICK, $_[1] ); }
+sub EVT_GRID_ROW_SIZE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_ROW_SIZE, $_[1] ); }
+sub EVT_GRID_COL_SIZE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_COL_SIZE, $_[1] ); }
+sub EVT_GRID_RANGE_SELECT($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_RANGE_SELECT, $_[1] ); }
+sub EVT_GRID_CELL_CHANGE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_CHANGE, $_[1] ); }
+sub EVT_GRID_SELECT_CELL($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_SELECT_CELL, $_[1] ); }
+sub EVT_GRID_EDITOR_SHOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_SHOWN, $_[1] ); }
+sub EVT_GRID_EDITOR_HIDDEN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_HIDDEN, $_[1] ); }
+sub EVT_GRID_EDITOR_CREATED($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_CREATED, $_[1] ); }
+
+#
 # HelpEvent
 #
 
@@ -178,6 +199,7 @@ sub EVT_LIST_COL_RIGHT_CLICK($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAN
 sub EVT_LIST_COL_BEGIN_DRAG($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_COL_BEGIN_DRAG, $_[2] ); }
 sub EVT_LIST_COL_DRAGGING($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_COL_DRAGGING, $_[2] ); }
 sub EVT_LIST_COL_END_DRAG($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_COL_END_DRAG, $_[2] ); }
+sub EVT_LIST_ITEM_FOCUSED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_LIST_ITEM_FOCUSED, $_[2] ); }
 
 #
 # MenuEvent
@@ -241,6 +263,12 @@ sub EVT_NOTEBOOK_PAGE_CHANGED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMA
 #
 
 sub EVT_PAINT($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_PAINT, $_[1] ); }
+
+#
+# ProcessEvent
+#
+
+sub EVT_END_PROCESS($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_END_PROCESS, $_[2] ); }
 
 #
 # SashEvent
@@ -321,6 +349,18 @@ sub EVT_TIMER($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_TIMER, $_[2] ); }
 sub EVT_SYS_COLOUR_CHANGED($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SYS_COLOUR_CHANGED, $_[1] ); }
 
 #
+# Taskbar
+#
+
+sub EVT_TASKBAR_MOVE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_MOVE, $_[1] ); }
+sub EVT_TASKBAR_LEFT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_DOWN, $_[1] ); }
+sub EVT_TASKBAR_LEFT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_UP, $_[1] ); }
+sub EVT_TASKBAR_RIGHT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_DOWN, $_[1] ); }
+sub EVT_TASKBAR_RIGHT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_UP, $_[1] ); }
+sub EVT_TASKBAR_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_DCLICK, $_[1] ); }
+sub EVT_TASKBAR_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_DCLICK, $_[1] ); }
+
+#
 # TreeEvent
 #
 
@@ -375,6 +415,7 @@ package Wx::MoveEvent;       @ISA = qw(Wx::Event);
 package Wx::NotebookEvent;   @ISA = qw(Wx::NotifyEvent);
 package Wx::NotifyEvent;     @ISA = qw(Wx::CommandEvent);
 package Wx::PaintEvent;      @ISA = qw(Wx::Event);
+package Wx::ProcessEvent;    @ISA = qw(Wx::Event);
 package Wx::QueryLayoutInfoEvent; @ISA = qw(Wx::Event);
 package Wx::SashEvent;       @ISA = qw(Wx::CommandEvent);
 package Wx::SizeEvent;       @ISA = qw(Wx::Event);
@@ -386,6 +427,10 @@ package Wx::TextUrlEvent;    @ISA = qw(Wx::CommandEvent);
 package Wx::TimerEvent;      @ISA = qw(Wx::Event);
 package Wx::TreeEvent;       @ISA = qw(Wx::NotifyEvent);
 package Wx::UpdateUIEvent;   @ISA = qw(Wx::CommandEvent);
+
+package Wx::SplitterEvent;
+
+if( $Wx::_wx_version >= 2.003003 ) { @ISA = qw(Wx::NotifyEvent) }
 
 1;
 

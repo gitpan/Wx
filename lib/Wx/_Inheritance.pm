@@ -32,7 +32,6 @@ package Wx::Choice;                     @ISA = qw(Wx::ControlWithItems);
 package Wx::ListBox;                    @ISA = qw(Wx::ControlWithItems);
 package Wx::Notebook;                   @ISA = qw(Wx::Control);
 package Wx::ToolBarBase;                @ISA = qw(Wx::Control);
-package Wx::ToolBar;                    @ISA = qw(Wx::ToolBarBase);
 package Wx::ToolBarSimple;              @ISA = qw(Wx::Control);
 package Wx::ToolBarToolBase;
 package Wx::StaticBitmap;               @ISA = qw(Wx::Control);
@@ -107,6 +106,10 @@ package Wx::GridSizer;                  @ISA = qw(Wx::Sizer);
 package Wx::FlexGridSizer;              @ISA = qw(Wx::GridSizer);
 package Wx::NotebookSizer;              @ISA = qw(Wx::Sizer);
 package Wx::PlSizer;                    @ISA = qw(Wx::Sizer);
+
+package Wx::TaskBarIcon;                @ISA = qw(Wx::EvtHandler);
+
+package Wx::Process;                    @ISA = qw(Wx::EvtHandler);
 
 if( $] >= 5.005 ) { require Tie::Handle; }
 
@@ -243,6 +246,17 @@ if( $Wx::_platform == $Wx::_gtk ) {
 } else {
   @ISA = qw(UNIVERSAL);
 }
+
+package Wx::PlValidator;
+
+# avoids a 'Attempt to free unreferenced scalar' warning
+sub DESTROY {print $_[0],"\n"}
+
+no strict;
+
+package Wx::ToolBar;
+
+@ISA = wxUNIVERSAL ? qw(Wx::ToolBarSimple) : qw(Wx::ToolBarBase);
 
 1;
 

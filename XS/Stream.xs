@@ -71,11 +71,7 @@ SV*
 Wx_InputStream::GETC()
   CODE:
     char value = THIS->GetC();
-#if WXPERL_P_VERSION_GE( 5, 5, 0 ) || WXPERL_P_VERSION_GE( 5, 4, 5 )
     RETVAL = newSVpvn( &value, 1 );
-#else
-    RETVAL = newSVpv( &value, 1 );
-#endif
   OUTPUT:
     RETVAL
 
@@ -110,7 +106,7 @@ Wx_InputStream::READLINE()
     if( THIS->Eof() ) { XSRETURN_UNDEF; }
 
     while( THIS->Read( &c, 1 ).LastRead() != 0 ) {
-        // printf("!%s!\n", RETVAL.c_str() );
+##        printf("!%s!\n", val.c_str() );
         val.Append( c );
         if( c == '\n' ) break;
     }

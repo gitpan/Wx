@@ -17,17 +17,84 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $Verbose);
 use ExtUtils::MakeMaker;
 
 # parse command line variables
-use vars qw($debug_mode $unicode_mode $extra_libs $extra_cflags $use_shared $use_dllexport);
+use vars qw($debug_mode $unicode_mode $extra_libs $extra_cflags
+            $use_shared $use_dllexport $o_help $o_mksymlinks);
 use vars qw($Arch);
+use Getopt::Long;
 
-LOOP: foreach ( @ARGV ) {
-  m/^DEBUG=(\d+)$/ && do { $debug_mode = $1 ; undef $_; next LOOP; };
-  m/^UNICODE=(\d+)$/ && do { $unicode_mode = $1; undef $_; next LOOP; };
-  m/^EXTRA_LIBS=(.*)$/ && do { $extra_libs = $1; undef $_; next LOOP; };
-  m/^EXTRA_CFLAGS=(.*)$/ && do { $extra_cflags = $1; undef $_; next LOOP; };
-  m/^USE_SHARED=(.*)$/ && do { $use_shared = $1; undef $_; next LOOP; };
-  m/^USE_DLLEXPORT=(.*)$/ && do { $use_dllexport = $1; undef $_; next LOOP; };
+my $result =
+GetOptions( 'debug' => \$debug_mode,
+            'unicode' => \$unicode_mode,
+            'extra-libs=s' => \$extra_libs,
+            'extra-cflags=s' => \$extra_cflags,
+            'mingw-shared!' => \$use_shared,
+            'use-dllexport!' => \$use_dllexport,
+            'help' => \$o_help,
+            'mksymlinks' => \$o_mksymlinks,
+          );
+
+if( $o_help || !$result ) {
+  print <<EOT;
+Usage: perl Makefile.PL [options]
+  --debug              enable debug symbols
+  --unicode            enable Unicode support ( MSW only )
+  --extra-libs=s       specify extra linking flags
+  --extra-cflags=s     specify extra compilation flags
+  --[no]mingw-shared   use 'g++ --shared' with MinGW ( MSW only )
+  --[no]use-dllexport  use 'dllexport' ( MSW only )
+  --mksymlinks         create a symlink tree ( only if filesystem
+                       supports that, of course )
+  --help               you are reading it
+EOT
+  exit 0;
 }
+
+# small helper, 5.005 does not have F::S::Functions
+sub splitpath {
+  return File::Spec->splitpath( @_ );
+}
+
+#
+# this can only work on Unix, patches welcome...
+#
+if( $o_mksymlinks ) {
+  require FindBin;
+  require ExtUtils::Manifest;
+  if( $] >= 5.005 ) {
+    require File::Spec;
+  } else {
+    eval <<'EOT'
+package File::Spec;
+
+# this will work on *nix, and only on files not in root,
+# but almost no-one will use 5.004 on non-unix by now...
+sub splitpath {
+  shift;
+  my $file = shift;
+  return ( undef, $file, undef ) if $file =~ m{/\.{1,2}$};
+  return ( undef, $file, $1 ) if $file =~ s{([^/]+)$}{};
+}
+EOT
+  }
+  require File::Path;
+
+  *mkpath = \&File::Path::mkpath;
+
+  my $manifest = MM->catfile( $FindBin::RealBin, 'MANIFEST' );
+  die "Can't find MANIFEST" unless -e $manifest;
+  my $files = ExtUtils::Manifest::maniread( $manifest );
+
+  foreach my $f ( keys %$files ) {
+    my( $fr, $to ) = ( "${FindBin::RealBin}/$f", $f );
+    my $dir;
+    ( undef, $dir, undef ) = splitpath( $to );
+    mkpath( $dir ) if length $dir && !-d $dir;
+    next if -l $to;
+    unlink $to or die "unlink '$to' failed: $!" if -e $to;
+    symlink( $fr, $to ) or die "symlink '$fr' => '$to' failed: $!";
+  }
+}
+
 $use_dllexport = 0 unless $use_shared;
 #FIXME// hack
 $extra_cflags .= ' -DWXPL_USE_DLLEXPORT=1 ' if $use_dllexport;
