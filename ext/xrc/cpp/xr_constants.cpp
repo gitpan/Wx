@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     04/04/2002
-// RCS-ID:      $Id: xr_constants.cpp,v 1.6 2004/02/29 14:30:40 mbarbon Exp $
-// Copyright:   (c) 2002-2003 Mattia Barbon
+// RCS-ID:      $Id: xr_constants.cpp,v 1.8 2005/01/04 17:15:09 mbarbon Exp $
+// Copyright:   (c) 2002-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,9 @@ double xrc_constant( const char* name, int arg )
     case 'X':
         r( wxXRC_USE_LOCALE );
         r( wxXRC_NO_SUBCLASSING );
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+        r( wxXRC_NO_RELOADING );
+#endif
 
         r( wxXML_ELEMENT_NODE );
         r( wxXML_ATTRIBUTE_NODE );

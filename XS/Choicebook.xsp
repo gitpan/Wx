@@ -1,38 +1,38 @@
 #############################################################################
-## Name:        XS/Listbook.xsp
-## Purpose:     XS++ for Wx::Listbook
+## Name:        XS/Choicebook.xsp
+## Purpose:     XS++ for Wx::Choicebook
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:     21/12/2003
-## RCS-ID:      $Id: Listbook.xsp,v 1.2 2004/12/30 13:49:19 mbarbon Exp $
-## Copyright:   (c) 2003 Mattia Barbon
+## Created:     04/01/2005
+## RCS-ID:      $Id: Choicebook.xsp,v 1.1 2005/01/04 17:15:07 mbarbon Exp $
+## Copyright:   (c) 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 %module{Wx};
 
-%typemap{wxListbook*}{simple};
+%typemap{wxChoicebook*}{simple};
 
 %{
-#if WXPERL_W_VERSION_GE( 2, 5, 1 )
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
 
-#include <wx/listbook.h>
+#include <wx/choicebk.h>
 %}
 
-%name{Wx::Listbook} class wxListbook
+%name{Wx::Choicebook} class wxChoicebook
 {
-    %name{newDefault} wxListbook()
-        %code{% RETVAL = new wxListbook();
+    %name{newDefault} wxChoicebook()
+        %code{% RETVAL = new wxChoicebook();
                 wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
              %};
-    %name{newFull} wxListbook(wxWindow *parent,
+    %name{newFull} wxChoicebook(wxWindow *parent,
                               wxWindowID id,
                               const wxPoint& pos = wxDefaultPosition,
                               const wxSize& size = wxDefaultSize,
                               long style = 0,
                               const wxString& name = wxEmptyString)
-        %code{% RETVAL = new wxListbook( parent, id, pos, size, style, name );
+        %code{% RETVAL = new wxChoicebook( parent, id, pos, size, style, name );
                 wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
              %};
 
@@ -43,7 +43,7 @@
                 long style = 0,
                 const wxString& name = wxEmptyString);
 
-    wxListView* GetListView();
+    bool IsVertical();
 };
 
 %{
@@ -53,7 +53,7 @@ new( ... )
     BEGIN_OVERLOAD()
         MATCH_VOIDM_REDISP( newDefault )
         MATCH_ANY_REDISP( newFull )
-    END_OVERLOAD( "Wx::Listbook::new" )
+    END_OVERLOAD( "Wx::Choicebook::new" )
 %}
 
 %{

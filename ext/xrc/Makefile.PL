@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     27/07/2001
-## RCS-ID:      $Id: Makefile.PL,v 1.13 2004/07/10 13:19:12 mbarbon Exp $
-## Copyright:   (c) 2001-2003 Mattia Barbon
+## RCS-ID:      $Id: Makefile.PL,v 1.15 2005/01/03 21:07:25 mbarbon Exp $
+## Copyright:   (c) 2001-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -17,7 +17,7 @@ use Wx::build::MakeMaker;
 wxWriteMakefile( NAME            => 'Wx::XRC',
                  VERSION_FROM    => 'lib/Wx/XRC.pm',
                  clean           => { FILES => 'cpp/factory.h cpp/reshnd.h' },
-                 WX_CORE_LIB     => 'xrc xml core base',
+                 WX_CORE_LIB     => 'xrc xml html adv core base',
                );
 
 # local variables:

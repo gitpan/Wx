@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm,v 1.72 2004/06/20 13:13:21 mbarbon Exp $
-## Copyright:   (c) 2000-2003 Mattia Barbon
+## RCS-ID:      $Id: Wx.pm,v 1.74 2005/01/04 22:10:49 mbarbon Exp $
+## Copyright:   (c) 2000-2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.21';
+$VERSION = '0.22';
 
 sub BEGIN{
   @EXPORT_OK = qw(wxPOINT wxSIZE wxTheApp);
@@ -111,9 +111,10 @@ sub load_dll {
       if( -f "$_/auto/Wx/Wx.dll" ) {
         $wx_path = "$_/auto/Wx";
         my $lib = ( glob "$wx_path/wx*${suff}_html*.dll" )[0];
+        next unless $lib;
         $lib =~ s{.*[/\\]([^/\\]+)$}{$1};
         $lib =~ m/^wx(?:msw)([^_]+)_html_([^\.]+)\.dll/i
-          or die "PANIC: name scheme for '$lib'";
+          or die "PANIC: name scheme for '$lib' in '$_'";
         $wx_pre = $1;
         $wx_post = $2;
         last;
