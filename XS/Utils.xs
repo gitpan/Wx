@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     09/02/2001
-## RCS-ID:      $Id: Utils.xs,v 1.31 2004/03/20 17:51:32 mbarbon Exp $
+## RCS-ID:      $Id: Utils.xs,v 1.34 2004/11/09 20:56:51 mbarbon Exp $
 ## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -197,7 +197,7 @@ IsMain()
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 
 bool
-wxShowTip( parent, tipProvider, showAtStartup = TRUE )
+wxShowTip( parent, tipProvider, showAtStartup = true )
     wxWindow* parent
     wxTipProvider* tipProvider
     bool showAtStartup
@@ -210,6 +210,30 @@ wxCreateFileTipProvider( filename, currentTip )
 void
 wxUsleep( ms )
     unsigned long ms
+  CODE:
+#if WXPERL_W_VERSION_LE( 2, 5, 2 )
+    wxUsleep( ms );
+#else
+    wxMilliSleep( ms );
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+
+void
+wxMicroSleep( ms )
+    unsigned long ms
+
+#endif
+
+void
+wxMilliSleep( ms )
+    unsigned long ms
+  CODE:
+#if WXPERL_W_VERSION_LE( 2, 5, 2 )
+    wxUsleep( ms );
+#else
+    wxMilliSleep( ms );
+#endif
 
 void
 wxSleep( sec )
@@ -219,7 +243,7 @@ bool
 wxYield()
 
 bool
-wxSafeYield( window = 0, onlyIfNeeded = FALSE )
+wxSafeYield( window = 0, onlyIfNeeded = false )
     wxWindow* window
     bool onlyIfNeeded
 

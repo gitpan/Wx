@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        wxThread.pm
+## Name:        demo/wxThread.pm
 ## Purpose:     wxPerl demo helper for threads
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:     30/ 3/2002
-## RCS-ID:      $Id: wxThread.pm,v 1.2 2003/05/04 17:35:18 mbarbon Exp $
+## Created:     30/03/2002
+## RCS-ID:      $Id: wxThread.pm,v 1.5 2004/12/08 17:50:56 mbarbon Exp $
 ## Copyright:   (c) 2002-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -88,7 +88,7 @@ sub DESTROY {
     #print "Join end\n";
   }
 
-  $this->SUPER::DESTROY();
+  #$this->SUPER::DESTROY();
   #print "Join leave\n";
 }
 
@@ -100,7 +100,7 @@ sub entry_point {
   threads::shared::share( $value );
 
   for(;;) {
-    Wx::Usleep( 200 + rand( 1000 ) );
+    Wx::MilliSleep( 200 + rand( 1000 ) );
 
     last unless $keep_going;
     my $x = Wx::PlThreadEvent->new( -1, $ThreadDemoWin::MY_ID, $value );

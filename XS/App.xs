@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: App.xs,v 1.22 2004/02/28 22:59:06 mbarbon Exp $
-## Copyright:   (c) 2000-2002 Mattia Barbon
+## RCS-ID:      $Id: App.xs,v 1.25 2004/11/01 16:30:16 mbarbon Exp $
+## Copyright:   (c) 2000-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -31,10 +31,10 @@ wxWakeUpIdle()
 
 MODULE=Wx PACKAGE=Wx::_App
 
-void
-End()
-  CODE:
-    wxEntryCleanup();
+## void
+## End()
+##   CODE:
+##     wxEntryCleanup();
 
 int
 Start( app, sub )
@@ -42,10 +42,6 @@ Start( app, sub )
     SV* sub
   CODE:
     // for Wx::Perl::SplashFast
-#if 0
-    if( wxTopLevelWindows.GetCount() > 0 )
-      croak( "Only one Wx::App instance allowed" );
-#endif
     if( !SvROK( sub ) || SvTYPE( SvRV( sub ) ) != SVt_PVCV )
       croak( "sub must be a CODE reference" );
 
@@ -55,7 +51,8 @@ Start( app, sub )
     app->SetAppName( app->argv[0] );
 #endif
 #if !WXPERL_W_VERSION_GE( 2, 5, 1 )
-    wxEntryInitGui();
+    if( !wxPerlAppCreated )
+        wxEntryInitGui();
 #endif
 
     SV* This = ST(0);
@@ -73,7 +70,6 @@ Start( app, sub )
 wxApp*
 wxApp::new()
   CODE:
-##    RETVAL = new wxPliApp( CLASS );
 #if !WXPERL_W_VERSION_GE( 2, 5, 1 )
     if( !wxTheApp )
         wxTheApp = new wxPliApp();
@@ -106,7 +102,7 @@ wxApp::GetClassName()
 bool
 wxApp::GetExitOnFrameDelete()
 
-Wx_Icon*
+wxIcon*
 wxApp::GetStdIcon( which )
     int which
   CODE:
@@ -131,7 +127,7 @@ wxApp::GetStdIcon( which )
   OUTPUT:
     RETVAL
 
-Wx_Window*
+wxWindow*
 wxApp::GetTopWindow()
 
 bool
@@ -148,6 +144,14 @@ wxApp::Initialized()
 
 int
 wxApp::MainLoop()
+  CODE:
+    RETVAL = THIS->MainLoop();
+    // hack for embedded case...
+#if defined( __WXMSW__ ) && !WXPERL_W_VERSION_GE( 2, 5, 0 )
+    wxPliApp::SetKeepGoing( (wxPliApp*) THIS, true );
+#endif
+    wxPliApp::DeletePendingObjects( THIS );
+  OUTPUT: RETVAL
 
 bool
 wxApp::Pending()
@@ -174,7 +178,7 @@ wxApp::SetExitOnFrameDelete( flag )
 
 void
 wxApp::SetTopWindow( window )
-    Wx_Window* window
+    wxWindow* window
 
 void
 wxApp::SetVendorName( name )
@@ -184,11 +188,26 @@ void
 wxApp::SetUseBestVisual( flag )
     bool flag
 
-#if WXPERL_W_VERSION_GE( 2, 3, 2 )
-
 void
 wxApp::Yield()
   CODE:
     THIS->wxApp::Yield();
+
+#if WXPERL_W_VERSION_GE( 2, 5, 2 )
+
+void
+wxApp::Exit()
+
+bool
+wxApp::ProcessIdle()
+
+bool
+wxApp::SendIdleEvents( window, event )
+    wxWindow* window
+    wxIdleEvent* event
+  C_ARGS: window, *event
+
+bool
+wxApp::IsActive()
 
 #endif

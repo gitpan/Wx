@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     16/08/2001
-## RCS-ID:      $Id: DropSource.xs,v 1.6 2004/03/02 21:12:35 mbarbon Exp $
+## RCS-ID:      $Id: DropSource.xs,v 1.8 2004/08/04 20:13:55 mbarbon Exp $
 ## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -15,7 +15,7 @@
 
 MODULE=Wx PACKAGE=Wx::DropSource
 
-#if defined( __WXMSW__ )
+#if defined( __WXMSW__ ) || defined( __WXMAC__ )
 
 wxDropSource*
 newCursorEmpty( CLASS, win = 0, cursorCopy = (wxCursor*)&wxNullCursor, cursorMove = (wxCursor*)&wxNullCursor, cursorStop = (wxCursor*)&wxNullCursor )
@@ -94,7 +94,7 @@ wxDropSource::GetDataObject()
   OUTPUT:
     RETVAL
   CLEANUP:
-    wxPli_object_set_deleteable( aTHX_ ST(0), FALSE );
+    wxPli_object_set_deleteable( aTHX_ ST(0), false );
 
 void
 wxDropSource::SetCursor( res, cursor )

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     01/10/2000
-// RCS-ID:      $Id: Wx.xs,v 1.60 2004/06/20 08:43:41 mbarbon Exp $
+// RCS-ID:      $Id: Wx.xs,v 1.63 2004/08/28 23:24:06 mbarbon Exp $
 // Copyright:   (c) 2000-2002 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -66,6 +66,8 @@ void WXDLLEXPORT wxEntryCleanup();
 #include "cpp/app.h"
 
 IMPLEMENT_APP_NO_MAIN(wxPliApp);
+static bool wxPerlAppCreated = false;
+static bool wxPerlInitialized = false;
 
 #undef THIS
 
@@ -119,7 +121,7 @@ int wxEntryStart( int argc, char** argv )
 #endif
 
     if (!wxApp::Initialize())
-        return FALSE;
+        return false;
 }
 
 int wxEntryInitGui()
@@ -159,6 +161,9 @@ typedef wxConfigBase::EntryType EntryType;
 WXPLI_BOOT_ONCE_EXP(Wx);
 #define boot_Wx wxPli_boot_Wx
 
+extern bool Wx_booted, Wx_Const_booted, Wx_Ctrl_booted,
+    Wx_Evt_booted, Wx_Wnd_booted, Wx_GDI_booted, Wx_Win_booted;
+
 MODULE=Wx PACKAGE=Wx
 
 BOOT:
@@ -190,9 +195,9 @@ BOOT:
 void 
 Load()
   CODE:
-    static bool initialized = false;
-    if( initialized ) { XSRETURN_EMPTY; }
-    initialized = true;
+    wxPerlAppCreated = wxTheApp != NULL && wxTheApp->Initialized();
+    if( wxPerlInitialized ) { XSRETURN_EMPTY; }
+    wxPerlInitialized = true;
 
     NV ver = wxMAJOR_VERSION + wxMINOR_VERSION / 1000.0 + 
         wxRELEASE_NUMBER / 1000000.0;
@@ -221,7 +226,7 @@ Load()
     tmp = get_sv( "Wx::_platform", 1 );
     sv_setiv( tmp, platform );
 
-    if( wxTopLevelWindows.GetCount() > 0 )
+    if( wxPerlAppCreated || wxTopLevelWindows.GetCount() > 0 )
         return;
 
     char** argv = 0;
@@ -248,7 +253,11 @@ SetOvlConstants()
 void
 UnLoad()
   CODE:
-    wxEntryCleanup();
+    Wx_booted = Wx_Const_booted = Wx_Ctrl_booted =
+        Wx_Evt_booted = Wx_Wnd_booted = Wx_GDI_booted = Wx_Win_booted = false;
+    if( wxPerlInitialized && !wxPerlAppCreated )
+        wxEntryCleanup();
+    wxPerlInitialized = false;
 
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
 
@@ -268,7 +277,7 @@ _load_plugin( string )
 #endif
 
 bool
-_xsmatch( avref, proto, required = -1, allow_more = FALSE )
+_xsmatch( avref, proto, required = -1, allow_more = false )
     SV* avref
     SV* proto
     int required

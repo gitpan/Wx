@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Frame.xs,v 1.22 2004/06/20 08:24:55 mbarbon Exp $
+## RCS-ID:      $Id: Frame.xs,v 1.25 2004/11/01 16:30:16 mbarbon Exp $
 ## Copyright:   (c) 2000-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -12,6 +12,7 @@
 
 #include <wx/frame.h>
 #include <wx/menu.h>
+#include <wx/icon.h>
 #if wxPERL_USE_MINIFRAME
 #include <wx/minifram.h>
 #endif
@@ -80,12 +81,24 @@ wxFrame::CreateToolBar( style = wxNO_BORDER | wxTB_HORIZONTAL, id = -1, name = w
     wxWindowID id
     wxString name
 
-Wx_Point*
+wxPoint*
 wxFrame::GetClientAreaOrigin()
   CODE:
     RETVAL = new wxPoint( THIS->GetClientAreaOrigin() );
   OUTPUT:
     RETVAL
+
+wxIcon*
+wxFrame::GetIcon()
+  CODE:
+    RETVAL = new wxIcon( THIS->GetIcon() );
+  OUTPUT: RETVAL
+
+wxIconBundle*
+wxFrame::GetIcons()
+  CODE:
+    RETVAL = new wxIconBundle( THIS->GetIcons() );
+  OUTPUT: RETVAL
 
 wxMenuBar*
 wxFrame::GetMenuBar()
@@ -122,7 +135,7 @@ void
 wxFrame::Maximize( maximize )
     bool maximize
 
-#ifdef __WXMAC__
+#if defined( __WXMAC__ ) && WXPERL_W_VERSION_GE( 2, 5, 2 )
 
 void
 wxFrame::MacSetMetalAppearance( ismetal )
@@ -142,7 +155,7 @@ wxFrame::OnCreateStatusBar( number, style, id, name )
 
 void
 wxFrame::SetIcon( icon )
-    Wx_Icon* icon
+    wxIcon* icon
   CODE:
     THIS->SetIcon( *icon );
 

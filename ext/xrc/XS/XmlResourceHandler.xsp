@@ -20,7 +20,7 @@
     if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, #METHOD ) )     \
     {                                                                         \
         SV* ret = wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,       \
-                                                     G_SCALAR );              \
+                                                     G_SCALAR, NULL );        \
         wxObject* val = (wxObject*)wxPli_sv_2_object( aTHX_ ret, NULL );      \
         SvREFCNT_dec( ret );                                                  \
         return val;                                                           \
@@ -57,7 +57,7 @@ public:
     wxPlXmlResourceHandler( const char* package )
         :m_callback( "Wx::XmlResourceHandler" )
     {
-        m_callback.SetSelf( wxPli_make_object( this, package ), TRUE );
+        m_callback.SetSelf( wxPli_make_object( this, package ), true );
     }
 
     DEC_V_CBACK_BOOL__WXXMLNODE_pure( CanHandle );
@@ -69,7 +69,9 @@ public:
     wxObject* GetParent() { return m_parent; }
     wxObject* GetInstance() { return m_instance; }
     wxWindow* GetParentAsWindow() { return m_parentAsWindow; }
+#if WXPERL_W_VERSION_LE( 2, 5, 2 )
     wxWindow* GetInstanceAsWindow() { return m_instanceAsWindow; }
+#endif
 
     bool IsOfClass( wxXmlNode* node, const wxString& className )
         { return wxXmlResourceHandler::IsOfClass( node, className ); }
@@ -169,7 +171,9 @@ wxPlXmlResourceHandler::new()
     wxObject* GetParent();
     wxObject* GetInstance();
     wxWindow* GetParentAsWindow();
+#if WXPERL_W_VERSION_LE( 2, 5, 2 )
     wxWindow* GetInstanceAsWindow();
+#endif
 
     bool IsOfClass( wxXmlNode* node, const wxString& className );
     wxString GetNodeContent( wxXmlNode* node );

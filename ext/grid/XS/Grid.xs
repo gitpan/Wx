@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/12/2001
-## RCS-ID:      $Id: Grid.xs,v 1.17 2004/06/01 19:27:15 mbarbon Exp $
+## RCS-ID:      $Id: Grid.xs,v 1.20 2004/11/23 22:10:54 mbarbon Exp $
 ## Copyright:   (c) 2001-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -54,16 +54,17 @@ wxGrid::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 
     wxString name
   CODE:
     RETVAL = new wxGrid( parent, id, pos, size, style, name );
+    wxPli_create_evthandler( aTHX_ RETVAL, CLASS );
   OUTPUT:
     RETVAL
 
 bool
-wxGrid::AppendCols( numCols = 1, updateLabels = TRUE )
+wxGrid::AppendCols( numCols = 1, updateLabels = true )
     int numCols
     bool updateLabels
 
 bool
-wxGrid::AppendRows( numRows = 1, updateLabels = TRUE )
+wxGrid::AppendRows( numRows = 1, updateLabels = true )
     int numRows
     bool updateLabels
 
@@ -71,21 +72,21 @@ void
 wxGrid::AutoSize()
 
 void
-wxGrid::AutoSizeColumn( col, setAsMin = TRUE )
+wxGrid::AutoSizeColumn( col, setAsMin = true )
     int col
     bool setAsMin
 
 void
-wxGrid::AutoSizeColumns( setAsMin = TRUE )
+wxGrid::AutoSizeColumns( setAsMin = true )
     bool setAsMin
 
 void
-wxGrid::AutoSizeRow( row, setAsMin = TRUE )
+wxGrid::AutoSizeRow( row, setAsMin = true )
     int row
     bool setAsMin
 
 void
-wxGrid::AutoSizeRows( setAsMin = TRUE )
+wxGrid::AutoSizeRows( setAsMin = true )
     bool setAsMin
 
 void
@@ -142,13 +143,13 @@ wxGrid::CreateGrid( numRows, numCols, selMode = wxGrid::wxGridSelectCells )
     wxGridSelectionModes selMode
 
 bool
-wxGrid::DeleteCols( pos = 0, numCols = 1, updateLabels = TRUE )
+wxGrid::DeleteCols( pos = 0, numCols = 1, updateLabels = true )
     int pos
     int numCols
     bool updateLabels
 
 bool
-wxGrid::DeleteRows( pos = 0, numRows = 1, updateLabels = TRUE )
+wxGrid::DeleteRows( pos = 0, numRows = 1, updateLabels = true )
     int pos
     int numRows
     bool updateLabels
@@ -166,27 +167,27 @@ void
 wxGrid::DisableDragColSize()
 
 void
-wxGrid::EnableCellEditControl( enable = TRUE )
+wxGrid::EnableCellEditControl( enable = true )
     bool enable
 
 void
-wxGrid::EnableDragColSize( enable = TRUE )
+wxGrid::EnableDragColSize( enable = true )
     bool enable
 
 void
-wxGrid::EnableDragGridSize( enable = TRUE )
+wxGrid::EnableDragGridSize( enable = true )
     bool enable
 
 void
-wxGrid::EnableDragRowSize( enable = TRUE )
+wxGrid::EnableDragRowSize( enable = true )
     bool enable
 
 void
-wxGrid::EnableEditing( enable = TRUE )
+wxGrid::EnableEditing( enable = true )
     bool enable
 
 void
-wxGrid::EnableGridLines( enable = TRUE )
+wxGrid::EnableGridLines( enable = true )
     bool enable
 
 void
@@ -450,6 +451,17 @@ wxGrid::GetRowSize( row )
     int row
 
 void
+wxGrid::GetSelectedCells()
+  PPCODE:
+    wxGridCellCoordsArray selection = THIS->GetSelectedCells();
+    EXTEND( SP, (IV) selection.GetCount() );
+
+    for( size_t i = 0; i < selection.GetCount(); ++i )
+      PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
+             new wxGridCellCoords( selection[i] ),
+             "Wx::GridCellCoords" ) );
+
+void
 wxGrid::GetSelectedCols()
   PPCODE:
     PUTBACK;
@@ -484,13 +496,13 @@ void
 wxGrid::HideCellEditControl()
 
 bool
-wxGrid::InsertCols( pos = 0, numCols = 1, updateLabels = TRUE )
+wxGrid::InsertCols( pos = 0, numCols = 1, updateLabels = true )
     int pos
     int numCols
     bool updateLabels
 
 bool
-wxGrid::InsertRows( pos = 0, numRows = 1, updateLabels = TRUE )
+wxGrid::InsertRows( pos = 0, numRows = 1, updateLabels = true )
     int pos
     int numRows
     bool updateLabels
@@ -530,7 +542,7 @@ bool
 wxGrid::IsSelection()
 
 bool
-wxGrid::IsVisibleXY( row, col, wholeCellVisible = TRUE )
+wxGrid::IsVisibleXY( row, col, wholeCellVisible = true )
     int row
     int col
     bool wholeCellVisible
@@ -540,7 +552,7 @@ wxGrid::IsVisibleXY( row, col, wholeCellVisible = TRUE )
     RETVAL
 
 bool
-wxGrid::IsVisibleCo( coords, wholeCellVisible = TRUE )
+wxGrid::IsVisibleCo( coords, wholeCellVisible = true )
     wxGridCellCoords* coords
     bool wholeCellVisible
   CODE:
@@ -617,7 +629,7 @@ void
 wxGrid::SelectAll()
 
 void
-wxGrid::SelectBlockXYWH( topRow, leftCol, bottomRow, rightCol, addToSelected = FALSE )
+wxGrid::SelectBlockXYWH( topRow, leftCol, bottomRow, rightCol, addToSelected = false )
     int topRow
     int leftCol
     int bottomRow
@@ -627,7 +639,7 @@ wxGrid::SelectBlockXYWH( topRow, leftCol, bottomRow, rightCol, addToSelected = F
     THIS->SelectBlock( topRow, leftCol, bottomRow, rightCol, addToSelected );
 
 void
-wxGrid::SelectBlockPP( topLeft, bottomRight, addToSelected = FALSE )
+wxGrid::SelectBlockPP( topLeft, bottomRight, addToSelected = false )
     wxGridCellCoords* topLeft
     wxGridCellCoords* bottomRight
     bool addToSelected
@@ -635,12 +647,12 @@ wxGrid::SelectBlockPP( topLeft, bottomRight, addToSelected = FALSE )
     THIS->SelectBlock( *topLeft, *bottomRight, addToSelected );
 
 void
-wxGrid::SelectCol( col, addToSelected = FALSE )
+wxGrid::SelectCol( col, addToSelected = false )
     int col
     bool addToSelected
 
 void
-wxGrid::SelectRow( row, addToSelected = FALSE )
+wxGrid::SelectRow( row, addToSelected = false )
     int row
     bool addToSelected
 
@@ -737,7 +749,7 @@ wxGrid::SetDefaultCellTextColour( colour )
     wxColour colour
 
 void
-wxGrid::SetDefaultColSize( width, resizeExistingCols = FALSE )
+wxGrid::SetDefaultColSize( width, resizeExistingCols = false )
     int width
     bool resizeExistingCols
 
@@ -756,7 +768,7 @@ wxGrid::SetDefaultRenderer( renderer )
     THIS->SetDefaultRenderer( renderer );
 
 void
-wxGrid::SetDefaultRowSize( height, resizeExistingCols = FALSE )
+wxGrid::SetDefaultRowSize( height, resizeExistingCols = false )
     int height
     bool resizeExistingCols
 
@@ -846,7 +858,7 @@ wxGrid::SetMargins( extraWidth, extraHeight )
     int extraHeight
 
 void
-wxGrid::SetReadOnly( row, col, isReadOnly = TRUE )
+wxGrid::SetReadOnly( row, col, isReadOnly = true )
     int row
     int col
     bool isReadOnly

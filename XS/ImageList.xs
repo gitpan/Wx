@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: ImageList.xs,v 1.8 2004/02/28 22:59:06 mbarbon Exp $
-## Copyright:   (c) 2000-2003 Mattia Barbon
+## RCS-ID:      $Id: ImageList.xs,v 1.10 2004/08/04 20:13:54 mbarbon Exp $
+## Copyright:   (c) 2000-2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -15,7 +15,7 @@
 MODULE=Wx PACKAGE=Wx::ImageList
 
 wxImageList*
-wxImageList::new( width, height, mask = TRUE, initialCount =1 )
+wxImageList::new( width, height, mask = true, initialCount =1 )
     int width
     int height
     bool mask
@@ -40,8 +40,8 @@ wxImageList::Add( ... )
 
 int
 wxImageList::AddBitmap( bitmap, mask = (wxBitmap*)&wxNullBitmap )
-    Wx_Bitmap* bitmap
-    Wx_Bitmap* mask
+    wxBitmap* bitmap
+    wxBitmap* mask
   CODE:
     RETVAL = THIS->Add( *bitmap, *mask );
   OUTPUT:
@@ -49,8 +49,8 @@ wxImageList::AddBitmap( bitmap, mask = (wxBitmap*)&wxNullBitmap )
 
 int
 wxImageList::AddWithColourMask( bitmap, colour )
-    Wx_Bitmap* bitmap
-    Wx_Colour* colour
+    wxBitmap* bitmap
+    wxColour* colour
   CODE:
     RETVAL = THIS->Add( *bitmap, *colour );
   OUTPUT:
@@ -58,16 +58,16 @@ wxImageList::AddWithColourMask( bitmap, colour )
 
 int
 wxImageList::AddIcon( icon )
-    Wx_Icon* icon
+    wxIcon* icon
   CODE:
     RETVAL = THIS->Add( *icon );
   OUTPUT:
     RETVAL
 
 bool
-wxImageList::Draw( index, dc, x, y, flags = wxIMAGELIST_DRAW_NORMAL, solidBackground = FALSE )
+wxImageList::Draw( index, dc, x, y, flags = wxIMAGELIST_DRAW_NORMAL, solidBackground = false )
     int index
-    Wx_DC* dc
+    wxDC* dc
     int x
     int y
     int flags
@@ -114,8 +114,8 @@ wxImageList::Replace( ... )
 bool
 wxImageList::ReplaceBitmap( index, bitmap, mask = (wxBitmap*)&wxNullBitmap )
     int index
-    Wx_Bitmap* bitmap
-    Wx_Bitmap* mask
+    wxBitmap* bitmap
+    wxBitmap* mask
   CODE:
     RETVAL = THIS->Replace( index, *bitmap, *mask );
   OUTPUT:
@@ -126,7 +126,7 @@ wxImageList::ReplaceBitmap( index, bitmap, mask = (wxBitmap*)&wxNullBitmap )
 bool
 wxImageList::ReplaceBitmap( index, bitmap )
     int index
-    Wx_Bitmap* bitmap
+    wxBitmap* bitmap
   CODE:
     RETVAL = THIS->Replace( index, *bitmap );
   OUTPUT:
@@ -137,7 +137,7 @@ wxImageList::ReplaceBitmap( index, bitmap )
 bool
 wxImageList::ReplaceIcon( index, icon )
     int index
-    Wx_Icon* icon
+    wxIcon* icon
   CODE:
     RETVAL = THIS->Replace( index, *icon );
   OUTPUT:

@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        wxNotebookSizer.pm
+## Name:        demo/wxNotebookSizer.pm
 ## Purpose:     wxPerl demo helper for Wx::NotebookSizer
 ## Author:      Mattia Barbon
 ## Modified by:
-## Created:      9/ 6/2002
-## RCS-ID:      
+## Created:     09/06/2002
+## RCS-ID:      $Id: wxNotebookSizer.pm,v 1.5 2004/11/23 22:12:27 mbarbon Exp $
 ## Copyright:   (c) 2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -90,7 +90,6 @@ EOT
                                wxDefaultPosition, [100, 100] );
   $page2_sz->Add( $page2, 0, wxALL, 5 );
   $notebook->AddPage( $page2, 'Button' );
-  #$notebook->SetSizer( $nbsizer );
 
   $top_sizer->Add( $nbsizer, 1, wxGROW );
 
