@@ -19,9 +19,15 @@
 #include <wx/layout.h>
 #include <stdarg.h>
 
+#include "cpp/compat.h"
+#include "cpp/chkconfig.h"
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -38,7 +44,6 @@
 #include <wx/msw/winundef.h>
 #endif // __WXMSW__
 
-#include "cpp/compat.h"
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 
@@ -174,6 +179,13 @@ Wx_Window::FindWindow( i )
 void
 Wx_Window::Fit()
 
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+void
+Wx_Window::Freeze()
+
+#endif
+
 Wx_Colour*
 Wx_Window::GetBackgroundColour()
   CODE:
@@ -226,8 +238,21 @@ Wx_Window::GetClientSizeXY()
     PUSHs( sv_2mortal( newSViv( x ) ) );
     PUSHs( sv_2mortal( newSViv( y ) ) );
 
-# Wx_DropTarget*
-# Wx_Window::GetDropTarget()
+#if wxPERL_USE_DRAG_AND_DROP
+
+Wx_DropTarget*
+Wx_Window::GetDropTarget()
+  CLEANUP:
+    wxPli_object_set_deleteable( ST(0), FALSE );
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+Wx_Window*
+Wx_Window::GetDefaultItem()
+
+#endif
 
 Wx_EvtHandler*
 Wx_Window::GetEventHandler()
@@ -252,14 +277,14 @@ Wx_Window::GetForegroundColour()
 Wx_Window*
 Wx_Window::GetGrandParent()
 
-#if __WXMSW__
+#if defined(__WXMSW__)
 
 long
 Wx_Window::GetHandle()
 
 #endif // __WXMSW__
 
-#if WXPERL_W_VERSION_GE( 2, 3 ) || defined( __WXPERL_FORCE__ )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 wxString
 Wx_Window::GetHelpText()
@@ -377,8 +402,12 @@ Wx_Window::GetValidator()
 long
 Wx_Window::GetWindowStyleFlag()
 
+#if WXPERL_W_VERSION_LE( 2, 2, 1 )
+
 void
 Wx_Window::InitDialog()
+
+#endif
 
 bool
 Wx_Window::IsEnabled()
@@ -502,6 +531,18 @@ Wx_Window::ScreenToClientXY( x, y )
     PUSHs( sv_2mortal( newSViv( (IV) x ) ) );
     PUSHs( sv_2mortal( newSViv( (IV) y ) ) );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+bool
+Wx_Window::ScrollLines( lines )
+    int lines
+
+bool
+Wx_Window::ScrollPages( lines )
+    int lines
+
+#endif
+
 void
 Wx_Window::ScrollWindow( x, y, rect = 0 )
     int x
@@ -551,6 +592,25 @@ Wx_Window::SetCursor( cursor )
   CODE:
     THIS->SetCursor( *cursor );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+Wx_Window*
+Wx_Window::SetDefaultItem( window )
+    Wx_Window* window
+
+#endif
+
+#if wxPERL_USE_DRAG_AND_DROP
+
+void
+Wx_Window::SetDropTarget( target )
+    Wx_DropTarget* target
+  CODE:
+    wxPli_object_set_deleteable( ST(1), FALSE );
+    THIS->SetDropTarget( target );
+
+#endif
+
 void
 Wx_Window::SetEventHandler( handler )
     Wx_EvtHandler* handler
@@ -568,7 +628,7 @@ Wx_Window::SetForegroundColour( colour )
   CODE:
     THIS->SetForegroundColour( *colour );
 
-#if WXPERL_W_VERSION_GE( 2, 3 ) || defined( __WXPERL_FORCE__ )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 void
 Wx_Window::SetHelpText( text )
@@ -691,6 +751,13 @@ Wx_Window::SetWindowStyleFlag( style )
 bool
 Wx_Window::Show( show )
     bool show
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+void
+Wx_Window::Thaw()
+
+#endif
 
 bool
 Wx_Window::TransferDataFromWindow()

@@ -8,11 +8,15 @@ run
 
 build/nmake.mak
 build/gmake.mak
+build/Any_OS.pm
 build/Any_wx_config.pm
+build/MacOSX_GCC.pm
 build/Win32_MSVC.pm
 build/Win32_MinGW.pm
 build/wxConfig.pm
+build/wxMMUtils.pm
 build/Tests_Helper.pm
+build/Win32.pm
 
 docs/bugs.txt
 docs/changes.txt
@@ -20,10 +24,13 @@ docs/install.txt
 docs/todo.txt
 
 script/make_exp_list.pl
+script/make_ovl_list.pl
 script/pipe.pl
 
 t/1_load.t
 t/2_inheritance.t
+t/3_event.t
+t/4_userdata.t
 
 lib/Wx/App.pm
 lib/Wx/Bitmap.pm
@@ -47,6 +54,7 @@ lib/Wx/Rect.pm
 lib/Wx/Region.pm
 lib/Wx/ScreenDC.pm
 lib/Wx/Sizer.pm
+lib/Wx/SplashScreen.pm
 lib/Wx/StaticBitmap.pm
 lib/Wx/Timer.pm
 lib/Wx/ToolBar.pm
@@ -155,6 +163,7 @@ XS/Cursor.xs
 XS/DC.xs
 XS/Dialog.xs
 XS/EvtHandler.xs
+XS/FindReplaceDialog.xs
 XS/Font.xs
 XS/FontDialog.xs
 XS/Frame.xs
@@ -194,6 +203,7 @@ XS/Stream.xs
 XS/TextCtrl.xs
 XS/Timer.xs
 XS/TreeCtrl.xs
+XS/ToggleButton.xs
 XS/ToolBar.xs
 XS/ToolTip.xs
 XS/Utils.xs
@@ -206,6 +216,7 @@ XS/TextEntryDialog.xs
 XS/MessageDialog.xs
 
 cpp/app.h
+cpp/chkconfig.h
 cpp/compat.h
 cpp/constants.h
 cpp/controls.h
@@ -222,6 +233,7 @@ cpp/sizer.h
 cpp/splitterwindow.h
 cpp/streams.h
 cpp/timer.h
+cpp/tipprovider.h
 cpp/typedef.h
 cpp/validators.h
 cpp/v_cback.h
@@ -232,6 +244,24 @@ cpp/e_cback.cpp
 cpp/helpers.cpp
 cpp/streams.cpp
 cpp/v_cback.cpp
+
+ext/dnd/DND.xs
+ext/dnd/Makefile.PL
+ext/dnd/XS/Clipboard.xs
+ext/dnd/XS/DataObject.xs
+ext/dnd/XS/DropFiles.xs
+ext/dnd/XS/DropSource.xs
+ext/dnd/XS/DropTarget.xs
+ext/dnd/cpp/dataobject.h
+ext/dnd/cpp/dn_constants.cpp
+ext/dnd/cpp/dn_typedef.h
+ext/dnd/cpp/dropsource.h
+ext/dnd/cpp/droptarget.h
+ext/dnd/lib/Wx/DropSource.pm
+ext/dnd/lib/Wx/DND.pm
+ext/dnd/t/1_load.t
+ext/dnd/t/2_inheritance.t
+ext/dnd/typemap
 
 ext/filesys/FS.xs
 ext/filesys/Makefile.PL
@@ -268,6 +298,17 @@ ext/html/typemap
 ext/html/t/1_load.t
 ext/html/t/2_inheritance.t
 
+ext/mdi/MDI.xs
+ext/mdi/Makefile.PL
+ext/mdi/XS/MDIChildFrame.xs
+ext/mdi/XS/MDIParentFrame.xs
+ext/mdi/cpp/md_typedef.h
+ext/mdi/cpp/mdi.h
+ext/mdi/lib/Wx/MDI.pm
+ext/mdi/t/1_load.t
+ext/mdi/t/2_inheritance.t
+ext/mdi/typemap
+
 ext/print/Makefile.PL
 ext/print/Print.xs
 ext/print/XS/PageSetupDialog.xs
@@ -287,3 +328,33 @@ ext/print/typemap
 ext/print/t/1_load.t
 ext/print/t/2_inheritance.t
 
+ext/xrc/Makefile.PL
+ext/xrc/XRC.xs
+ext/xrc/XS/XmlResource.xs
+ext/xrc/cpp/xr_typedef.h
+ext/xrc/lib/Wx/XRC.pm
+ext/xrc/typemap
+ext/xrc/t/1_load.t
+ext/xrc/t/2_inheritance.t
+
+demo/DataObjects.pm
+demo/DragDrop.pm
+demo/MDI.pm
+demo/Printing.pm
+demo/Unicode.pm
+demo/XRC.pm
+demo/data/fs.zip
+demo/data/html/index.html
+demo/data/html/page.html
+demo/data/locale/en/wxperl_demo.po
+demo/data/locale/fr/wxperl_demo.po
+demo/data/locale/it/wxperl_demo.po
+demo/data/resource.xrc
+demo/data/logo.jpg
+demo/demo.pl
+demo/wxClipboard.pm
+demo/wxFileSystem.pm
+demo/wxHtmlWindow.pm
+demo/wxListCtrl.pm
+demo/wxLocale.pm
+demo/wxSplashScreen.pm

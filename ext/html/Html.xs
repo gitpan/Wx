@@ -15,9 +15,15 @@
 #include <wx/defs.h>
 #include <stdarg.h>
 
+#include "cpp/compat.h"
+#include "cpp/chkconfig.h"
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -41,7 +47,6 @@
 #include <wx/msw/winundef.h>
 #endif // __WXMSW__
 
-#include "cpp/compat.h"
 #if !WXPL_MSW_EXPORTS
 #define _WXP_DEFINE_CLASSNAME 1
 #endif
@@ -63,7 +68,7 @@ INCLUDE: XS/HtmlEasyPrinting.xs
 #include "cpp/ht_constants.cpp"
 
 #  //FIXME//tricky
-#if __WXMSW__
+#if defined(__WXMSW__)
 #undef XS
 #define XS( name ) __declspec(dllexport) void name( pTHXo_ CV* cv )
 #endif

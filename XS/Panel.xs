@@ -16,17 +16,25 @@
 MODULE=Wx PACKAGE=Wx::Panel
 
 Wx_Panel*
-Wx_Panel::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTAB_TRAVERSAL, name = wxPanelNameStr )
-    Wx_Window* parent
-    wxWindowID id
-    Wx_Point pos
-    Wx_Size size
-    long style
-    wxString name
-  CODE:
-    RETVAL = new wxPliPanel( CLASS, parent, id, pos, size, style, name );
-  OUTPUT:
-    RETVAL
+Wx_Panel::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTAB_TRAVERSAL, name = wxPanelNameStr )
+  CASE: items == 1
+    CODE:
+      RETVAL = new wxPliPanel( CLASS );
+    OUTPUT:
+      RETVAL
+  CASE:
+      Wx_Window* parent
+      wxWindowID id
+      Wx_Point pos
+      Wx_Size size
+      long style
+      wxString name
+    CODE:
+      RETVAL = new wxPliPanel( CLASS, parent, id, pos, size, style, name );
+    OUTPUT:
+      RETVAL
+
+#if !WXPERL_W_VERSION_GE( 2, 3, 0 )
 
 Wx_Button*
 Wx_Panel::GetDefaultItem()
@@ -41,6 +49,8 @@ Wx_Panel::InitDialog()
 void
 Wx_Panel::SetDefaultItem( btn )
     Wx_Button* btn
+
+#endif
 
 bool
 Wx_Panel::TransferDataFromWindow()

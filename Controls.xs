@@ -42,10 +42,18 @@
 
 #include "cpp/compat.h"
 #include "cpp/typedef.h"
+#include "cpp/chkconfig.h"
 
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+#include <wx/tglbtn.h>
+#endif
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -147,6 +155,7 @@ INCLUDE: XS/StaticBitmap.xs
 INCLUDE: XS/StaticBox.xs
 INCLUDE: XS/StaticLine.xs
 INCLUDE: XS/StaticText.xs
+INCLUDE: XS/ToggleButton.xs
 INCLUDE: XS/TextCtrl.xs
 INCLUDE: XS/TreeCtrl.xs
 

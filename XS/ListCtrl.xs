@@ -14,20 +14,43 @@
 
 MODULE=Wx_Evt PACKAGE=Wx::ListEvent
 
+Wx_ListEvent*
+Wx_ListEvent::new( eventType = wxEVT_NULL, id = 0 )
+    wxEventType eventType
+    int id
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+long
+Wx_ListEvent::GetCacheFrom()
+
+long
+Wx_ListEvent::GetCacheTo()
+
+#endif
+
 int
 Wx_ListEvent::GetCode()
 
 long
 Wx_ListEvent::GetIndex()
 
+#if WXPERL_W_VERSION_LE( 2, 3, 1 )
+
 long
 Wx_ListEvent::GetOldIndex()
+
+#endif
 
 int
 Wx_ListEvent::GetColumn()
 
+#if WXPERL_W_VERSION_LE( 2, 3, 1 )
+
 bool
 Wx_ListEvent::Cancelled()
+
+#endif
 
 Wx_Point*
 Wx_ListEvent::GetPoint()
@@ -173,6 +196,82 @@ Wx_ListItem::GetFont()
     RETVAL = new wxFont( THIS->GetFont() );
   OUTPUT:
     RETVAL
+
+MODULE=Wx PACKAGE=Wx::ListItemAttr
+
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+Wx_ListItemAttr*
+Wx_ListItemAttr::new( ... )
+  CASE: items == 1
+    CODE:
+      RETVAL = new wxListItemAttr();
+    OUTPUT:
+      RETVAL
+  CASE: items == 4
+    INPUT:
+      Wx_Colour text = NO_INIT
+      Wx_Colour back = NO_INIT
+      Wx_Font* font = NO_INIT
+    CODE:
+      text = *(Wx_Colour *) wxPli_sv_2_object( ST(1), wxPlColourName );
+      back = *(Wx_Colour *) wxPli_sv_2_object( ST(2), wxPlColourName );
+      font = (Wx_Font *) wxPli_sv_2_object( ST(3), wxPlFontName );
+      RETVAL = new wxListItemAttr( text, back, *font );
+    OUTPUT:
+      RETVAL
+  CASE:
+    CODE:
+      croak( "Usage: Wx::ListItemAttr::new(THIS [, text, back, font ] )" );
+
+void
+Wx_ListItemAttr::DESTROY()
+
+void
+Wx_ListItemAttr::SetTextColour( text )
+    Wx_Colour text
+
+void
+Wx_ListItemAttr::SetBackgroundColour( back )
+    Wx_Colour back
+
+void
+Wx_ListItemAttr::SetFont( font )
+    Wx_Font* font
+  CODE:
+    THIS->SetFont( *font );
+
+bool
+Wx_ListItemAttr::HasTextColour()
+
+bool
+Wx_ListItemAttr::HasBackgroundColour()
+
+bool
+Wx_ListItemAttr::HasFont()
+
+Wx_Colour*
+Wx_ListItemAttr::GetTextColour()
+  CODE:
+    RETVAL = new wxColour( THIS->GetTextColour() );
+  OUTPUT:
+    RETVAL
+
+Wx_Colour*
+Wx_ListItemAttr::GetBackgroundColour()
+  CODE:
+    RETVAL = new wxColour( THIS->GetBackgroundColour() );
+  OUTPUT:
+    RETVAL
+
+Wx_Font*
+Wx_ListItemAttr::GetFont()
+  CODE:
+    RETVAL = new wxFont( THIS->GetFont() );
+  OUTPUT:
+    RETVAL
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::ListCtrl
 
@@ -447,6 +546,22 @@ Wx_ListCtrl::InsertImageStringItem( index, label, image )
   OUTPUT: 
     RETVAL
 
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+bool
+Wx_ListCtrl::IsVirtual()
+
+void
+Wx_ListCtrl::RefreshItem( item )
+    long item
+
+void
+Wx_ListCtrl::RefreshItems( itemFrom, itemTo )
+    long itemFrom
+    long itemTo
+
+#endif
+
 bool
 Wx_ListCtrl::ScrollList( dx, dy )
     int dx
@@ -470,6 +585,14 @@ void
 Wx_ListCtrl::SetImageList( imagelist, which )
     Wx_ImageList* imagelist
     int which
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+void
+Wx_ListCtrl::SetItemCount( count )
+    long count
+
+#endif
 
 bool
 Wx_ListCtrl::SetItemInfo( info )
@@ -538,3 +661,56 @@ Wx_ListCtrl::SortItems( function )
         (long)function );
   OUTPUT:
     RETVAL
+
+MODULE=Wx PACKAGE=Wx::ListView
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+Wx_ListView*
+Wx_ListView::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = "listCtrl" )
+    Wx_Window* parent
+    wxWindowID id
+    Wx_Point pos
+    Wx_Size size
+    long style
+    Wx_Validator* validator
+    wxString name
+  CODE:
+    RETVAL = new wxPliListView( CLASS, parent, id, pos, size, style,
+        *validator, name );
+  OUTPUT:
+    RETVAL
+
+void
+Wx_ListView::Select( n, on )
+    long n
+    bool on
+
+void
+Wx_ListView::SetColumnImage( col, image )
+    int col
+    int image
+
+void
+Wx_ListView::ClearColumnImage( col )
+    int col
+
+void
+Wx_ListView::Focus( index )
+    long index
+
+long
+Wx_ListView::GetFocusedItem()
+
+long
+Wx_ListView::GetFirstSelected()
+
+long
+Wx_ListView::GetNextSelected( item )
+    long item
+
+bool
+Wx_ListView::IsSelected( index )
+    long index
+
+#endif

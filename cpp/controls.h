@@ -46,10 +46,34 @@ WXPLI_DECLARE_CLASS_9( ListBox, TRUE,
                        wxWindow*, wxWindowID, const wxPoint&,
                        const wxSize&, int, const wxString*, long, 
                        const wxValidator&, const wxString& );
-WXPLI_DECLARE_CLASS_7( ListCtrl, TRUE,
+
+class wxPliListCtrl:public wxListCtrl
+{
+    WXPLI_DECLARE_DYNAMIC_CLASS( wxPliListCtrl );
+    WXPLI_DECLARE_V_CBACK();
+public:
+    WXPLI_DEFAULT_CONSTRUCTOR( wxPliListCtrl, "Wx::ListCtrl", TRUE );
+    WXPLI_CONSTRUCTOR_7( wxPliListCtrl, "Wx::ListCtrl", TRUE,
+                         wxWindow*, wxWindowID, const wxPoint&,
+                         const wxSize&, long, const wxValidator&,
+                         const wxString& );
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    wxString OnGetItemText( long item, long column ) const;
+    int OnGetItemImage( long item ) const;
+    wxListItemAttr* OnGetItemAttr( long item ) const;
+#endif
+};
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+WXPLI_DECLARE_CLASS_7( ListView, TRUE,
                        wxWindow*, wxWindowID, const wxPoint&,
-                       const wxSize&, long, const wxValidator&,
-                       const wxString& );
+                       const wxSize&, long, 
+                       const wxValidator&, const wxString& );
+
+#endif
+
 WXPLI_DECLARE_CLASS_6( Notebook, TRUE,
                        wxWindow*, wxWindowID, const wxPoint&,
                        const wxSize&, long, const wxString& );
@@ -86,10 +110,24 @@ WXPLI_DECLARE_CLASS_10( Slider, TRUE,
                         wxWindow*, wxWindowID, int, int, int,
                         const wxPoint&, const wxSize&, long,
                         const wxValidator&, const wxString& );
-WXPLI_DECLARE_CLASS_7( StaticBitmap, TRUE,
-                       wxWindow*, wxWindowID, const wxBitmap&,
-                       const wxPoint&, const wxSize&, long,
-                       const wxString& );
+
+class wxPliStaticBitmap:public wxStaticBitmap
+{
+    WXPLI_DECLARE_DYNAMIC_CLASS( wxPliStaticBitmap );
+    WXPLI_DECLARE_SELFREF();
+public:
+    WXPLI_DEFAULT_CONSTRUCTOR( wxPliStaticBitmap, "Wx::StaticBitmap", TRUE );
+    WXPLI_CONSTRUCTOR_7( wxPliStaticBitmap, "Wx::StaticBitmap", TRUE,
+                         wxWindow*, wxWindowID, const wxBitmap&,
+                         const wxPoint&, const wxSize&, long,
+                         const wxString& );
+    WXPLI_CONSTRUCTOR_7( wxPliStaticBitmap, "Wx::StaticBitmap", TRUE,
+                         wxWindow*, wxWindowID, const wxIcon&,
+                         const wxPoint&, const wxSize&, long,
+                         const wxString& );
+};
+
+
 WXPLI_DECLARE_CLASS_7( StaticBox, TRUE,
                        wxWindow*, wxWindowID, const wxString&,
                        const wxPoint&, const wxSize&, long,
@@ -105,6 +143,15 @@ WXPLI_DECLARE_CLASS_8( TextCtrl, TRUE,
                        wxWindow*, wxWindowID, const wxString&,
                        const wxPoint&, const wxSize&, long,
                        const wxValidator&, const wxString& );
+
+#if WXPERL_W_VERSION_GE( 2, 3, 1 ) && wxPERL_USE_TOGGLEBTN
+
+WXPLI_DECLARE_CLASS_8( ToggleButton, TRUE,
+                       wxWindow*, wxWindowID, const wxString&,
+                       const wxPoint&, const wxSize&, long,
+                       const wxValidator&, const wxString& );
+
+#endif
 
 class wxPliTreeCtrl:public wxTreeCtrl
 {

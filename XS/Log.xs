@@ -25,6 +25,15 @@ AddTraceMask( mask )
   CODE:
     wxLog::AddTraceMask( mask );
 
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+void
+ClearTraceMasks()
+  CODE:
+    wxLog::ClearTraceMasks();
+
+#endif
+
 void
 RemoveTraceMask( mask )
     wxString mask

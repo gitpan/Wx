@@ -15,9 +15,15 @@
 #include <wx/defs.h>
 #include <stdarg.h>
 
+#include "cpp/compat.h"
+#include "cpp/chkconfig.h"
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -40,7 +46,6 @@
 #endif // __WXMSW__
 
 // some helper functions/classes/macros
-#include "cpp/compat.h"
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 
@@ -62,7 +67,7 @@ INCLUDE: XS/Palette.xs
 
 MODULE=Wx PACKAGE=Wx
 
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_Rect*
 GetClientDisplayRect()

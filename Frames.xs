@@ -5,7 +5,7 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2001 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -15,9 +15,15 @@
 #include <wx/defs.h>
 #include <stdarg.h>
 
+#include "cpp/compat.h"
+#include "cpp/chkconfig.h"
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -39,7 +45,6 @@
 #include <wx/msw/winundef.h>
 #endif // __WXMSW__
 
-#include "cpp/compat.h"
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 
@@ -64,5 +69,6 @@ INCLUDE: XS/ProgressDialog.xs
 INCLUDE: XS/SingleChoiceDialog.xs
 INCLUDE: XS/MultiChoiceDialog.xs
 INCLUDE: XS/FontDialog.xs
+INCLUDE: XS/FindReplaceDialog.xs
 
 MODULE=Wx_Wnd

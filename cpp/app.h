@@ -5,10 +5,14 @@
 // Modified by:
 // Created:     29/10/2000
 // RCS-ID:      
-// Copyright:   (c) 2000 Mattia Barbon
+// Copyright:   (c) 2000-2001 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
+
+#ifdef Yield
+#undef Yield
+#endif
 
 class wxPliApp:public wxApp
 {
@@ -21,6 +25,9 @@ public:
     bool OnInit();
     int OnExit();
     int MainLoop();
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    DEC_V_CBACK_BOOL__BOOL( Yield );
+#endif
 };
 
 inline wxPliApp::wxPliApp( const char* package )
@@ -77,7 +84,7 @@ int wxPliApp::OnExit()
     if( wxPliVirtualCallback_FindCallback( &m_callback, "OnExit" ) )
     {
         SV* ret = wxPliVirtualCallback_CallCallback( &m_callback, G_SCALAR );
-        int val = SvIV( ret );
+        int val = SvOK( ret ) ? SvIV( ret ) : 0;
         SvREFCNT_dec( ret );
 
         return val;
@@ -85,6 +92,10 @@ int wxPliApp::OnExit()
     else
         return wxApp::OnExit();
 }
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+DEF_V_CBACK_BOOL__BOOL( wxPliApp, wxApp, Yield );
+#endif
 
 WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPliApp, wxApp );
 

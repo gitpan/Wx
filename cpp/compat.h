@@ -10,33 +10,41 @@
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
 
+#if !defined( PERL_REVISION ) && !defined( PATCHLEVEL )
 #include <patchlevel.h>
+#endif
 
 // < 5.6 does not define PERL_
 #ifdef PERL_REVISION
-#define WXPERL_P_VERSION_EQ( V, S ) \
- ( ( PERL_REVISION == (V) ) && ( PERL_VERSION == (S) ) )
-#define WXPERL_P_VERSION_GE( V, S ) \
+#define WXPERL_P_VERSION_EQ( V, S, P ) \
+ ( ( PERL_REVISION == (V) ) && ( PERL_VERSION == (S) ) && ( PERL_SUBVERSION == (P) ) )
+#define WXPERL_P_VERSION_GE( V, S, P ) \
  ( ( PERL_REVISION > (V) ) || \
-   ( PERL_REVISION == (V) && PERL_VERSION >= (S) ) )
+   ( PERL_REVISION == (V) && PERL_VERSION > (S) ) || \
+   ( PERL_REVISION == (V) && PERL_VERSION == (S) && PERL_SUBVERSION >= (P) ) )
+
 #else
-#define WXPERL_P_VERSION_EQ( V, S ) \
- ( ( 5 == (V) ) && ( PATCHLEVEL == (S) ) )
-#define WXPERL_P_VERSION_GE( V, S ) \
+#define WXPERL_P_VERSION_EQ( V, S, P ) \
+ ( ( 5 == (V) ) && ( PATCHLEVEL == (S) ) && ( SUBVERSION == (P) ) )
+#define WXPERL_P_VERSION_GE( V, S, P ) \
  ( ( 5 > (V) ) || \
-   ( 5 == (V) && PATCHLEVEL >= (S) ) )
+   ( 5 == (V) && PATCHLEVEL > (S) ) || \
+   ( 5 == (V) && PATCHLEVEL == (S) && SUBVERSION >= (P) ) )
+
 #endif
 
-#define WXPERL_W_VERSION_EQ( V, S ) \
- ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION == (S) )
-#define WXPERL_W_VERSION_GE( V, S ) \
+#define WXPERL_W_VERSION_EQ( V, S, P ) \
+ ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION == (S) && wxRELEASE_NUMBER == (P) )
+#define WXPERL_W_VERSION_GE( V, S, P ) \
  ( ( wxMAJOR_VERSION > (V) ) || \
-   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION >= (S) ) )
-#define WXPERL_W_VERSION_LE( V, S ) \
+   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION > (S) ) || \
+   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION == (S) && wxRELEASE_NUMBER >= (P) ) )
+#define WXPERL_W_VERSION_LE( V, S, P ) \
  ( ( wxMAJOR_VERSION < (V) ) || \
-   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION <= (S) ) )
+   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION < (S) ) || \
+   ( wxMAJOR_VERSION == (V) && wxMINOR_VERSION == (S) && wxRELEASE_NUMBER <= (P) ) )
 
-#if WXPERL_P_VERSION_EQ( 5, 4 )
+#if WXPERL_P_VERSION_GE( 5, 4, 0 ) && !WXPERL_P_VERSION_GE( 5, 5, 0 )
 
 // some functions have changed from char* to const char*, and I want
 // a stronger type check (under Perl 5.6 CHAR_P is defined to
@@ -58,7 +66,7 @@
 
 #endif
 
-#if WXPERL_P_VERSION_EQ( 5, 5 )
+#if WXPERL_P_VERSION_GE( 5, 5, 0 ) && !WXPERL_P_VERSION_GE( 5, 6, 0 )
 
 #define CHAR_P (char*)
 #define get_sv perl_get_sv
@@ -71,7 +79,7 @@
 
 #endif
 
-#if WXPERL_P_VERSION_EQ( 5, 6 )
+#if WXPERL_P_VERSION_GE( 5, 6, 0 )
 
 #define CHAR_P
 
@@ -80,7 +88,7 @@
 #define WXINTL_NO_GETTEXT_MACRO 1
 
 // Win32 dll stuff
-#if __WXMSW__ && WXPL_USE_DLLEXPORT
+#if defined(__WXMSW__) && WXPL_USE_DLLEXPORT
 #define WXPL_MSW_EXPORTS 1
 #else
 #define WXPL_MSW_EXPORTS 0
@@ -101,3 +109,13 @@
 #    define FUNCPTR( name ) name
 #  endif
 #endif
+
+// puts extern "C" around perl headers
+#if defined(__CYGWIN__)
+#define WXPL_EXTERN_C_START extern "C" {
+#define WXPL_EXTERN_C_END   }
+#else
+#define WXPL_EXTERN_C_START
+#define WXPL_EXTERN_C_END
+#endif
+

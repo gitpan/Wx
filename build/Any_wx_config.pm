@@ -10,14 +10,18 @@
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
-package wxConfig;
+package Any_wx_config;
 
 use strict;
+use Config;
+use wxMMUtils;
+use base 'Any_OS';
 
 #
 # wx-config-like
 #
-sub wx_config {
+sub my_wx_config {
+  my $class = shift;
   my $options = join ' ', map { "--$_" } @_;
 
   my $t = qx(wx-config $options);
@@ -42,7 +46,9 @@ sub ld_is_GNU {
   my $pipe = MM->catfile( top_dir(), 'script', 'pipe.pl' );
 
   return 1 if $ld =~ m/gcc|g\+\+/i;
-  return 1 if qx($^X $pipe $ld -v) =~ m/gcc|g\+\+|\sgnu\s/i;
+  my $output = qx($^X $pipe $ld -v);
+  return 1 if $output =~ m/gcc|g\+\+|\sgnu\s/i;
+  return 1 if $output =~ m/.*see no perl executable.*perl is required to build dynamic libraries/is;
 
   return;
 }
@@ -51,8 +57,8 @@ sub configure {
   my( $cccflags, $libs );
 
   my( %config ) =
-    ( LIBS => $extra_libs . ' ',
-      CCFLAGS => $extra_cflags . ' -I. ',
+    ( LIBS => $wxConfig::extra_libs . ' ',
+      CCFLAGS => $wxConfig::extra_cflags . ' -I. ',
       ( building_extension() ?
         ( INC => ' -I' . top_dir() . ' ',
           DEFINE => ' -DWXPL_EXT ',
@@ -61,15 +67,17 @@ sub configure {
       ),
     );
 
-  if( cc_is_GNU( $Config{cc} ) ) { $config{CC} = 'g++' }
-  else { warn 'unknown compiler: set EXTRA_CFLAGS to force C++ mode'
-           unless length( $extra_cflags ) > 1 }
+  my $cxx = wx_config( 'cxx' );
+  $config{CC} = $cxx;
 
-  if( $debug_mode ) { $config{CCFLAGS} .= ' -g ' }
+  if( $wxConfig::debug_mode ) {
+    $config{CCFLAGS} .= ' -g ';
+    $config{OPTIMIZE} = ' ';
+  }
 
-  if( ld_is_GNU( $Config{ld} ) ) { $config{LD} = 'g++' }
+  if( ld_is_GNU( $Config{ld} ) ) { $config{LD} = "$cxx -shared" }
 
-  $cccflags = wx_config( 'cflags' );
+  $cccflags = wx_config( 'cxxflags' );
   $libs = wx_config( 'libs' );
 
   foreach ( split ' ', $cccflags ) {
@@ -80,16 +88,15 @@ sub configure {
 
   $config{LIBS} .= ' ' . $libs;
 
-  if( $Verbose >= 1 ) {
-    foreach (keys %config) {
-      print( $_ ," =>", $config{$_}, "\n" );
-    }
-  }
-
   \%config;
 }
 
-sub wxConfig::sysdep_postamble {}
+sub wx_lib {
+  my( $this, $lib ) = @_;
+  $lib =~ s/^\s*(.*?)\s*/$1/;
+
+  return " -l$lib ";
+}
 
 1;
 

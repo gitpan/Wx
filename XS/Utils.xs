@@ -13,11 +13,24 @@
 #include <wx/busyinfo.h>
 #include <wx/settings.h>
 #include <wx/caret.h>
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+#include <wx/snglinst.h>
+#include <wx/splash.h>
+#endif
 #include <wx/utils.h>
+#include <wx/debug.h>
+#include <wx/tipdlg.h>
+#include "cpp/tipprovider.h"
+
+#if !WXPERL_W_VERSION_GE( 2, 3, 1 )
+#if !defined(__WXMSW__) || defined(__WXMICROWIN__)
+  #include  <signal.h>      // for SIGTRAP used by wxTrap()
+#endif  //Win/Unix
+#endif
 
 MODULE=Wx PACKAGE=Wx::CaretSuspend
 
-#if WXPERL_W_VERSION_GE( 2, 3 ) || defined( __WXPERL_FORCE__ )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_CaretSuspend*
 Wx_CaretSuspend::new( window )
@@ -25,6 +38,28 @@ Wx_CaretSuspend::new( window )
 
 void
 Wx_CaretSuspend::DESTROY()
+
+#endif
+
+MODULE=Wx PACKAGE=Wx::_SplashScreenCpp
+
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+Wx_SplashScreen*
+Wx_SplashScreen::new( bitmap, splashStyle, milliseconds, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSIMPLE_BORDER|wxFRAME_FLOAT_ON_PARENT )
+    Wx_Bitmap* bitmap
+    long splashStyle
+    int milliseconds
+    Wx_Window* parent
+    wxWindowID id
+    Wx_Point pos
+    Wx_Size size
+    long style
+  CODE:
+    RETVAL = new wxSplashScreen( *bitmap, splashStyle, milliseconds, parent,
+        id, pos, size, style );
+  OUTPUT:
+    RETVAL
 
 #endif
 
@@ -80,6 +115,28 @@ Wx_StopWatch::Resume()
 long
 Wx_StopWatch::Time()
 
+MODULE=Wx PACKAGE=Wx::SingleInstanceChecker
+
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+#if wxUSE_SNGLINST_CHECKER
+
+Wx_SingleInstanceChecker*
+Wx_SingleInstanceChecker::new()
+
+void
+Wx_SingleInstanceChecker::DESTROY()
+
+bool
+Wx_SingleInstanceChecker::Create( name, path = wxEmptyString )
+    wxString name
+    wxString path
+
+bool
+Wx_SingleInstanceChecker::IsAnotherRunning()
+
+#endif
+#endif
+
 MODULE=Wx PACKAGE=Wx::SystemSettings
 
 Wx_Colour*
@@ -106,7 +163,49 @@ GetSystemMetric( index )
   OUTPUT:
     RETVAL
 
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+bool
+GetCapability( index )
+    int index
+  CODE:
+    RETVAL = wxSystemSettings::GetCapability( index );
+  OUTPUT:
+    RETVAL
+
+#endif
+
+MODULE=Wx PACKAGE=Wx::TipProvider
+
+Wx_TipProvider*
+Wx_TipProvider::new( currentTip )
+    size_t currentTip
+  CODE:
+    RETVAL = new wxPliTipProvider( CLASS, currentTip );
+  OUTPUT:
+    RETVAL
+
+size_t
+Wx_TipProvider::GetCurrentTip()
+
+void
+Wx_TipProvider::SetCurrentTip( number )
+    size_t number
+  CODE:
+    ((wxPliTipProvider*)THIS)->SetCurrentTip( number );
+
 MODULE=Wx PACKAGE=Wx PREFIX=wx
+
+bool
+wxShowTip( parent, tipProvider, showAtStartup = TRUE )
+    Wx_Window* parent
+    Wx_TipProvider* tipProvider
+    bool showAtStartup
+
+Wx_TipProvider*
+wxCreateFileTipProvider( filename, currentTip )
+    wxString filename
+    size_t currentTip
 
 bool
 wxYield()
@@ -118,3 +217,27 @@ wxSafeYield( window = 0 )
 bool
 wxYieldIfNeeded()
 
+void
+wxTrap()
+  CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+    wxTrap();
+#else
+#if defined(__WXMSW__) && !defined(__WXMICROWIN__)
+    DebugBreak();
+#elif defined(__WXMAC__)
+#if 0
+#if __powerc
+    Debugger();
+#else
+    SysBreak();
+#endif
+#endif
+#elif defined(__UNIX__)
+#if 0
+    raise(SIGTRAP);
+#endif
+#else
+    // TODO
+#endif // Win/Unix
+#endif

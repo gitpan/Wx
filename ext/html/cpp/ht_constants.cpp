@@ -28,13 +28,25 @@ double html_constant( const char* name, int arg )
     case 'H':
         r( wxHF_TOOLBAR );
         r( wxHF_FLATTOOLBAR );
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+        r( wxHF_FLAT_TOOLBAR );
+#endif
         r( wxHF_CONTENTS );
         r( wxHF_INDEX );
         r( wxHF_SEARCH );
         r( wxHF_BOOKMARKS );
         r( wxHF_OPENFILES );
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+        r( wxHF_OPEN_FILES );
+#endif
         r( wxHF_PRINT );
         r( wxHF_DEFAULTSTYLE );
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+        r( wxHF_MERGE_BOOKS );
+        r( wxHF_ICONS_BOOK );
+        r( wxHF_ICONS_BOOK_CHAPTER );
+        r( wxHF_ICONS_FOLDER );
+#endif
         break;
     case 'P':
         r( wxPAGE_ODD );

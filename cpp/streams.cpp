@@ -105,7 +105,7 @@ size_t wxPliInputStream::OnSysRead( void* buffer, size_t size )
     SPAGAIN;
 
     SV* sv_read_count = POPs;
-    size_t read_count;
+    size_t read_count = 0;
 
     m_lasterror = wxSTREAM_NO_ERROR;
     if( !SvOK( sv_read_count ) )
@@ -181,7 +181,7 @@ size_t wxPliOutputStream::OnSysWrite( const void* buffer, size_t size )
     ENTER;
     SAVETMPS;
 
-#if WXPERL_P_VERSION_GE( 5, 5 )
+#if WXPERL_P_VERSION_GE( 5, 5, 0 ) || WXPERL_P_VERSION_GE( 5, 4, 5 )
     SV* target = sv_2mortal( newSVpvn( CHAR_P ( const char*)buffer, size ) );
 #else
     SV* target = sv_2mortal( newSVpv( CHAR_P ( const char*)buffer, size ) );
@@ -197,7 +197,7 @@ size_t wxPliOutputStream::OnSysWrite( const void* buffer, size_t size )
     SPAGAIN;
 
     SV* sv_write_count = POPs;
-    size_t write_count;
+    size_t write_count = 0;
 
     m_lasterror = wxSTREAM_NO_ERROR;
     if( !SvOK( sv_write_count ) )

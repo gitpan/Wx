@@ -17,7 +17,7 @@ make install       # (4)
    ...
    against the samples in the 'samples' subdirectory
    before installing
-4) you may need administrator/root privileges to install
+4) you may need Administrator/root privileges to install
 
 SPECIFYING THE INSTALLATION PATH
 
@@ -52,7 +52,7 @@ ADDITIONAL FLAGS
 In addition to ExtUtils::MakeMaker flags wxPerl Makefile.PL accepts
 
 * DEBUG={0|1} 
-  Currently only under Win32 VC++ ( and MinGW, but is not tested )
+  Currently only under Win32 or GCC
   adds debugging information to the library
 
 * EXTRA_LIBS={extra libraries}

@@ -20,9 +20,15 @@
 #include <wx/window.h>
 #include <stdarg.h>
 
+#include "cpp/compat.h"
+#include "cpp/chkconfig.h"
+
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
@@ -37,7 +43,6 @@
 #include <wx/msw/winundef.h>
 #endif // __WXMSW__
 
-#include "cpp/compat.h"
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 
@@ -58,17 +63,21 @@ MODULE=Wx_Evt PACKAGE=Wx::Event
 # GetObjectType
 # SetEventObject
 
+#if WXPERL_W_VERSION_LE( 2, 3, 1 )
+
 Wx_Event*
 Wx_Event::new( id = 0 )
     int id
 
-# void
-# Wx_Event::DESTROY()
+#endif
 
 void
-Wx_Event::Destroy()
-  CODE:
-    delete THIS;
+Wx_Event::DESTROY()
+
+# void
+# Wx_Event::Destroy()
+#   CODE:
+#     delete THIS;
 
 wxEventType
 Wx_Event::GetEventType()
@@ -150,21 +159,21 @@ Wx_CommandEvent::SetString( string )
 
 MODULE=Wx_Evt PACKAGE=Wx::ActivateEvent
 
-# Wx_ActivateEvent*
-# Wx_ActivateEvent::new( type = 0, active = TRUE, id = 0 )
-#     wxEventType type
-#     bool active
-#     int id
+Wx_ActivateEvent*
+Wx_ActivateEvent::new( type = 0, active = TRUE, id = 0 )
+    wxEventType type
+    bool active
+    int id
 
 bool
 Wx_ActivateEvent::GetActive()
 
 MODULE=Wx_Evt PACKAGE=Wx::CloseEvent
 
-# Wx_CloseEvent*
-# Wx_CloseEvent::new( commandEventType = 0, id = 0 )
-#     wxEventType commandEventType
-#     int id
+Wx_CloseEvent*
+Wx_CloseEvent::new( commandEventType = 0, id = 0 )
+    wxEventType commandEventType
+    int id
 
 bool
 Wx_CloseEvent::CanVeto()
@@ -184,41 +193,12 @@ void
 Wx_CloseEvent::Veto( veto = TRUE )
     bool veto
 
-MODULE=Wx_Evt PACKAGE=Wx::DropFilesEvent
-
-void
-Wx_DropFilesEvent::GetFiles()
-  PPCODE:
-    wxString* files = THIS->GetFiles();
-    int i, max = THIS->GetNumberOfFiles();
-    EXTEND( SP, max );
-    for( i = 0; i < max; ++i )
-    {
-#if wxUSE_UNICODE
-      SV* tmp = sv_2mortal( newSVpv( CHAR_P files[i].mb_str(wxConvUTF8), 0 ) );
-      SvUTF8_on( tmp );
-      PUSHs( tmp );
-#else
-      PUSHs( sv_2mortal( newSVpv( CHAR_P files[i].c_str(), 0 ) ) );
-#endif
-    }
-
-int
-Wx_DropFilesEvent::GetNumberOfFiles()
-
-Wx_Point*
-Wx_DropFilesEvent::GetPosition()
-  CODE:
-    RETVAL = new wxPoint( THIS->GetPosition() );
-  OUTPUT:
-    RETVAL
-
 MODULE=Wx_Evt PACKAGE=Wx::EraseEvent
 
-# Wx_EraseEvent*
-# Wx_EraseEvent::new( id = 0, dc = 0 )
-#     int id
-#     Wx_DC* dc
+Wx_EraseEvent*
+Wx_EraseEvent::new( id = 0, dc = 0 )
+    int id
+    Wx_DC* dc
 
 Wx_DC*
 Wx_EraseEvent::GetDC()
@@ -229,16 +209,25 @@ Wx_EraseEvent::GetDC()
 
 MODULE=Wx_Evt PACKAGE=Wx::FocusEvent
 
-# Wx_FocusEvent*
-# Wx_FocusEvent::new( eventType = 0, id = 0 )
-#     wxEventType eventType
-#     int id
+Wx_FocusEvent*
+Wx_FocusEvent::new( eventType = 0, id = 0 )
+    wxEventType eventType
+    int id
+
+MODULE=Wx_Evt PACKAGE=Wx::IconizeEvent
+
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+bool
+Wx_IconizeEvent::Iconized()
+
+#endif
 
 MODULE=Wx_Evt PACKAGE=Wx::KeyEvent
 
-# Wx_KeyEvent*
-# Wx_KeyEvent::new( keyEventType )
-#     wxEventType keyEventType
+Wx_KeyEvent*
+Wx_KeyEvent::new( keyEventType )
+    wxEventType keyEventType
 
 bool
 Wx_KeyEvent::AltDown()
@@ -266,9 +255,10 @@ Wx_KeyEvent::ShiftDown()
 
 MODULE=Wx_Evt PACKAGE=Wx::HelpEvent
 
-# Wx_HelpEvent::new()
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
-#if WXPERL_W_VERSION_GE( 2, 3 ) || defined( __WXPERL_FORCE__ )
+Wx_HelpEvent*
+Wx_HelpEvent::new()
 
 Wx_Point*
 Wx_HelpEvent::GetPosition()
@@ -299,8 +289,8 @@ Wx_HelpEvent::SetTarget( target )
 
 MODULE=Wx_Evt PACKAGE=Wx::IdleEvent
 
-# Wx_IdleEvent*
-# Wx_IdleEvent::new()
+Wx_IdleEvent*
+Wx_IdleEvent::new()
 
 bool
 Wx_IdleEvent::MoreRequested()
@@ -311,18 +301,18 @@ Wx_IdleEvent::RequestMore( needMore = TRUE )
 
 MODULE=Wx_Evt PACKAGE=Wx::InitDialogEvent
 
-# Wx_InitDialogEvent*
-# Wx_InitDialogEvent::new( id = 0 )
-#     int id
+Wx_InitDialogEvent*
+Wx_InitDialogEvent::new( id = 0 )
+    int id
 
 MODULE=Wx_Evt PACKAGE=Wx::JoystickEvent
 
-# Wx_JoystickEvent*
-# Wx_JoystickEvent::new( eventType = 0, state = 0, joystick = wxJOYSTICK1, change = 0 )
-#     wxEventType eventType
-#     int state
-#     int joystick
-#     int change
+Wx_JoystickEvent*
+Wx_JoystickEvent::new( eventType = 0, state = 0, joystick = wxJOYSTICK1, change = 0 )
+    wxEventType eventType
+    int state
+    int joystick
+    int change
 
 bool
 Wx_JoystickEvent::ButtonDown( button = wxJOY_BUTTON_ANY )
@@ -366,19 +356,19 @@ Wx_JoystickEvent::IsZMove()
 
 MODULE=Wx_Evt PACKAGE=Wx::MenuEvent
 
-# Wx_MenuEvent*
-# Wx_MenuEvent::new( eventType = 0, id = 0 )
-#     wxEventType eventType
-#     int id
+Wx_MenuEvent*
+Wx_MenuEvent::new( eventType = 0, id = 0 )
+    wxEventType eventType
+    int id
 
 int
 Wx_MenuEvent::GetMenuId()
 
 MODULE=Wx_Evt PACKAGE=Wx::MouseEvent
 
-# Wx_MouseEvent*
-# Wx_MouseEvent::new( eventType = 0 )
-#     wxEventType eventType
+Wx_MouseEvent*
+Wx_MouseEvent::new( eventType = 0 )
+    wxEventType eventType
 
 bool
 Wx_MouseEvent::AltDown()
@@ -440,6 +430,19 @@ Wx_MouseEvent::GetX()
 long
 Wx_MouseEvent::GetY()
 
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+int
+Wx_MouseEvent::GetWheelRotation()
+
+int
+Wx_MouseEvent::GetWheelDelta()
+
+int
+Wx_MouseEvent::GetLinesPerAction()
+
+#endif
+
 bool
 Wx_MouseEvent::IsButton()
 
@@ -493,10 +496,10 @@ Wx_MouseEvent::ShiftDown()
 
 MODULE=Wx_Evt PACKAGE=Wx::MoveEvent
 
-# Wx_MoveEvent*
-# Wx_MoveEvent::new( point, id = 0 )
-#     Wx_Point point
-#     int id
+Wx_MoveEvent*
+Wx_MoveEvent::new( point, id = 0 )
+    Wx_Point point
+    int id
 
 Wx_Point*
 Wx_MoveEvent::GetPosition()
@@ -506,6 +509,11 @@ Wx_MoveEvent::GetPosition()
     RETVAL
 
 MODULE=Wx_Evt PACKAGE=Wx::NotifyEvent
+
+Wx_NotifyEvent*
+Wx_NotifyEvent::new( eventType = wxEVT_NULL, id = 0 )
+    wxEventType eventType
+    int id
 
 bool
 Wx_NotifyEvent::IsAllowed()
@@ -518,20 +526,16 @@ Wx_NotifyEvent::Allow()
 
 MODULE=Wx_Evt PACKAGE=Wx::PaintEvent
 
-# Wx_PaintEvent*
-# Wx_PaintEvent::new( id = 0 )
-#     int id
+Wx_PaintEvent*
+Wx_PaintEvent::new( id = 0 )
+    int id
 
 MODULE=Wx_Evt PACKAGE=Wx::SizeEvent
 
-# Wx_SizeEvent*
-# Wx_SizeEvent::new( size, id = 0 )
-#     Wx_Size size
-#     int id
-#   CODE:
-#     RETVAL = new wxSizeEvent( size, id );
-#   OUTPUT:
-#     RETVAL
+Wx_SizeEvent*
+Wx_SizeEvent::new( size, id = 0 )
+    Wx_Size size
+    int id
 
 Wx_Size*
 Wx_SizeEvent::GetSize()
@@ -542,11 +546,11 @@ Wx_SizeEvent::GetSize()
 
 MODULE=Wx_Evt PACKAGE=Wx::ScrollWinEvent
 
-# Wx_ScrollWinEvent*
-# Wx_ScrollWinEvent::new( eventType = 0, pos = 0, orientation = 0 )
-#     wxEventType eventType
-#     int pos
-#     int orientation
+Wx_ScrollWinEvent*
+Wx_ScrollWinEvent::new( eventType = 0, pos = 0, orientation = 0 )
+    wxEventType eventType
+    int pos
+    int orientation
 
 int
 Wx_ScrollWinEvent::GetOrientation()
@@ -556,14 +560,14 @@ Wx_ScrollWinEvent::GetPosition()
 
 MODULE=Wx_Evt PACKAGE=Wx::SysColourChangedEvent
 
-# Wx_SysColourChangedEvent*
-# Wx_SysColourChangedEvent::new()
+Wx_SysColourChangedEvent*
+Wx_SysColourChangedEvent::new()
 
 MODULE=Wx_Evt PACKAGE=Wx::UpdateUIEvent
 
-# Wx_UpdateUIEvent*
-# Wx_UpdateUIEvent::new( commandId = 0 )
-#     wxWindowID commandId
+Wx_UpdateUIEvent*
+Wx_UpdateUIEvent::new( commandId = 0 )
+    wxWindowID commandId
 
 void
 Wx_UpdateUIEvent::Check( check )

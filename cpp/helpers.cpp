@@ -98,7 +98,7 @@ const char* wxPli_cpp_class_2_perl( const wxChar* className )
 void wxPli_push_args( SV*** psp, const char* argtypes, va_list& args ) 
 {
     SV** sp = *psp;
-#if WXPERL_P_VERSION_GE( 5, 5 )
+#if WXPERL_P_VERSION_GE( 5, 5, 0 )
     dTHR;
 #endif
 
@@ -112,6 +112,7 @@ void wxPli_push_args( SV*** psp, const char* argtypes, va_list& args )
     SV* svval;
     wxObject* oval;
     void* pval;
+    wxString* wxsval;
     const char* package;
 
     while( *argtypes ) 
@@ -134,10 +135,21 @@ void wxPli_push_args( SV*** psp, const char* argtypes, va_list& args )
             stval = va_arg( args, char* );
             XPUSHs( sv_2mortal( newSVpv( stval, 0 ) ) );
             break;
+        case 'P':
+        {
+            wxsval = va_arg( args, wxString* );
+            SV* sv = sv_newmortal();
+            WXSTRING_OUTPUT( (*wxsval), sv );
+            XPUSHs( sv );
+            break;
+        }
         case 'S':
             svval = va_arg( args, SV* );
             XPUSHs( sv_2mortal( newSVsv( svval ) ) );
             break;
+        case 's':
+            svval = va_arg( args, SV* );
+            XPUSHs( svval );
         case 'O':
             oval = va_arg( args, wxObject* );
             XPUSHs( wxPli_object_2_sv( sv_newmortal(), oval ) );
@@ -274,7 +286,7 @@ SV* wxPli_object_2_sv( SV* var, wxObject* object )
     return var;
 }
 
-SV* wxPli_make_object( wxObject* object, const char* classname ) 
+SV* wxPli_make_object( void* object, const char* classname ) 
 {
     SV* ret;
     SV* value;
@@ -437,6 +449,20 @@ int wxPli_av_2_intarray( SV* avref, int** array )
     return n;
 }
 
+wxWindowID wxPli_get_wxwindowid( SV* var )
+{
+    if( sv_isobject( var ) && sv_derived_from( var, "Wx::Window" ) )
+    {
+        wxWindow* window = (wxWindow*)wxPli_sv_2_object( var, "Wx::Window" );
+
+        return window->GetId();
+    }
+    else
+    {
+        return SvIV( var );
+    }
+}
+
 int wxPli_av_2_stringarray( SV* avref, wxString** array )
 {
     wxString* arr;
@@ -468,10 +494,10 @@ int wxPli_av_2_stringarray( SV* avref, wxString** array )
 #if wxUSE_UNICODE
 wxChar* wxPli_copy_string( SV* scalar, wxChar** )
 {
-    unsigned int length;
-    const wxMB2WXbuf tmp = ( SvUTF8( scalar ) ) ?
-        ( wxConvUTF8.cMB2WX( SvPVutf8( scalar, length ) ) )
-        : ( wxString( SvPV( scalar, length ) ).wc_str() ); 
+    STRLEN length;
+    wxWCharBuffer tmp = ( SvUTF8( scalar ) ) ?
+      wxConvUTF8.cMB2WX( SvPVutf8( scalar, length ) ) :
+      wxWCharBuffer( wxString( SvPV( scalar, length ) ).wc_str() );
     
     wxChar* buffer = new wxChar[length + 1];
     memcpy( buffer, tmp.data(), length * sizeof(wxChar) );
@@ -482,7 +508,7 @@ wxChar* wxPli_copy_string( SV* scalar, wxChar** )
 
 char* wxPli_copy_string( SV* scalar, char** )
 {
-    unsigned int length;
+    STRLEN length;
     const char* tmp = SvPV( scalar, length );
 
     char* buffer = new char[length + 1];
@@ -593,6 +619,16 @@ void _get_args_objectarray( SV** sp, int items, void** array, const char* packag
 
 wxPoint wxPli_sv_2_wxpoint( SV* scalar )
 {
+    return wxPli_sv_2_wxpoint_test( scalar, 0 );
+}
+
+wxPoint wxPli_sv_2_wxpoint_test( SV* scalar, bool* ispoint )
+{
+    static wxPoint dummy;
+
+    if( ispoint )
+        *ispoint = TRUE;
+
     if( SvROK( scalar ) ) 
     {
         SV* ref = SvRV( scalar );
@@ -607,7 +643,15 @@ wxPoint wxPli_sv_2_wxpoint( SV* scalar )
             
             if( av_len( av ) != 1 )
             {
-                croak( "the array reference must have 2 elements" );
+                if( ispoint )
+                {
+                    *ispoint = FALSE;
+                    return dummy;
+                }
+                else
+                {
+                    croak( "the array reference must have 2 elements" );
+                }
             }
             else
             {
@@ -619,8 +663,17 @@ wxPoint wxPli_sv_2_wxpoint( SV* scalar )
         }
     }
     
-    croak( "variable is not of type Wx::Point" );
-    return wxPoint();
+    if( ispoint )
+    {
+        *ispoint = FALSE;
+        return dummy;
+    }
+    else
+    {
+        croak( "variable is not of type Wx::Point" );
+    }
+
+    return dummy;
 }
 
 wxSize wxPli_sv_2_wxsize( SV* scalar )
@@ -673,7 +726,45 @@ Wx_KeyCode wxPli_sv_2_keycode( SV* sv )
     return 0; // yust to silence a possible warning
 }
 
-int wxPli_av_2_pointarray( SV* arr, wxList *points, wxPoint** tmp )
+int wxPli_av_2_pointarray( SV* arr, wxPoint** points )
+{
+    *points = 0;
+
+    if( !SvROK( arr ) || SvTYPE( SvRV( arr ) ) != SVt_PVAV )
+    {
+        croak( "variable is not an array reference" );
+    }
+
+    AV* array = (AV*) SvRV( arr );
+    size_t items = av_len( array ) + 1, i;
+
+    if( items == 0 )
+        return 0;
+
+    wxPoint* tmp = new wxPoint[ items ];
+    for( i = 0; i < items; ++i )
+    {
+        SV* scalar = *av_fetch( array, i, 0 );
+
+        if( SvROK( scalar ) ) 
+        {
+            bool isPoint;
+
+            tmp[ i ] = wxPli_sv_2_wxpoint_test( scalar, &isPoint );
+            if( !isPoint )
+            {
+                delete [] tmp;
+                croak( "variable is not of type Wx::Point" );
+                return 0;
+            }
+        }
+    }
+
+    *points = tmp;
+    return items;
+}
+
+int wxPli_av_2_pointlist( SV* arr, wxList *points, wxPoint** tmp )
 {
     *tmp = 0;
 

@@ -39,8 +39,19 @@ Wx_Colour::Blue()
 unsigned char
 Wx_Colour::Green()
 
-long
+#if !defined( __WXMAC__ ) && !defined( __WXGTK__ )
+
+WXCOLORREF
 Wx_Colour::GetPixel()
+
+#else
+#if defined( __WXGTK__ )
+
+int
+Wx_Colour::GetPixel()
+
+#endif
+#endif
 
 bool
 Wx_Colour::Ok()

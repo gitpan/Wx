@@ -12,31 +12,45 @@
 
 #undef bool
 
+#include <stddef.h>
+#include "cpp/compat.h"
+#if !WXPERL_W_VERSION_GE( 2, 3, 0 )
 #include <wx/defs.h>
 #include <wx/window.h>
-#include <wx/module.h>
-
-#if __WXMSW__
-#include <wx/msw/private.h>
 #endif
 
-#include <stdarg.h>
+// THIS IS AN HACK!
+#if defined(_MSC_VER) && WXPERL_W_VERSION_GE( 2, 3, 2 )
+#define STRICT
+#endif
 
+WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+WXPL_EXTERN_C_END
+
 #undef bool
 #undef Move
 #undef Copy
 #undef Pause
 #undef New
 
+#include <wx/defs.h>
+#include <wx/window.h>
+#include <wx/module.h>
+#include "cpp/chkconfig.h"
+
+#if defined(__WXMSW__)
+#include <wx/msw/private.h>
+#endif
+
 int  WXDLLEXPORT wxEntryStart( int argc, char** argv );
 int  WXDLLEXPORT wxEntryInitGui();
 void WXDLLEXPORT wxEntryCleanup();
 
 #if __VISUALC__
-#pragma warning (disable: 4800 )
+#pragma warning (disable: 4800)
 #endif
 
 #ifdef __WXMSW__
@@ -44,7 +58,6 @@ void WXDLLEXPORT wxEntryCleanup();
 #endif // __WXMSW__
 
 #define _WXP_DEFINE_CLASSNAME 1
-#include "cpp/compat.h"
 #include "cpp/typedef.h"
 #include "cpp/helpers.h"
 
@@ -132,7 +145,7 @@ BOOT:
   SV* tmp = get_sv( "Wx::_exports", 1 );
   sv_setiv( tmp, (IV)(void*)&st_wxPliHelpers );
 
-#if __WXMSW__
+#if defined(__WXMSW__)
 
 void
 _SetInstance( instance )
@@ -172,6 +185,10 @@ UnLoad()
   CODE:
     wxEntryCleanup();
 
+I32
+looks_like_number( sval )
+    SV* sval
+
 INCLUDE: XS/App.xs
 INCLUDE: XS/Caret.xs
 INCLUDE: XS/Geom.xs
@@ -187,7 +204,7 @@ INCLUDE: XS/Stream.xs
 INCLUDE: XS/ClassInfo.xs
 
 #  //FIXME// tricky
-#if __WXMSW__
+#if defined(__WXMSW__)
 #undef XS
 #define XS( name ) __declspec(dllexport) void name( pTHXo_ CV* cv )
 #endif

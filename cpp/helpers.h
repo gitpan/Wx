@@ -62,15 +62,16 @@ WXPLDLL SV* FUNCPTR( wxPli_object_2_sv )( SV* var, wxObject* object );
 WXPLDLL SV* FUNCPTR( wxPli_non_object_2_sv )( SV* var, void* data,
                                               const char* package );
 
-WXPLDLL SV* FUNCPTR( wxPli_make_object )( wxObject* object,
+WXPLDLL SV* FUNCPTR( wxPli_make_object )( void* object,
                                           const char* classname );
 
 WXPLDLL bool FUNCPTR( wxPli_object_is_deleteable )( SV* object );
 WXPLDLL void FUNCPTR( wxPli_object_set_deleteable )( SV* object,
                                                      bool deleteable );
 
-WXPLDLL const char* wxPli_get_class( SV* ref );
+WXPLDLL const char* FUNCPTR( wxPli_get_class )( SV* ref );
 
+WXPLDLL wxWindowID FUNCPTR( wxPli_get_wxwindowid )( SV* var );
 WXPLDLL int wxPli_av_2_stringarray( SV* avref, wxString** array );
 WXPLDLL int wxPli_av_2_uchararray( SV* avref, unsigned char** array );
 WXPLDLL int wxPli_av_2_svarray( SV* avref, SV*** array );
@@ -81,11 +82,13 @@ int wxPli_get_args_argc_argv( void* argv, bool unicode );
 WXPLDLL void wxPli_get_args_objectarray( SV** sp, int items, void** array,
                                          const char* package );
 
+WXPLDLL wxPoint FUNCPTR( wxPli_sv_2_wxpoint_test )( SV* scalar, bool* ispoint );
 WXPLDLL wxPoint FUNCPTR( wxPli_sv_2_wxpoint )( SV* scalar );
 WXPLDLL wxSize FUNCPTR( wxPli_sv_2_wxsize )( SV* scalar );
 WXPLDLL Wx_KeyCode wxPli_sv_2_keycode( SV* scalar );
 
-WXPLDLL int wxPli_av_2_pointarray( SV* array, wxList *points, wxPoint** tmp );
+WXPLDLL int wxPli_av_2_pointlist( SV* array, wxList *points, wxPoint** tmp );
+WXPLDLL int wxPli_av_2_pointarray( SV* array, wxPoint** points );
 
 // stream wrappers
 class wxPliInputStream;
@@ -107,9 +110,9 @@ WXPLDLL void FUNCPTR( wxPli_remove_constant_function )
 class wxPliVirtualCallback;
 
 WXPLDLL bool FUNCPTR( wxPliVirtualCallback_FindCallback )
-    ( wxPliVirtualCallback* cb, const char* name );
+    ( const wxPliVirtualCallback* cb, const char* name );
 WXPLDLL SV* FUNCPTR( wxPliVirtualCallback_CallCallback )
-    ( wxPliVirtualCallback* cb, I32 flags = G_SCALAR,
+    ( const wxPliVirtualCallback* cb, I32 flags = G_SCALAR,
       const char* argtypes = 0, ... );
 
 struct wxPliHelpers
@@ -117,7 +120,8 @@ struct wxPliHelpers
     void* ( * m_wxPli_sv_2_object )( SV*, const char* );
     SV* ( * m_wxPli_object_2_sv )( SV*, wxObject* );
     SV* ( * m_wxPli_non_object_2_sv )( SV* , void*, const char* );
-    SV* ( * m_wxPli_make_object )( wxObject*, const char* );
+    SV* ( * m_wxPli_make_object )( void*, const char* );
+    wxPoint ( * m_wxPli_sv_2_wxpoint_test )( SV*, bool* );
     wxPoint ( * m_wxPli_sv_2_wxpoint )( SV* );
     wxSize ( * m_wxPli_sv_2_wxsize )( SV* scalar );
     int ( * m_wxPli_av_2_intarray )( SV* avref, int** array );
@@ -128,21 +132,25 @@ struct wxPliHelpers
     void ( * m_wxPli_remove_constant_function )
         ( double (**)( const char*, int ) );
 
-    bool ( * m_wxPliVirtualCallback_FindCallback )( wxPliVirtualCallback* cb, const char* name );
+    bool ( * m_wxPliVirtualCallback_FindCallback )( const wxPliVirtualCallback* cb, const char* name );
     SV* ( * m_wxPliVirtualCallback_CallCallback )
-        ( wxPliVirtualCallback* cb, I32 flags = G_SCALAR,
+        ( const wxPliVirtualCallback* cb, I32 flags = G_SCALAR,
           const char* argtypes = 0, ... );
     bool ( * m_wxPli_object_is_deleteable )( SV* object );
     void ( * m_wxPli_object_set_deleteable )( SV* object, bool deleteable );
+    const char* ( * m_wxPli_get_class )( SV* ref );
+    wxWindowID ( * m_wxPli_get_wxwindowid )( SV* var );
 };
 
 #define DEFINE_PLI_HELPERS( name ) \
 wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
- &wxPli_non_object_2_sv, &wxPli_make_object, &wxPli_sv_2_wxpoint, \
+ &wxPli_non_object_2_sv, &wxPli_make_object, &wxPli_sv_2_wxpoint_test, \
+ &wxPli_sv_2_wxpoint, \
  &wxPli_sv_2_wxsize, &wxPli_av_2_intarray, wxPli_stream_2_sv, \
  &wxPli_add_constant_function, &wxPli_remove_constant_function, \
  &wxPliVirtualCallback_FindCallback, &wxPliVirtualCallback_CallCallback, \
- &wxPli_object_is_deleteable, &wxPli_object_set_deleteable };
+ &wxPli_object_is_deleteable, &wxPli_object_set_deleteable, &wxPli_get_class, \
+ &wxPli_get_wxwindowid };
 
 #define INIT_PLI_HELPERS( name ) \
   SV* wxpli_tmp = get_sv( "Wx::_exports", 1 ); \
@@ -151,6 +159,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
   wxPli_object_2_sv = name->m_wxPli_object_2_sv; \
   wxPli_non_object_2_sv = name->m_wxPli_non_object_2_sv; \
   wxPli_make_object = name->m_wxPli_make_object; \
+  wxPli_sv_2_wxpoint_test = name->m_wxPli_sv_2_wxpoint_test; \
   wxPli_sv_2_wxpoint = name->m_wxPli_sv_2_wxpoint; \
   wxPli_sv_2_wxsize = name->m_wxPli_sv_2_wxsize; \
   wxPli_av_2_intarray = name->m_wxPli_av_2_intarray; \
@@ -160,7 +169,9 @@ wxPliHelpers name = { &wxPli_sv_2_object, &wxPli_object_2_sv, \
   wxPliVirtualCallback_FindCallback = name->m_wxPliVirtualCallback_FindCallback; \
   wxPliVirtualCallback_CallCallback = name->m_wxPliVirtualCallback_CallCallback; \
   wxPli_object_is_deleteable = name->m_wxPli_object_is_deleteable; \
-  wxPli_object_set_deleteable = name->m_wxPli_object_set_deleteable;
+  wxPli_object_set_deleteable = name->m_wxPli_object_set_deleteable; \
+  wxPli_get_class = name->m_wxPli_get_class; \
+  wxPli_get_wxwindowid = name->m_wxPli_get_wxwindowid;
 
 int wxCALLBACK ListCtrlCompareFn( long item1, long item2, long comparefn );
 
@@ -213,7 +224,7 @@ inline wxPliTreeItemData::~wxPliTreeItemData()
 inline void wxPliTreeItemData::SetData( SV* data )
 {
     if( m_data )
-        SvREFCNT_dec( data );
+        SvREFCNT_dec( m_data );
     m_data = data ? newSVsv( data ) : 0;
 }
 

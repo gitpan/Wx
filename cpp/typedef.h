@@ -56,11 +56,14 @@ FD_TD( Event );
 FD_TD( ActivateEvent );
 FD_TD( CloseEvent );
 FD_TD( CommandEvent );
-FD_TD( DropFilesEvent );
 FD_TD( EraseEvent );
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+FD_TD( FindDialogEvent );
+#endif
 FD_TD( FocusEvent );
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 FD_TD( HelpEvent );
+FD_TD( IconizeEvent );
 #endif
 FD_TD( IdleEvent );
 FD_TD( InitDialogEvent );
@@ -79,6 +82,9 @@ FD_TD( SizeEvent );
 FD_TD( SpinEvent );
 FD_TD( SplitterEvent );
 FD_TD( SysColourChangedEvent );
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+FD_TD( TextUrlEvent );
+#endif
 FD_TD( TimerEvent );
 FD_TD( TreeEvent );
 FD_TD( UpdateUIEvent );
@@ -109,7 +115,7 @@ FD_TD( BusyCursor );
 FD_TD( BusyInfo );
 FD_TD( Button );
 FD_TD( Caret );
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 FD_TD( CaretSuspend );
 #endif
 FD_TD( CheckBox );
@@ -120,7 +126,7 @@ FD_TD( ClientDC );
 FD_TD( Colour );
 FD_TD( ColourData );
 
-#if defined( __WXMOTIF__ ) || defined( __WXGTK__ )
+#if defined( __WXMOTIF__ ) || defined( __WXGTK__ ) || defined( __WXMAC__ )
 FD_TD_NAME( ColourDialog, GenericColourDialog );
 #else
 FD_TD( ColourDialog );
@@ -133,17 +139,21 @@ FD_TD( Cursor );
 FD_TD( DC );
 FD_TD( Dialog );
 FD_TD( DirDialog );
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 FD_TD( DrawObject );
 #endif
 FD_TD( DropTarget );
 FD_TD( EvtHandler );
 FD_TD( FileDialog );
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+FD_TD( FindReplaceData );
+FD_TD( FindReplaceDialog );
+#endif
 FD_TD( FlexGridSizer );
 FD_TD( Font );
 FD_TD( FontData );
 
-#if defined( __WXMOTIF__ )
+#if defined( __WXMOTIF__ ) || defined( __WXMAC__ )
 FD_TD_NAME( FontDialog, GenericFontDialog );
 #else
 FD_TD( FontDialog );
@@ -162,6 +172,8 @@ FD_TD( LayoutConstraints );
 FD_TD( ListBox );
 FD_TD( ListCtrl );
 FD_TD( ListItem );
+FD_TD( ListItemAttr );
+FD_TD( ListView );
 FD_TD( Locale );
 FD_TD( Log );
 FD_TD( LogGui );
@@ -200,12 +212,14 @@ FD_TD( ScreenDC );
 FD_TD( ScrollBar );
 FD_TD( ScrolledWindow );
 FD_TD( SingleChoiceDialog );
+FD_TD( SingleInstanceChecker );
 FD_TD( Size );
 FD_TD( Sizer );
 FD_TD( SizerItem );
 FD_TD( Slider );
 FD_TD( SpinButton );
 FD_TD( SpinCtrl );
+FD_TD( SplashScreen );
 FD_TD( SplitterWindow );
 FD_TD( StaticBitmap );
 FD_TD( StaticBox );
@@ -218,6 +232,8 @@ FD_TD( StopWatch );
 FD_TD( TextCtrl );
 FD_TD( TextEntryDialog );
 FD_TD( Timer );
+FD_TD( TipProvider );
+FD_TD( ToggleButton );
 FD_TD( ToolBar );
 FD_TD( ToolBarBase );
 FD_TD( ToolBarToolBase );

@@ -100,7 +100,7 @@ newIcon( icon )
   OUTPUT:
     RETVAL
 
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_Bitmap*
 newImage( image )
@@ -115,7 +115,7 @@ newImage( image )
 void
 Wx_Bitmap::DESTROY()
 
-#if WXPERL_W_VERSION_GE( 2, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_Image*
 Wx_Bitmap::ConvertToImage()
@@ -123,6 +123,16 @@ Wx_Bitmap::ConvertToImage()
     RETVAL = new wxImage( THIS->ConvertToImage() );
   OUTPUT:
     RETVAL
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+
+void
+Wx_Bitmap::CopyFromIcon( icon )
+    Wx_Icon* icon
+  CODE:
+    THIS->CopyFromIcon( *icon );
 
 #endif
 
@@ -227,10 +237,21 @@ InsertHandler( handler )
 
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+bool
+Wx_Bitmap::LoadFile( name, type )
+    wxString name
+    wxBitmapType type
+
+#else
+
 bool
 Wx_Bitmap::LoadFile( name, type )
     wxString name
     long type
+
+#endif
 
 bool
 Wx_Bitmap::Ok()
@@ -245,11 +266,23 @@ RemoveHandler( name )
 
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+bool
+Wx_Bitmap::SaveFile( name, type, palette = 0 )
+    wxString name
+    wxBitmapType type
+    Wx_Palette* palette
+
+#else
+
 bool
 Wx_Bitmap::SaveFile( name, type, palette = 0 )
     wxString name
     long type
     Wx_Palette* palette
+
+#endif
 
 void
 Wx_Bitmap::SetDepth( depth )
