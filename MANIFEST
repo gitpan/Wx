@@ -15,10 +15,11 @@ build/Win32_MSVC.pm
 build/Win32_MinGW.pm
 build/wxConfig.pm
 build/wxMMUtils.pm
+build/wxMMHacks.pm
 build/Tests_Helper.pm
 build/W32.pm
 
-build/Test/Builder.pm			Test::Simple, Test::More and Test::Harness
+build/Test/Builder.pm		Test::Simple, Test::More and Test::Harness
 build/Test/Harness.pm
 build/Test/Harness/Assert.pm
 build/Test/Harness/Iterator.pm
@@ -40,38 +41,23 @@ t/03_event.t
 t/04_userdata.t
 t/05_timer.t
 t/06_loadxpm.t
+t/07_overload.t
+t/08_ovl_func.t
+t/09_create_delete.t
 
 lib/Wx/App.pm
-lib/Wx/Bitmap.pm
-lib/Wx/Brush.pm
-lib/Wx/Caret.pm
-lib/Wx/Colour.pm
-lib/Wx/ComboBox.pm
-lib/Wx/ControlWithItems.pm
-lib/Wx/Cursor.pm
-lib/Wx/DC.pm
 lib/Wx/Event.pm
-lib/Wx/Icon.pm
 lib/Wx/Image.pm
 lib/Wx/ImageList.pm
-lib/Wx/ListCtrl.pm
 lib/Wx/Locale.pm
 lib/Wx/Menu.pm
-lib/Wx/Pen.pm
 lib/Wx/RadioBox.pm
-lib/Wx/Rect.pm
 lib/Wx/Region.pm
-lib/Wx/ScreenDC.pm
 lib/Wx/Sizer.pm
 lib/Wx/SplashScreen.pm
-lib/Wx/StaticBitmap.pm
 lib/Wx/Timer.pm
-lib/Wx/ToolBar.pm
-lib/Wx/TreeCtrl.pm
-lib/Wx/Window.pm
 lib/Wx/_Constants.pm
 lib/Wx/_Functions.pm
-lib/Wx/_Inheritance.pm
 
 samples/controls/controls.pl
 samples/controls/icons/choice.bmp
@@ -176,6 +162,8 @@ XS/EvtHandler.xs
 XS/FindReplaceDialog.xs
 XS/Font.xs
 XS/FontDialog.xs
+XS/FontEnumerator.xs
+XS/FontMapper.xs
 XS/Frame.xs
 XS/Gauge.xs
 XS/Geom.xs
@@ -220,7 +208,7 @@ XS/ToolBar.xs
 XS/ToolTip.xs
 XS/Utils.xs
 XS/Validators.xs
-
+XS/Wizard.xs
 XS/ColourDialog.xs
 XS/DirDialog.xs
 XS/FileDialog.xs
@@ -238,13 +226,17 @@ cpp/event.h
 cpp/evthandler.h
 cpp/frame.h
 cpp/helpers.h
+cpp/log.h
 cpp/panel.h
+cpp/overload.cpp
+cpp/overload.h
 cpp/process.h
 cpp/sashwindow.h
 cpp/scrolledwindow.h
 cpp/singlechoicedialog.h
 cpp/sizer.h
 cpp/splitterwindow.h
+cpp/statusbar.h
 cpp/streams.h
 cpp/timer.h
 cpp/tipprovider.h
@@ -252,12 +244,14 @@ cpp/typedef.h
 cpp/validators.h
 cpp/v_cback.h
 cpp/window.h
+cpp/wizard.h
 
 cpp/controls.cpp
 cpp/e_cback.cpp
 cpp/helpers.cpp
 cpp/streams.cpp
 cpp/v_cback.cpp
+cpp/wxapi.h
 
 ext/Makefile.PL
 ext/pperl/Makefile.PL
@@ -387,6 +381,25 @@ ext/xrc/lib/Wx/XRC.pm
 ext/xrc/typemap
 ext/xrc/t/01_load.t
 
+ext/docview/Makefile.PL
+ext/docview/DocView.xs
+ext/docview/XS/DocManager.xs
+ext/docview/XS/DocTemplate.xs
+ext/docview/XS/Document.xs
+ext/docview/XS/View.xs
+ext/docview/XS/FileHistory.xs
+ext/docview/XS/DocParentFrame.xs
+ext/docview/XS/DocChildFrame.xs
+ext/docview/XS/DocMDIParentFrame.xs
+ext/docview/XS/DocMDIChildFrame.xs
+ext/docview/cpp/docview.h
+ext/docview/cpp/dv_typedef.h
+ext/docview/cpp/dv_constants.cpp
+ext/docview/lib/Wx/DocView.pm
+ext/docview/typemap
+ext/docview/t/01_load.t
+ext/docview/t/02_inheritance.t
+
 demo/DataObjects.pm
 demo/DragDrop.pm
 demo/MDI.pm
@@ -403,6 +416,11 @@ demo/data/resource.xrc
 demo/data/logo.jpg
 demo/data/cat.pl
 demo/data/dummy.pl
+demo/data/fileopen.gif
+demo/data/filesave.gif
+demo/data/fuzzy.gif
+demo/data/quotes.gif
+demo/data/update.gif
 demo/demo.pl
 demo/splash.pl
 demo/wxCheckListBox.pm
@@ -420,3 +438,4 @@ demo/wxBoxSizer.pm
 demo/wxGridSizer.pm
 demo/wxFlexGridSizer.pm
 demo/wxNotebookSizer.pm
+demo/wxWizard.pm

@@ -6,7 +6,8 @@ use base 'Exporter';
 
 use vars qw(@EXPORT @EXPORT_OK);
 @EXPORT = qw(obj_from_src top_dir building_extension
-             xs_depend merge_config wx_version wx_config is_platform);
+             xs_depend merge_config wx_version wx_config is_platform
+             get_platform is_debug is_inside_wxperl_tree path_search);
 @EXPORT_OK = qw(unix_top_dir);
 
 #
@@ -21,7 +22,18 @@ sub wx_config {
 #
 sub is_platform($) {
   my $uc = uc shift;
-  return scalar( wx_config('cxxflags' ) =~ m/__WX${uc}__/ );
+  return scalar( wx_config( 'cxxflags' ) =~ m/__WX${uc}__/ );
+}
+
+sub get_platform() {
+  my $cf = wx_config( 'cxxflags' );
+  $cf =~ m/__WX(x11|msw|motif|gtk|mac)__/i && return lc $1;
+
+  die "Unable to determine toolkit!";
+}
+
+sub is_debug() {
+  return scalar( wx_config( 'cxxflags' ) =~ m/__WXDEBUG__/ );
 }
 
 #
@@ -48,10 +60,20 @@ sub wx_version() {
 sub unix_top_dir() {
   my $utop = '.';
   my $top = MM->curdir;
+  my $count = 0;
 
-  until( -f MM->catfile( $top, 'Wx.pm' ) ) {
+  until( $count == 10 || -f MM->catfile( $top, 'Wx.pm' ) ) {
     $top = MM->catdir( MM->updir, $top );
     $utop = "../$utop";
+    ++$count;
+  }
+
+  # we are outsize wxPerl source tree
+  if( $count == 10 ) {
+    my $build = $INC{'wxConfig.pm'};
+    $build =~ s{\Wbuild\WwxConfig\.pm$}{};
+    die "unable to find unix_top_dir" unless -f "$build/Wx.pm";
+    $utop = $build;
   }
 
   return $utop;
@@ -62,16 +84,48 @@ sub unix_top_dir() {
 #
 sub top_dir() {
   my $top = MM->curdir;
+  my $count = 0;
 
-  until( -f MM->catfile( $top, 'Wx.pm' ) ) {
+  until( $count == 10 || -f MM->catfile( $top, 'Wx.pm' ) ) {
     $top = MM->catdir( MM->updir, $top );
+    ++$count;
   }
 
+  if( $count == 10 ) {
+    my $build = $INC{'wxConfig.pm'};
+    $build =~ s{\Wbuild\WwxConfig\.pm$}{};
+    die "unable to find top_dir" unless -f "$build/Wx.pm";
+    $top = $build;
+  }
   return MM->canonpath( $top );
 }
 
 sub building_extension() {
   return !-f 'Wx.pm';
+}
+
+sub is_inside_wxperl_tree() {
+  my $top = MM->curdir;
+  my $count = 0;
+
+  until( $count == 10 ) {
+    return 1 if -f MM->catfile( $top, 'Wx.pm' );
+    $top = MM->catdir( MM->updir, $top );
+    ++$count;
+  }
+
+  return 0;
+}
+
+sub path_search {
+  my $file = shift;
+
+  foreach my $d ( split $Config{path_sep}, $ENV{PATH} ) {
+    my $full = MM->catfile( $d, $file );
+    return $full if -f $full;
+  }
+
+  return;
 }
 
 #
@@ -92,8 +146,15 @@ sub merge_config {
 
         my @c;
         foreach my $i ( @b ) {
+          my $mi = $i;
+          my @ipaths = $mi =~ m/(-L[^ ]+)/g;
+          $mi =~ s/-L[^ ]+ +//g;
+
           foreach my $j ( @a ) {
-            push @c, " $i $j $i ";
+            my $mj = $j;
+            my @jpaths = $mj =~ m/(-L[^ ]+)/g;
+            $mj =~ s/-L[^ ]+ +//g;
+            push @c, " @ipaths @jpaths $mj $mi ";
           }
         }
 
@@ -102,7 +163,7 @@ sub merge_config {
       }
 
       if( ref($cfg{$i}) || ref($cfg2{$i}) ) {
-        warn "non scalar key '$i'";
+        die "non scalar key '$i'";
         $cfg{$i} = $cfg2{$i};
       } else {
         $cfg{$i} .= ' ' . $cfg2{$i};
@@ -178,16 +239,24 @@ sub scan_xs($$) {
 
     m/^\#\s*include\s+"([^"]*)"\s*$/ and $file = $1 and $arr = \@cinclude;
     m/^\s*INCLUDE:\s+(.*)$/ and $file = $1 and $arr = \@xsinclude;
+    m/^\s*INCLUDE:\s+.*\s(\S+\.xsp)\s*\|/ and $file = $1 and
+      $arr = \@xsinclude;
 
     if( defined $file ) {
+      $file = MM->catfile( split '/', $file );
       foreach my $dir ( @$incpath ) {
-        my $f = MM->catfile( $dir, $file );
+        my $f = $dir eq MM->curdir ? $file : MM->catfile( $dir, $file );
         if( -f $f ) {
           push @$arr, $f;
           my( $cinclude, $xsinclude ) = scan_xs( $f, $incpath );
           push @cinclude, @$cinclude;
           push @xsinclude, @$xsinclude;
           last;
+        } elsif( $file =~ m/ovl_const\.(?:cpp|h)/i ) {
+          my $dir = top_dir();
+          push @$arr, ( ( $dir eq MM->curdir ) ?
+                                         $file :
+                                         MM->catfile( top_dir(), $file ) );
         }
       }
     }
@@ -196,37 +265,6 @@ sub scan_xs($$) {
   close IN;
 
   ( \@cinclude, \@xsinclude );
-}
-
-#
-# Cut'n'paste from 5.005_03 MakeMaker.pm
-#
-sub WriteEmptyMakefile {
-  if (-f 'Makefile.old') {
-    chmod 0666, 'Makefile.old';
-    unlink 'Makefile.old' or warn "unlink Makefile.old: $!";
-  }
-  rename 'Makefile', 'Makefile.old' or warn "rename Makefile Makefile.old: $!"
-    if -f 'Makefile';
-  open MF, '> Makefile' or die "open Makefile for write: $!";
-  print MF <<'EOP';
-all:
-
-clean:
-
-install:
-
-makemakerdflt:
-
-test:
-
-EOP
-  close MF or die "close Makefile for write: $!";
-}
-
-if( $] < 5.005 )
-{
-  *ExtUtils::MakeMaker::WriteEmptyMakefile = \&WriteEmptyMakefile
 }
 
 1;

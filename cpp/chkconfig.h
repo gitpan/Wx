@@ -12,6 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include <wx/setup.h>
+#include "cpp/setup.h"
 
 #if 0
 #define wxPERL_USE_PRINTING_ARCHITECTURE 1
@@ -136,4 +137,12 @@
 #   define wxPERL_USE_BESTHELP ( wxUSE_MS_HTML_HELP && wxUSE_WXHTML_HELP )
 #endif
 
+#ifdef wxPERL_USE_ICO_CUR
+#   if wxPERL_USE_ICO_CUR && !wxUSE_ICO_CUR
+#       error "Recompile wxWindows with wxUSE_ICO_CUR"
+#   endif
+#else
+#   define wxPERL_USE_ICO_CUR wxUSE_ICO_CUR
+#endif
+ 
 #endif    

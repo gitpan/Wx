@@ -25,11 +25,11 @@ public:
     bool FindCallback( pTHX_ const char* name ) const;
     SV* CallCallback( pTHX_ I32 flags, const char* argtypes,
                       va_list& arglist ) const;
-    SV* GetMethod() const { return m_method; }
+    CV* GetMethod() const { return m_method; }
 public:
     const char* m_package;
     HV* m_stash;
-    SV* m_method;
+    CV* m_method;
 };
 
 inline wxPliVirtualCallback::wxPliVirtualCallback( const char* package )
@@ -360,6 +360,37 @@ inline wxPliVirtualCallback::wxPliVirtualCallback( const char* package )
 
 #define DEC_V_CBACK_WXFSFILEP__WXFILESYSTEM_WXSTRING( METHOD ) \
   wxFSFile* METHOD( wxFileSystem&, const wxString& )
+
+#define DEC_V_CBACK_VOID__WXLOGLEVEL_CWXCHARP_TIMET( METHOD ) \
+  void METHOD( wxLogLevel, const wxChar*, time_t )
+
+#define DEF_V_CBACK_VOID__WXLOGLEVEL_CWXCHARP_TIMET( CLASS, BASE, METHOD )\
+  void CLASS::METHOD( wxLogLevel param1, const wxChar* param2, time_t param3 )\
+  {                                                                           \
+    dTHX;                                                                     \
+    if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, #METHOD ) )     \
+    {                                                                         \
+        wxPliVirtualCallback_CallCallback( aTHX_ &m_callback, G_VOID,         \
+                                           "iwl", int(param1), param2,        \
+                                           long(param3) );                    \
+    }                                                                         \
+    BASE::METHOD( param1, param2, param3 );                                   \
+  }
+
+#define DEC_V_CBACK_VOID__CWXCHARP_TIMET( METHOD ) \
+  void METHOD( const wxChar*, time_t )
+
+#define DEF_V_CBACK_VOID__CWXCHARP_TIMET( CLASS, BASE, METHOD )\
+  void CLASS::METHOD( const wxChar* param1, time_t param2 )                   \
+  {                                                                           \
+    dTHX;                                                                     \
+    if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, #METHOD ) )     \
+    {                                                                         \
+        wxPliVirtualCallback_CallCallback( aTHX_ &m_callback, G_VOID,         \
+                                           "wl", param1, long(param2) );      \
+    }                                                                         \
+    BASE::METHOD( param1, param2 );                                           \
+  }
 
 #endif // _WXPERL_V_CBACK_H
 

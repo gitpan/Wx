@@ -17,12 +17,17 @@
 
 #include <wx/event.h>
 #include <wx/dc.h>
-//FIXME// only for wxUserData
-#include <wx/window.h>
 #include <stdarg.h>
 
 #include "cpp/compat.h"
 #include "cpp/chkconfig.h"
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    #include <wx/clntdata.h>
+#else
+    // only for wxUserData
+    #include <wx/window.h>
+#endif
 
 WXPL_EXTERN_C_START
 #include <EXTERN.h>
@@ -162,7 +167,7 @@ Wx_CommandEvent::SetInt( intCommand )
 
 void
 Wx_CommandEvent::SetString( string )
-    const char* string
+    wxString string
 
 MODULE=Wx_Evt PACKAGE=Wx::PlEvent
 

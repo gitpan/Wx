@@ -45,6 +45,8 @@
 #include <wx/taskbar.h>
 #endif
 #include <wx/process.h>
+#include <wx/wizard.h>
+#include <wx/filefn.h>
 
 #include "cpp/compat.h"
 #include "cpp/chkconfig.h"
@@ -75,9 +77,10 @@ WXPL_EXTERN_C_END
 #pragma warning (disable: 4800 )
 #endif
 
-//
+//////////////////////////////////////////////////////////////////////////////
 // implementation for wxPlConstantsModule OnInit/OnExit
-//
+//////////////////////////////////////////////////////////////////////////////
+
 #include "cpp/helpers.h"
 #include "cpp/constants.h"
 #include <wx/listimpl.cpp>
@@ -102,6 +105,380 @@ void wxPli_remove_constant_function( double (**f)( const char*, int ) )
     s_functions().DeleteObject( f );
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// descriptor for all event macros
+//////////////////////////////////////////////////////////////////////////////
+
+struct wxPlEVT
+{
+    // 2 - only THIS and function
+    // 3 - THIS, function, one ID
+    // 4 - THIS, function, two ids
+    // 5 - THIS, function, two ids, event id
+    const char* name;
+    unsigned char args;
+    int evtID;    
+};
+
+#define SEVT( NAME, ARGS ) { #NAME, ARGS, wx##NAME },
+#define EVT( NAME, ARGS, ID ) { #NAME, ARGS, ID },
+
+// !package: Wx::Event
+// !tag:
+// !parser: sub { $_[0] =~ m<^\s*S?EVT\(\s*(\w+)\s*\,> }
+
+static wxPlEVT evts[] =
+{
+    SEVT( EVT_WIZARD_PAGE_CHANGED, 3 )
+    SEVT( EVT_WIZARD_PAGE_CHANGING, 3 )
+    SEVT( EVT_WIZARD_CANCEL, 3 )
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    SEVT( EVT_WIZARD_HELP, 3 )
+#endif
+    { 0, 0, 0 }
+};
+
+#if 0
+	wxWindowID	id;
+	int	lastid = (int)SvIV(ST(2));
+	wxEventType	type = (wxEventType)SvIV(ST(3));
+	SV*	method = ST(4);
+	Wx_EvtHandler *	THIS;
+
+    id = wxPli_get_wxwindowid( aTHX_ ST(1) );;
+
+    THIS = (Wx_EvtHandler *) wxPli_sv_2_object( aTHX_ ST(0), "Wx::EvtHandler" );;
+    THIS->Connect(id, lastid, type,
+                    (wxObjectEventFunction)&wxPliEventCallback::Handler,
+                    new wxPliEventCallback( method, ST(0) ) );
+#endif
+
+#include "cpp/e_cback.h"
+
+// THIS, ID, function
+XS(Connect3);
+XS(Connect3)
+{
+    dXSARGS;
+    assert( items == 3 );
+    SV* THISs = ST(0);
+    wxEvtHandler *THISo =
+        (wxEvtHandler*)wxPli_sv_2_object( aTHX_ THISs, "Wx::EvtHandler" );
+    wxWindowID id = wxPli_get_wxwindowid( aTHX_ ST(1) );
+    SV* func = ST(2);
+    I32 evtID = CvXSUBANY(cv).any_i32;
+
+    if( SvOK( func ) )
+    {
+        THISo->Connect( id, -1, evtID,
+                        (wxObjectEventFunction)&wxPliEventCallback::Handler,
+                        new wxPliEventCallback( func, THISs ) );
+    }
+    else
+    {
+        THISo->Disconnect( id, -1, evtID,
+                           (wxObjectEventFunction)&wxPliEventCallback::Handler,
+                           0 );
+    }
+}
+
+void CreateEventMacro( const char* name, unsigned char args, int id )
+{
+    char buffer[1024];
+    CV* cv;
+    dTHX;
+
+    strcpy( buffer, "Wx::Event::" );
+    strcat( buffer, name );
+
+    switch( args )
+    {
+    case 3:
+        cv = (CV*)newXS( buffer, Connect3, "Constants.xs" );
+        sv_setpv((SV*)cv, "$$$");
+        break;
+    }
+
+    CvXSUBANY(cv).any_i32 = id;
+}
+
+void SetEvents()
+{
+    for( size_t i = 0; evts[i].name != 0; ++i )
+        CreateEventMacro( evts[i].name, evts[i].args, evts[i].evtID );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// the inheritance tree
+//////////////////////////////////////////////////////////////////////////////
+
+struct wxPlINH
+{
+    const char* klass;
+    const char* base;
+};
+
+#define I( class, base ) \
+    { "Wx::" #class, "Wx::" #base },
+
+static wxPlINH inherit[] =
+{
+    I( Window,          EvtHandler )
+    I( Menu,            EvtHandler )
+    I( MenuBar,         Window )
+    I( TopLevelWindow,  Window )
+    I( _App,            EvtHandler )
+    I( Panel,           Window )
+    I( Control,         Window )
+    I( Button,          Control )
+    I( BitmapButton,    Button )
+    I( TextCtrl,        Control )
+    I( StaticText,      Control )
+    I( CheckBox,        Control )
+    I( CheckListBox,    ListBox )
+    I( ControlWithItems,Control )
+    I( Choice,          ControlWithItems )
+    I( ListBox,         ControlWithItems )
+    I( Notebook,        Control )
+    I( ToolBarBase,     Control )
+    I( ToolBarSimple,   Control )
+    I( StaticBitmap,    Control )
+    I( Gauge,           Control )
+    I( Gauge95,         Gauge )
+    I( Slider,          Control )
+    I( SpinCtrl,        Control )
+    I( SpinButton,      Control )
+    I( RadioBox,        Control )
+    I( RadioButton,     Control )
+    I( StaticLine,      Control )
+    I( StaticBox,       Control )
+    I( ScrollBar,       Control )
+    I( StatusBarGeneric,Window )
+    I( GenericScrolledWindow, Panel )
+    I( GenericTreeCtrl, ScrolledWindow )
+    I( MiniFrame,       Frame )
+    I( SplitterWindow,  Window )
+    I( ListCtrl,        Control )
+    I( ListView,        ListCtrl )
+    I( SashWindow,      Window )
+    I( ToggleButton,    Control )
+    I( Wizard,          Dialog )
+    I( WizardPage,      Panel )
+    I( WizardPageSimple, WizardPage )
+
+    I( ColourDialog,    Dialog )
+    I( GenericColourDialog, ColourDialog )
+    I( FindReplaceDialog, Dialog )
+    I( FontDialog,      Dialog )
+    I( DirDialog,       Dialog )
+    I( FileDialog,      Dialog )
+    I( TextEntryDialog, Dialog )
+    I( MessageDialog,   Dialog )
+    I( GenericMessageDialog, MessageDialog )
+    I( ProgressDialog,  Dialog )
+    I( SingleChoiceDialog, Dialog )
+    I( MultiChoiceDialog, Dialog )
+
+    I( Validator,       EvtHandler )
+    I( TextValidator,   Validator )
+    I( GenericValidator, Validator )
+    I( PlValidator,     Validator )
+
+    I( Font,            GDIObject )
+    I( Region,          GDIObject )
+    I( Bitmap,          GDIObject )
+    I( Brush,           GDIObject )
+    I( Pen,             GDIObject )
+    I( Palette,         GDIObject )
+
+    I( WindowDC,        DC )
+    I( ClientDC,        WindowDC )
+
+    I( BMPHandler,      ImageHandler )
+    I( PNGHandler,      ImageHandler )
+    I( JPEGHandler,     ImageHandler )
+    I( GIFHandler,      ImageHandler )
+    I( PCXHandler,      ImageHandler )
+    I( PNMHandler,      ImageHandler )
+    I( TIFFHandler,     ImageHandler )
+    I( XPMHandler,      ImageHandler )
+    I( IFFHandler,      ImageHandler )
+    I( ICOHandler,      BMPHandler )
+    I( CURHandler,      ICOHandler )
+    I( ANIHandler,      CURHandler )
+
+    I( LogTextCtrl,     Log )
+    I( LogWindow,       Log )
+    I( LogGui,          Log )
+    I( PlLog,           Log )
+    I( LogChain,        Log )
+    I( LogPassThrough,  LogChain )
+    I( PlLogPassThrough, LogPassThrough )
+
+    I( BoxSizer,        Sizer )
+    I( StaticBoxSizer,  BoxSizer )
+    I( GridSizer,       Sizer )
+    I( FlexGridSizer,   GridSizer )
+    I( NotebookSizer,   Sizer )
+    I( PlSizer,         Sizer )
+
+    I( TaskBarIcon,     EvtHandler )
+    I( Process,         EvtHandler )
+
+    { "Wx::Stream", "Tie::Handle" },
+    I( InputStream,     Stream )
+    I( OutputStream,    Stream )
+
+    ///////////////////////////////////////////
+    // Conditional part
+    ///////////////////////////////////////////
+#define HAS_TLW    ( WXPERL_W_VERSION_GE( 2, 3, 2 ) && !defined(__WXMOTIF__) )
+
+#if HAS_TLW
+    I( Frame,           TopLevelWindow )
+#else
+    I( Frame,           Window )
+#endif
+
+#if HAS_TLW
+    I( Dialog,          TopLevelWindow )
+#else
+    I( Dialog,          Panel )
+#endif
+
+#if defined(__WXMSW__)
+    I( MemoryDC,        DC )
+#else
+    I( MemoryDC,        WindowDC )
+#endif
+
+#if ( defined(__WXMSW__) || defined(__WXGTK__) ) && \
+    WXPERL_W_VERSION_GE( 2, 3, 0 )
+    I( PaintDC,         ClientDC )
+#else
+    I( PaintDC,         WindowDC )
+#endif
+
+#if defined(__WXGTK__)
+    I( ScreenDC,        PaintDC )
+#else
+    I( ScreenDC,        WindowDC )
+#endif
+
+#if defined(__WXMSW__)
+    I( TreeCtrl,        Control )
+#elif WXPERL_W_VERSION_GE( 2, 3, 0 )
+    I( TreeCtrl,        GenericTreeCtrl )
+#else
+    I( TreeCtrl,        ScrolledWindow )
+#endif
+
+#if defined(__WXGTK__)
+    I( ComboBox,        Control )
+#else
+    I( ComboBox,        Choice )
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 3, 0 )
+    I( ScrolledWindow,  GenericScrolledWindow )
+#else
+    I( ScrolledWindow,  Panel )
+#endif
+
+#if defined(__WXGTK__)
+    I( StatusBar,       StatusBarGeneric )
+#else
+    I( StatusBar,       Window )
+#endif
+
+#if defined(__WXMOTIF__)
+    I( Cursor,          Bitmap )
+#elif !defined(__WXGTK__)
+    I( Cursor,          GDIObject )
+#endif
+
+#if defined(__WXGTK__) || defined(__WXMOTIF__)
+    I( Icon,            Bitmap )
+#else
+    I( Icon,            GDIObject )
+#endif
+
+#if defined(__WXGTK__)
+    I( Colour,          GDIObject )
+#endif
+
+#if defined(__WXUNIVERSAL__)
+    I( ToolBar,         ToolBarSimple )
+#else
+    I( ToolBar,         ToolBarBase )
+#endif
+
+    ///////////////////////////////////////////
+    // Events
+    ///////////////////////////////////////////
+    I( PlEvent,         Event )
+    I( PlThreadEvent,   Event )
+    I( PlCommandEvent,  CommandEvent )
+    I( ActivateEvent,   Event )
+    I( CommandEvent,    Event )
+    I( CloseEvent,      Event )
+    I( EraseEvent,      Event )
+    I( FindDialogEvent, CommandEvent )
+    I( FocusEvent,      Event )
+    I( KeyEvent,        Event )
+    I( HelpEvent,       CommandEvent )
+    I( IconizeEvent,    Event )
+    I( IdleEvent,       Event )
+    I( InitDialogEvent, Event )
+    I( JoystickEvent,   Event )
+    I( ListEvent,       NotifyEvent )
+    I( MenuEvent,       Event )
+    I( MouseEvent,      Event )
+    I( MoveEvent,       Event )
+    I( NotebookEvent,   NotifyEvent )
+    I( NotifyEvent,     CommandEvent )
+    I( PaintEvent,      Event )
+    I( ProcessEvent,    Event )
+    I( QueryLayoutInfoEvent, Event )
+    I( SashEvent,       CommandEvent )
+    I( SizeEvent,       Event )
+    I( ScrollWinEvent,  Event )
+    I( SpinEvent,       NotifyEvent )
+    I( SysColourChangedEvent, Event )
+    I( TextUrlEvent,    CommandEvent )
+    I( TimerEvent,      Event )
+    I( TreeEvent,       NotifyEvent )
+    I( UpdateUIEvent,   CommandEvent )
+    I( WizardEvent,     NotifyEvent )
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    I( SplitterEvent,   NotifyEvent )
+#else
+    I( SplitterEvent,   CommandEvent )
+#endif
+
+    { 0, 0 }
+};
+
+void SetInheritance()
+{
+    dTHX;
+
+    for( size_t i = 0; inherit[i].klass; ++i )
+    {
+        char buffer[1024];
+        strcpy( buffer, inherit[i].klass );
+        strcat( buffer, "::ISA" );
+
+        AV* isa = get_av( buffer, 1 );
+        av_store( isa, 0, newSVpv( inherit[i].base, 0 ) );
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// the constant() function
+//////////////////////////////////////////////////////////////////////////////
+
 // !package: Wx
 // !tag:
 
@@ -118,11 +495,14 @@ static double constant( const char *name, int arg )
   case 'A':
     r( wxALIGN_LEFT );                  // sizer grid statictext
     r( wxALIGN_CENTRE );                // sizer grid statictext
+    r( wxALIGN_CENTER );                // sizer grid statictext
     r( wxALIGN_RIGHT );                 // sizer grid statictext
     r( wxALIGN_TOP );                   // sizer grid
     r( wxALIGN_BOTTOM );                // sizer grid
     r( wxALIGN_CENTER_VERTICAL );       // sizer
     r( wxALIGN_CENTER_HORIZONTAL );     // sizer
+    r( wxALIGN_CENTRE_VERTICAL );       // sizer
+    r( wxALIGN_CENTRE_HORIZONTAL );     // sizer
     r( wxALL );                         // sizer
 
     r( wxACCEL_ALT );
@@ -189,8 +569,8 @@ static double constant( const char *name, int arg )
     r( wxCB_DROPDOWN );                 // combobox
     r( wxCB_READONLY );                 // combobox
     r( wxCB_SORT );                     // combobox
-    r( wxCENTRE );                      // dialog sizer
     r( wxCENTER );                      // dialog sizer
+    r( wxCENTRE );                      // dialog sizer
     r( wxCLIP_CHILDREN );               // window
     r( wxCHOICEDLG_STYLE );
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
@@ -239,8 +619,13 @@ static double constant( const char *name, int arg )
     r( wxCROSSDIAG_HATCH );             // brush pen
     r( wxCROSS_HATCH );                 // brush pen
 
+#define wxCenterX wxCentreX
+#define wxCenterY wxCentreY
+
     r( wxCentreX );                     // layout constraints
     r( wxCentreY );                     // layout constraints
+    r( wxCenterX );                     // layout constraints
+    r( wxCenterY );                     // layout constraints
     break;
   case 'D':
     r( wxDECORATIVE );                  // font
@@ -254,9 +639,14 @@ static double constant( const char *name, int arg )
     r( wxDIALOG_EX_CONTEXTHELP );       // dialog
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+    r( wxDD_NEW_DIR_BUTTON );
+#endif
+
     r( wxDOT );                         // pen
     r( wxDOT_DASH );                    // pen
 
+    r( wxDIR );
     break;
   case 'E':
     r( wxEQUIV );                       // dc
@@ -433,6 +823,11 @@ static double constant( const char *name, int arg )
     r( wxEVT_DETAILED_HELP );
 #endif
 
+//    r( wxEVT_WIZARD_PAGE_CHANGED );
+//    r( wxEVT_WIZARD_PAGE_CHANGING );
+//    r( wxEVT_WIZARD_CANCEL );
+//    r( wxEVT_WIZARD_HELP );
+
     r( wxEXPAND );                      // sizer
 #if WXPERL_W_VERSION_GE( 2, 3, 3 )
     r( wxEXEC_SYNC );
@@ -450,11 +845,14 @@ static double constant( const char *name, int arg )
     r( wxFONTENCODING_SYSTEM );         // font
     r( wxFRAME_FLOAT_ON_PARENT );       // frame
     r( wxFRAME_TOOL_WINDOW );           // frame
+    r( wxFRAME_NO_WINDOW_MENU );
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
     r( wxFRAME_NO_TASKBAR );            // frame
     r( wxFRAME_TOOL_WINDOW );           // frame
     r( wxFRAME_EX_CONTEXTHELP );        // frame
 #endif
+
+    r( wxFILE );
 
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
     r( wxFR_DOWN );                     // findreplace
@@ -481,9 +879,27 @@ static double constant( const char *name, int arg )
     r( wxFONTENCODING_ISO8859_14 );     // font
     r( wxFONTENCODING_ISO8859_15 );     // font
     r( wxFONTENCODING_KOI8 );           // font
+    r( wxFONTENCODING_ALTERNATIVE );    // font
+    r( wxFONTENCODING_BULGARIAN );      // font
+    r( wxFONTENCODING_CP437 );          // font
+    r( wxFONTENCODING_CP850 );          // font
+    r( wxFONTENCODING_CP852 );          // font
+    r( wxFONTENCODING_CP855 );          // font
+    r( wxFONTENCODING_CP866 );          // font
+    r( wxFONTENCODING_CP874 );          // font
     r( wxFONTENCODING_CP1250 );         // font
     r( wxFONTENCODING_CP1251 );         // font
     r( wxFONTENCODING_CP1252 );         // font
+    r( wxFONTENCODING_CP1253 );         // font
+    r( wxFONTENCODING_CP1254 );         // font
+    r( wxFONTENCODING_CP1255 );         // font
+    r( wxFONTENCODING_CP1256 );         // font
+    r( wxFONTENCODING_CP1257 );         // font
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    r( wxFONTENCODING_UTF7 );           // font
+    r( wxFONTENCODING_UTF8 );           // font
+#endif
+    r( wxFONTENCODING_UNICODE );        // font
 
     // !export: Type_Float
     if( strEQ( name, "Type_Float" ) )
@@ -982,6 +1398,7 @@ static double constant( const char *name, int arg )
     r( wxNB_LEFT );                     // notebook
     r( wxNB_RIGHT );                    // notebook
     r( wxNB_BOTTOM );                   // notebook
+    r( wxNO );
     r( wxNO_BORDER );                   // frame toolbar
     r( wxNO_3D );                       // dialog window
     r( wxNO_FULL_REPAINT_ON_RESIZE );   // window
@@ -1034,9 +1451,17 @@ static double constant( const char *name, int arg )
     break;
   case 'S':
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
+
+#define wxSPLASH_CENTER_ON_PARENT wxSPLASH_CENTRE_ON_PARENT
+#define wxSPLASH_CENTER_ON_SCREEN wxSPLASH_CENTRE_ON_SCREEN
+#define wxSPLASH_NO_CENTER wxSPLASH_NO_CENTRE
+
     r( wxSPLASH_CENTRE_ON_PARENT );     // splashscreen
     r( wxSPLASH_CENTRE_ON_SCREEN );     // splashscreen
     r( wxSPLASH_NO_CENTRE );            // splashscreen
+    r( wxSPLASH_CENTER_ON_PARENT );     // splashscreen
+    r( wxSPLASH_CENTER_ON_SCREEN );     // splashscreen
+    r( wxSPLASH_NO_CENTER );            // splashscreen
     r( wxSPLASH_TIMEOUT );              // splashscreen
     r( wxSPLASH_NO_TIMEOUT );           // splashscreen
 #endif
@@ -1243,6 +1668,11 @@ static double constant( const char *name, int arg )
     r( wxTE_RICH );                     // textctrl
 #if WXPERL_W_VERSION_GE( 2, 3, 3 )
     r( wxTE_RICH2 );                    // textctrl
+    r( wxTE_LEFT );                     // textctrl
+    r( wxTE_RIGHT );                    // textctrl
+    r( wxTE_CENTRE );                   // textctrl
+    r( wxTE_CENTER );                   // textctrl
+    r( wxTE_AUTO_URL );                 // textctrl
 #endif
     r( wxTHICK_FRAME );                 // frame dialog
     r( wxTOP );                         // sizer layout constraints
@@ -1268,7 +1698,9 @@ static double constant( const char *name, int arg )
     r( wxWANTS_CHARS );
     r( wxWINDING_RULE );                // dc
     r( wxWidth );                       // layout constraints
-
+#if WXPERL_W_VERSION_GE( 2, 3, 1 )
+    r( wxWIZARD_EX_HELPBUTTON );
+#endif
     break;
   case 'X':
     r( wxXOR );                         // dc
@@ -1549,3 +1981,9 @@ double
 constant(name,arg)
     const char* name
     int arg
+
+void
+SetEvents()
+
+void
+SetInheritance()

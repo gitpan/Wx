@@ -37,10 +37,10 @@ use vars qw(@ISA $VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3;
 
 @ISA = qw(Exporter);
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 sub BEGIN{
-  @EXPORT_OK = qw(wxPOINT wxSIZE wxUNIVERSAL);
+  @EXPORT_OK = qw(wxPOINT wxSIZE);
   %EXPORT_TAGS = ( );
 }
 
@@ -68,11 +68,45 @@ sub AUTOLOAD {
   goto &$AUTOLOAD;
 }
 
+# handle :allclasses specially
+sub import {
+  my $package = shift;
+  my $count = 0;
+  foreach ( @_ ) {
+    m/^:/ or last;
+    m/^:allclasses$/ and do {
+      eval <<'EOT';
+use Wx::DND;
+use Wx::DocView;
+use Wx::FS;
+use Wx::Grid;
+use Wx::Help;
+use Wx::Html;
+use Wx::MDI;
+use Wx::Print;
+EOT
+
+      die $@ if $@;
+
+      splice @_, $count, 1;
+    };
+
+    ++$count;
+  }
+
+  $package->export_to_level( 1, $package, @_ );
+}
+
 sub END {
   UnLoad();
 }
 
-use Wx::_Ovl;
+#use Wx::_Ovl;
+
+sub _match(\@$;$$) { &_xsmatch( [@{shift()}],@_ ) }
+#*_match = \&_xsmatch;
+
+=for comment
 
 sub _match(\@$;$$) {
   my( $args, $sig, $required, $dots ) = @_;
@@ -91,12 +125,14 @@ sub _match(\@$;$$) {
     next if $_ == $bool;
 
     $t = ${$args}[$i];
-    next if $_ == $num && looks_like_number( $t );
+    if( $_ == $num ) {
+      if( looks_like_number( $t ) ) { next } else { return 0 } }
     next if !defined( $t ) ||
       ( defined( $tnames[$_] ) && UNIVERSAL::isa( $t, $tnames[$_] ) );
     next if ( $_ == $arr ) && ref( $t ) eq 'ARRAY';
     next if ( $_ == $wpoi || $_ == $wsiz ) && ref( $t ) eq 'ARRAY';
-    next if ( $_ == $wist || $_ == $wost ) && ref( $t );
+    next if ( $_ == $wist || $_ == $wost ) &&
+      ( ref( $t ) || ( \$t ) =~ m/^GLOB/ );
 
     # type clash: return false
     return;
@@ -106,6 +142,8 @@ sub _match(\@$;$$) {
 
   return 1;
 }
+
+=cut
 
 sub _ovl_error {
   ( 'unable to resolve overloaded method for ', $_[0] || (caller(1))[3] );
@@ -149,51 +187,49 @@ wx_boot( 'Wx', $VERSION );
 *Wx::SystemSettings::GetColour = \&Wx::SystemSettings::GetSystemColour;
 *Wx::SystemSettings::GetFont   = \&Wx::SystemSettings::GetSystemFont;
 *Wx::SystemSettings::GetMetric = \&Wx::SystemSettings::GetSystemMetric;
+*Wx::Window::Center = \&Wx::Window::Centre;
+*Wx::Window::CenterOnParent = \&Wx::Window::CentreOnParent;
+*Wx::Window::CenterOnScreen = \&Wx::Window::CentreOnScreen;
+*Wx::ListCtrl::InsertStringImageItem = \&Wx::ListCtrl::InsertImageStringItem;
+no strict 'refs';
+*{"Wx::Size::y"} = \&Wx::Size::height; # work around syntax highlighting
+use strict 'refs';
+*Wx::Size::x = \&Wx::Size::width;
 
 require Wx::_Constants;
 
 Load();
 SetConstants();
+SetOvlConstants();
+SetEvents();
+SetInheritance();
 
 # set up wxUNIVERSAL, wxGTK, wxMSW, etc
 eval( "sub wxUNIVERSAL() { $_universal }" );
 eval( "sub wxPL_STATIC() { $_static }" );
 eval( "sub wxMOTIF() { $_platform == $_motif }" );
+eval( "sub wxMSW() { $_platform == $_msw }" );
+eval( "sub wxGTK() { $_platform == $_gtk }" );
+eval( "sub wxVERSION() { $_wx_version }" );
 
 require Wx::App;
-require Wx::Bitmap;
-require Wx::Brush;
-require Wx::Caret;
-require Wx::Colour;
-require Wx::ComboBox;
-require Wx::ControlWithItems;
-require Wx::Cursor;
-require Wx::DC;
 require Wx::Event;
-require Wx::Icon;
 require Wx::Image;
 require Wx::ImageList;
-require Wx::ListCtrl;
 require Wx::Locale;
 require Wx::Menu;
-require Wx::Pen;
 require Wx::RadioBox;
-require Wx::Rect;
 require Wx::Region;
-require Wx::ScreenDC;
 require Wx::Sizer;
-require Wx::StaticBitmap;
 require Wx::Timer;
-require Wx::ToolBar;
-require Wx::TreeCtrl;
-require Wx::Window;
 require Wx::_Exp;
 require Wx::_Functions;
-require Wx::_Inheritance;
-
+# for Wx::Stream & co.
+if( $] >= 5.005 ) { require Tie::Handle; }
 require Wx::SplashScreen;
 
-use strict;
+package Wx::GDIObject;
+package Wx::TreeItemId; use overload '<=>' => \&tiid_spaceship;
 
 1;
 

@@ -29,8 +29,12 @@ Wx_ListEvent::GetCacheTo()
 
 #endif
 
+#if WXWIN_COMPATIBILITY_2_2
+
 int
 Wx_ListEvent::GetCode()
+
+#endif
 
 long
 Wx_ListEvent::GetIndex()
@@ -214,9 +218,9 @@ Wx_ListItemAttr::new( ... )
       Wx_Colour back = NO_INIT
       Wx_Font* font = NO_INIT
     CODE:
-      text = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(1), wxPlColourName );
-      back = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(2), wxPlColourName );
-      font = (Wx_Font *) wxPli_sv_2_object( aTHX_ ST(3), wxPlFontName );
+      text = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(1), "Wx::Colour" );
+      back = *(Wx_Colour *) wxPli_sv_2_object( aTHX_ ST(2), "Wx::Colour" );
+      font = (Wx_Font *) wxPli_sv_2_object( aTHX_ ST(3), "Wx::Font" );
       RETVAL = new wxListItemAttr( text, back, *font );
     OUTPUT:
       RETVAL
@@ -276,7 +280,7 @@ Wx_ListItemAttr::GetFont()
 MODULE=Wx PACKAGE=Wx::ListCtrl
 
 Wx_ListCtrl*
-Wx_ListCtrl::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = "listCtrl" )
+Wx_ListCtrl::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
     Wx_Window* parent
     wxWindowID id
     Wx_Point pos
@@ -351,6 +355,7 @@ Wx_ListCtrl::GetColumn( col )
   PREINIT:
     wxListItem item;
   CODE:
+    item.SetMask( wxLIST_MASK_TEXT|wxLIST_MASK_IMAGE|wxLIST_MASK_FORMAT );
     if( THIS->GetColumn( col, item ) )
     {
       RETVAL = new wxListItem( item );
@@ -528,6 +533,14 @@ Wx_ListCtrl::HitTest( point )
     PUSHs( sv_2mortal( newSViv( item ) ) );
     PUSHs( sv_2mortal( newSViv( flags ) ) );
 
+void
+wxListCtrl::InsertColumn( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_n_wlci, InsertColumnInfo )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_n_s_n_n, InsertColumnString, 2 )
+    END_OVERLOAD( Wx::ListCtrl::InsertColumn )
+
 long
 Wx_ListCtrl::InsertColumnInfo( col, info )
     int col
@@ -632,6 +645,14 @@ Wx_ListCtrl::SetItemCount( count )
 
 #endif
 
+void
+wxListCtrl::SetItem( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_wlci, SetItemInfo )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_n_n_s_n, SetItemString, 3 )
+    END_OVERLOAD( Wx::ListCtrl::SetItem )
+
 bool
 Wx_ListCtrl::SetItemInfo( info )
     Wx_ListItem* info
@@ -705,7 +726,7 @@ MODULE=Wx PACKAGE=Wx::ListView
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
 
 Wx_ListView*
-Wx_ListView::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = "listCtrl" )
+Wx_ListView::new( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
     Wx_Window* parent
     wxWindowID id
     Wx_Point pos

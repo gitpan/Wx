@@ -14,8 +14,18 @@
 
 MODULE=Wx PACKAGE=Wx::Mask
 
+void
+Wx_Mask::new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_wbmp_wcol, newBitmapColour )
+        MATCH_REDISP( wxPliOvl_wbmp_n, newBitmapIndex )
+        MATCH_REDISP( wxPliOvl_wbmp, newBitmap )
+    END_OVERLOAD( Wx::Mask::new )
+
 Wx_Mask*
-newBitmap( bitmap )
+newBitmap( CLASS, bitmap )
+    SV* CLASS
     Wx_Bitmap* bitmap
   CODE:
     RETVAL = new wxMask( *bitmap );
@@ -23,7 +33,8 @@ newBitmap( bitmap )
     RETVAL
 
 Wx_Mask*
-newBitmapColour( bitmap, colour )
+newBitmapColour( CLASS, bitmap, colour )
+    SV* CLASS
     Wx_Bitmap* bitmap
     Wx_Colour* colour
   CODE:
@@ -32,7 +43,8 @@ newBitmapColour( bitmap, colour )
     RETVAL
 
 Wx_Mask*
-newBitmapIndex( bitmap, index )
+newBitmapIndex( CLASS, bitmap, index )
+    SV* CLASS
     Wx_Bitmap* bitmap
     int index
   CODE:
@@ -59,11 +71,11 @@ bmp_spaceship( bmp1, bmp2, ... )
     // anyway, comparing bitmaps is just useless
     RETVAL = -1;
     if( SvROK( bmp1 ) && SvROK( bmp2 ) &&
-        sv_derived_from( bmp1, wxPlBitmapName ) &&
-        sv_derived_from( bmp2, wxPlBitmapName ) )
+        sv_derived_from( bmp1, "Wx::Bitmap" ) &&
+        sv_derived_from( bmp2, "Wx::Bitmap" ) )
     {
-        Wx_Bitmap* bitmap1 = (Wx_Bitmap*)_sv_2_object( bmp1, wxPlBitmapName );
-        Wx_Bitmap* bitmap2 = (Wx_Bitmap*)_sv_2_object( bmp2, wxPlBitmapName );
+        Wx_Bitmap* bitmap1 = (Wx_Bitmap*)_sv_2_object( bmp1, "Wx::Bitmap" );
+        Wx_Bitmap* bitmap2 = (Wx_Bitmap*)_sv_2_object( bmp2, "Wx::Bitmap" );
 
         RETVAL = *bitmap1 == *bitmap2 ? 0 : 1;
     } else
@@ -73,8 +85,19 @@ bmp_spaceship( bmp1, bmp2, ... )
 
 #endif
 
+void
+Wx_Bitmap::new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_n_n_n, newEmpty, 2 )
+        MATCH_REDISP( wxPliOvl_s_n, newFile )
+        MATCH_REDISP( wxPliOvl_wico, newIcon )
+        MATCH_REDISP( wxPliOvl_wimg, newImage )
+    END_OVERLOAD( Wx::Bitmap::new )
+
 Wx_Bitmap*
-newEmpty( width, height, depth = -1 )
+newEmpty( CLASS, width, height, depth = -1 )
+    SV* CLASS
     int width
     int height
     int depth
@@ -84,7 +107,8 @@ newEmpty( width, height, depth = -1 )
     RETVAL
 
 Wx_Bitmap*
-newFile( name, type )
+newFile( CLASS, name, type )
+    SV* CLASS
     wxString name
     long type
   CODE:
@@ -93,7 +117,8 @@ newFile( name, type )
     RETVAL
 
 Wx_Bitmap*
-newIcon( icon )
+newIcon( CLASS, icon )
+    SV* CLASS
     Wx_Icon* icon
   CODE:
     RETVAL = new wxBitmap( *icon );
@@ -131,12 +156,23 @@ newFromXPM( CLASS, data )
 #if WXPERL_W_VERSION_GE( 2, 3, 1 )
 
 Wx_Bitmap*
-newImage( image )
+newImage( CLASS, image )
+    SV* CLASS
     Wx_Image* image
   CODE:
     RETVAL = new wxBitmap( *image );
   OUTPUT:
     RETVAL
+
+#else
+
+wxBitmap*
+newImage( CLASS, image )
+    SV* CLASS
+    wxImage* image
+  CODE:
+    RETVAL = new wxBitmap( image->ConvertToBitmap() );
+  OUTPUT: RETVAL
 
 #endif
 

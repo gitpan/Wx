@@ -17,7 +17,6 @@
 #include "cpp/compat.h"
 #if !WXPERL_W_VERSION_GE( 2, 3, 0 )
 #include <wx/defs.h>
-#include <wx/window.h>
 #endif
 
 // THIS IS AN HACK!
@@ -25,22 +24,10 @@
 #define STRICT
 #endif
 
-WXPL_EXTERN_C_START
-#include <EXTERN.h>
-#include <perl.h>
-#include <XSUB.h>
-WXPL_EXTERN_C_END
+#include "cpp/wxapi.h"
 
-#undef bool
-#undef Move
-#undef Copy
-#undef Pause
-#undef New
-
-#include <wx/defs.h>
 #include <wx/window.h>
 #include <wx/module.h>
-#include "cpp/chkconfig.h"
 
 #if defined(__WXMSW__)
 #include <wx/msw/private.h>
@@ -54,22 +41,17 @@ int  WXDLLEXPORT wxEntryStart( int argc, char** argv );
 int  WXDLLEXPORT wxEntryInitGui();
 void WXDLLEXPORT wxEntryCleanup();
 
-#if __VISUALC__
-#pragma warning (disable: 4800)
-#endif
-
-#ifdef __WXMSW__
-#include <wx/msw/winundef.h>
-#endif // __WXMSW__
-
 #define _WXP_DEFINE_CLASSNAME 1
 #include "cpp/typedef.h"
-#include "cpp/helpers.h"
 
 #include "cpp/v_cback.h"
 
+// to declare wxPliUserDataCD
+#include "cpp/helpers.h"
 #include "cpp/helpers.cpp"
 #include "cpp/v_cback.cpp"
+#include "cpp/overload.cpp"
+#include "cpp/ovl_const.cpp"
 
 #undef THIS
 
@@ -83,8 +65,13 @@ extern "C" {
     XS( boot_Wx_Wnd );
     XS( boot_Wx_GDI );
 #if defined( WXPL_STATIC )
+    XS( boot_Wx__DocView );
+#if wxPERL_USE_STC
     XS( boot_Wx__STC );
+#endif
+#if wxPERL_USE_XRC
     XS( boot_Wx__XRC );
+#endif
     XS( boot_Wx__Print );
     XS( boot_Wx__MDI );
     XS( boot_Wx__Html );
@@ -165,8 +152,13 @@ BOOT:
   newXSproto( "Wx::_boot_Frames", boot_Wx_Wnd, file, "$$" );
   newXSproto( "Wx::_boot_GDI", boot_Wx_GDI, file, "$$" );
 #if defined( WXPL_STATIC )
+  newXSproto( "Wx::_boot_Wx__DocView", boot_Wx__DocView, file, "$$" );
+#if wxPERL_USE_STC
   newXSproto( "Wx::_boot_Wx__STC", boot_Wx__STC, file, "$$" );
+#endif
+#if wxPERL_USE_XRC
   newXSproto( "Wx::_boot_Wx__XRC", boot_Wx__XRC, file, "$$" );
+#endif
   newXSproto( "Wx::_boot_Wx__Print", boot_Wx__Print, file, "$$" );
   newXSproto( "Wx::_boot_Wx__MDI", boot_Wx__MDI, file, "$$" );
   newXSproto( "Wx::_boot_Wx__Html", boot_Wx__Html, file, "$$" );
@@ -209,13 +201,48 @@ SetConstants()
     SetConstants();
 
 void
+SetOvlConstants()
+
+void
 UnLoad()
   CODE:
     wxEntryCleanup();
 
+bool
+_xsmatch( avref, proto, required = -1, allow_more = FALSE )
+    SV* avref
+    SV* proto
+    int required
+    bool allow_more
+  PREINIT:
+    AV* av;
+    unsigned char* prototype;
+    int i, n, len;
+  PROTOTYPE: \@$;$$
+  CODE:
+    av = wxPli_avref_2_av( avref );
+    if( !av ) croak( "first parameter must be an ARRAY reference" );
+    n = wxPli_av_2_uchararray( aTHX_ proto, &prototype );
+    len = av_len( av ) + 1;
+    EXTEND(SP, len);
+    PUSHMARK(SP);
+    for( i = 0; i < len; ++i )
+        PUSHs( *av_fetch( av, i, 0 ) );
+    PUTBACK;
+    RETVAL = wxPli_match_arguments( aTHX_ prototype, n, required, allow_more );
+    SPAGAIN;
+    POPMARK; // wxPli_match_* does a PUSHMARK
+    delete[] prototype;
+  OUTPUT:
+    RETVAL
+
 I32
 looks_like_number( sval )
     SV* sval
+  CODE:
+    RETVAL = my_looks_like_number( aTHX_ sval );
+  OUTPUT:
+    RETVAL
 
 void
 CLONE( CLASS )
@@ -236,6 +263,8 @@ INCLUDE: XS/Stream.xs
 INCLUDE: XS/TaskBarIcon.xs
 INCLUDE: XS/Config.xs
 INCLUDE: XS/Process.xs
+INCLUDE: XS/FontMapper.xs
+INCLUDE: XS/FontEnumerator.xs
 
 # this is here for debugging purpouses
 INCLUDE: XS/ClassInfo.xs

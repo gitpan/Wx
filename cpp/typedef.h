@@ -20,7 +20,7 @@
 #define _WXP_DEFINE_CLASSNAME 1
 #endif
 
-#if _WXP_DEFINE_CLASSNAME
+#if 0 // not necessary anymore // _WXP_DEFINE_CLASSNAME
 
 #define FD_TD( name ) \
   class wx##name; \
@@ -94,6 +94,7 @@ FD_TD( TimerEvent );
 FD_TD( TreeEvent );
 FD_TD( UpdateUIEvent );
 FD_TD( ProcessEvent );
+FD_TD( WizardEvent );
 
 FD_TD( PlEvent );
 FD_TD( PlCommandEvent );
@@ -180,6 +181,8 @@ FD_TD_NAME( FontDialog, GenericFontDialog );
 FD_TD( FontDialog );
 #endif
 
+FD_TD( FontEnumerator )
+FD_TD( FontMapper )
 FD_TD( Frame );
 FD_TD( Gauge );
 FD_TD( GridSizer );
@@ -270,6 +273,9 @@ FD_TD( Validator );
 FD_TD( Window );
 FD_TD( WindowDC );
 FD_TD( WindowDisabler );
+FD_TD( Wizard );
+FD_TD( WizardPage );
+FD_TD( WizardPageSimple );
 
 FD_TD( BMPHandler );
 FD_TD( PNGHandler );
@@ -280,6 +286,9 @@ FD_TD( JPEGHandler );
 FD_TD( TIFFHandler );
 FD_TD( XPMHandler );
 FD_TD( IFFHandler );
+FD_TD( ICOHandler );
+FD_TD( CURHandler );
+FD_TD( ANIHandler );
 
 FD_TD( StreamBase );
 FD_TD( InputStream );

@@ -38,8 +38,10 @@ sub new {
 
 sub OnTimer {
   main::ok( 1, "EVT_TIMER works" );
-  Wx::WakeUpIdle;
+  $frame->{T1}->Destroy;
+  $frame->{T2}->Destroy;
   $frame->Destroy;
+  Wx::WakeUpIdle;
 }
 
 package MyFrame;
@@ -51,15 +53,20 @@ sub new {
   my $this = $class->SUPER::new( @_ );
 
   my $timer2 = Wx::Timer->new( MyHandler->new );
-  $timer2->Start( 400, 1 );
+  $timer2->Start( 800, 1 );
 
   my $timer1 = MyTimer->new;
   $timer1->Start( 100, 1 );
+
+  $this->{T1} = $timer1;
+  $this->{T2} = $timer2;
 
   return $this;
 }
 
 package main;
+
+use Wx qw(wxTheApp);
 
 my $app = test_app( sub {
                       $frame = MyFrame->new( undef, -1, 'boo' );

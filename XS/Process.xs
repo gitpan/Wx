@@ -59,6 +59,19 @@ Wx_Process::GetInputStream()
 wxOutputStream*
 Wx_Process::GetOutputStream()
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+bool
+wxProcess::IsErrorAvailable()
+
+bool
+wxProcess::IsInputAvailable()
+
+bool
+wxProcess::IsInputOpened()
+
+#endif
+
 #if WXPERL_W_VERSION_GE( 2, 3, 2 )
 
 wxKillError
@@ -90,6 +103,19 @@ Wx_Process::OnTerminate( pid, status )
 void
 Wx_Process::Redirect()
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+wxProcess*
+Open( cmd, flags = wxEXEC_ASYNC )
+    wxString cmd
+    int flags
+  CODE:
+    RETVAL = wxProcess::Open( cmd, flags );
+  OUTPUT:
+    RETVAL
+
+#endif
+
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 
 #if WXPERL_W_VERSION_GE( 2, 3, 3 )
@@ -103,6 +129,32 @@ wxExecuteCommand( command, sync = wxEXEC_ASYNC, callback = 0 )
     RETVAL = wxExecute( command, sync, callback );
   OUTPUT:
     RETVAL
+
+#if wxUSE_UNICODE
+
+long
+wxExecuteArgs( args, sync = wxEXEC_ASYNC, callback = 0 )
+    SV* args
+    int sync
+    wxProcess* callback
+  PREINIT:
+    wxChar** argv;
+    wxChar** t;
+    int n, i;
+  CODE:
+    n = wxPli_av_2_wxcharparray( aTHX_ args, &t );
+    argv = new wxChar*[n+1];
+    memcpy( argv, t, n*sizeof(char*) );
+    argv[n] = 0;
+    RETVAL = wxExecute( argv, sync, callback );
+    for( i = 0; i < n; ++i )
+        delete argv[i];
+    delete[] argv;
+    delete[] t;
+  OUTPUT:
+    RETVAL
+
+#else
 
 long
 wxExecuteArgs( args, sync = wxEXEC_ASYNC, callback = 0 )
@@ -125,6 +177,8 @@ wxExecuteArgs( args, sync = wxEXEC_ASYNC, callback = 0 )
     delete[] t;
   OUTPUT:
     RETVAL
+
+#endif
 
 #else
 

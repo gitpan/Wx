@@ -10,10 +10,12 @@
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
+#include "cpp/overload.h"
+
 MODULE=Wx PACKAGE=Wx::ComboBox
 
 Wx_ComboBox*
-Wx_ComboBox::new( parent, id, value, pos, size , choices, style = 0, validator = (wxValidator*)&wxDefaultValidator, name = wxComboBoxNameStr )
+Wx_ComboBox::new( parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, choices = 0, style = 0, validator = (wxValidator*)&wxDefaultValidator, name = wxComboBoxNameStr )
     Wx_Window* parent
     wxWindowID id
     wxString value
@@ -24,10 +26,11 @@ Wx_ComboBox::new( parent, id, value, pos, size , choices, style = 0, validator =
     Wx_Validator* validator
     wxString name
   PREINIT:
-    wxString* chs;
-    int n;
+    wxString* chs = 0;
+    int n = 0;
   CODE:
-    n = wxPli_av_2_stringarray( aTHX_ choices, &chs );
+    if( choices != 0 )
+        n = wxPli_av_2_stringarray( aTHX_ choices, &chs );
     RETVAL = new wxPliComboBox( CLASS, parent, id, value, pos, size, n, chs, 
         style, *validator, name );
 
@@ -38,7 +41,15 @@ Wx_ComboBox::new( parent, id, value, pos, size , choices, style = 0, validator =
 void
 Wx_ComboBox::Clear()
 
-#if defined( __WXGTK__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXGTK__ )
+
+void
+Wx_ComboBox::Append( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_s_s, AppendData )
+        MATCH_REDISP( wxPliOvl_s, AppendString )
+    END_OVERLOAD( Wx::ControlWithItems::Append )
 
 void
 Wx_ComboBox::AppendString( item )
@@ -67,6 +78,15 @@ Wx_ComboBox::GetSelection()
 wxString
 Wx_ComboBox::GetString( n )
     int n
+
+int
+Wx_ComboBox::GetCount()
+  CODE:
+#if WXPERL_W_VERSION_GE( 2, 3, 2 )
+    RETVAL = THIS->GetCount();
+#else
+    RETVAL = THIS->Number();
+#endif
 
 wxString
 Wx_ComboBox::GetStringSelection()
@@ -127,6 +147,14 @@ Wx_ComboBox::SetInsertionPoint( pos )
 
 void
 Wx_ComboBox::SetInsertionPointEnd()
+
+void
+Wx_ComboBox::SetSelection( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_n_n, SetMark )
+        MATCH_REDISP( wxPliOvl_n, SetSelectionN )
+    END_OVERLOAD( Wx::ComboBox::SetSelection )
 
 void
 Wx_ComboBox::SetSelectionN( n )

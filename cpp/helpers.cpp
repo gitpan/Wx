@@ -97,6 +97,16 @@ const char* wxPli_cpp_class_2_perl( const wxChar* className,
     return buffer;
 }
 
+void wxPli_push_arguments( pTHX_ SV*** psp, const char* argtypes, ... )
+{
+    va_list arglist;
+    va_start( arglist, argtypes );
+
+    wxPli_push_args( aTHX_ psp, argtypes, arglist );
+    
+    va_end( arglist );
+}
+
 void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args ) 
 {
     SV** sp = *psp;
@@ -111,6 +121,7 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
     IV ival;
     long lval;
     char* stval;
+    wxChar* wstval;
     SV* svval;
     wxObject* oval;
     void* pval;
@@ -142,6 +153,14 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
             wxsval = va_arg( args, wxString* );
             SV* sv = sv_newmortal();
             wxPli_wxString_2_sv( aTHX_ *wxsval, sv );
+            XPUSHs( sv );
+            break;
+        }
+        case 'w':
+        {
+            wstval = va_arg( args, wxChar* );
+            SV* sv = sv_newmortal();
+            wxPli_wxChar_2_sv( aTHX_ wstval, sv );
             XPUSHs( sv );
             break;
         }
@@ -384,6 +403,27 @@ void wxPli_object_set_deleteable( pTHX_ SV* object, bool deleteable )
     }
 }
 
+void wxPli_stringarray_push( pTHX_ const wxArrayString& strings )
+{
+    dSP;
+
+    size_t max = strings.GetCount();
+    EXTEND( SP, max );
+    for( size_t i = 0; i < max; ++i )
+    {
+#if wxUSE_UNICODE
+        SV* tmp = sv_2mortal( newSVpv( strings[i].mb_str(wxConvUTF8), 0 ) );
+        SvUTF8_on( tmp );
+        PUSHs( tmp );
+#else
+        PUSHs( sv_2mortal( newSVpvn( CHAR_P strings[i].c_str(),
+                                     strings[i].size() ) ) );
+#endif
+    }
+
+    PUTBACK;
+}
+
 AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings )
 {
     AV* av = newAV();
@@ -400,6 +440,19 @@ AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings )
         tmp = newSVpv( CHAR_P strings[i].c_str(), 0 );
 #endif
         av_store( av, i, tmp );
+    }
+
+    return av;
+}
+
+AV* wxPli_uchararray_2_av( pTHX_ const unsigned char* array, int count )
+{
+    AV* av = newAV();
+
+    av_extend( av, count );
+    for( int i = 0; i < count; ++i )
+    {
+        av_store( av, i, newSViv( array[i] ) );
     }
 
     return av;
@@ -489,19 +542,28 @@ int wxPli_av_2_intarray( pTHX_ SV* avref, int** array )
     return n;
 }
 
+#include <wx/menu.h>
+
 wxWindowID wxPli_get_wxwindowid( pTHX_ SV* var )
 {
-    if( sv_isobject( var ) && sv_derived_from( var, "Wx::Window" ) )
+    if( sv_isobject( var ) )
     {
-        wxWindow* window = (wxWindow*)
-            wxPli_sv_2_object( aTHX_ var, "Wx::Window" );
+        if( sv_derived_from( var, "Wx::Window" ) ) {
+            wxWindow* window = (wxWindow*)
+                wxPli_sv_2_object( aTHX_ var, "Wx::Window" );
 
-        return window->GetId();
+            return window->GetId();
+        }
+        else if( sv_derived_from( var, "Wx::MenuItem" ) )
+        {
+            wxMenuItem* item = (wxMenuItem*)
+                wxPli_sv_2_object( aTHX_ var, "Wx::MenuItem" );
+
+            return item->GetId();
+        }
     }
-    else
-    {
-        return SvIV( var );
-    }
+
+    return SvIV( var );
 }
 
 int wxPli_av_2_stringarray( pTHX_ SV* avref, wxString** array )
@@ -619,7 +681,8 @@ wxChar* wxPli_copy_string( SV* scalar, wxChar** )
     STRLEN length;
     wxWCharBuffer tmp = ( SvUTF8( scalar ) ) ?
       wxConvUTF8.cMB2WX( SvPVutf8( scalar, length ) ) :
-      wxWCharBuffer( wxString( SvPV( scalar, length ) ).wc_str() );
+      wxWCharBuffer( wxString( SvPV( scalar, length ),
+                               wxConvLocal ).wc_str() );
     
     wxChar* buffer = new wxChar[length + 1];
     memcpy( buffer, tmp.data(), length * sizeof(wxChar) );
@@ -743,7 +806,7 @@ wxPoint wxPli_sv_2_wxpoint_test( pTHX_ SV* scalar, bool* ispoint )
     {
         SV* ref = SvRV( scalar );
         
-        if( sv_derived_from( scalar, CHAR_P wxPlPointName ) ) 
+        if( sv_derived_from( scalar, CHAR_P "Wx::Point" ) ) 
         {
             return *(wxPoint*)SvIV( ref );
         }
@@ -792,7 +855,7 @@ wxSize wxPli_sv_2_wxsize( pTHX_ SV* scalar )
     {
         SV* ref = SvRV( scalar );
         
-        if( sv_derived_from( scalar, CHAR_P wxPlSizeName ) ) 
+        if( sv_derived_from( scalar, CHAR_P "Wx::Size" ) ) 
         {
             return *(wxSize*)SvIV( ref );
         }
@@ -900,7 +963,7 @@ int wxPli_av_2_pointlist( pTHX_ SV* arr, wxList *points, wxPoint** tmp )
         {
             SV* ref = SvRV( scalar );
         
-            if( sv_derived_from( scalar, CHAR_P wxPlPointName ) ) 
+            if( sv_derived_from( scalar, CHAR_P "Wx::Point" ) ) 
             {
                 points->Append( (wxObject*)SvIV( ref ) );
                 continue;
@@ -956,7 +1019,7 @@ void wxPli_stream_2_sv( pTHX_ SV* scalar, wxStreamBase* stream,
     }
 
     static SV* tie = eval_pv
-        ( "sub { local *o; my $c = shift; tie *o, $c, @_; return \\*o }", 1 );
+        ( "require Symbol; sub { my $x = Symbol::gensym(); my $c = shift; tie *$x, $c, @_; return $x }", 1 );
     static SV* dummy = SvREFCNT_inc( tie );
 
     dSP;
@@ -972,6 +1035,13 @@ void wxPli_stream_2_sv( pTHX_ SV* scalar, wxStreamBase* stream,
     SV* ret = POPs;
     SvSetSV_nosteal( scalar, ret );
     PUTBACK;
+}
+
+I32 my_looks_like_number( pTHX_ SV* sv )
+{
+    if( SvROK( sv ) || !SvOK( sv ) ) return 0;
+    if( SvIOK( sv ) || SvNOK( sv ) ) return 1;
+    return looks_like_number( sv );
 }
 
 // Local variables: //

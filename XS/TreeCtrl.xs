@@ -11,6 +11,7 @@
 #############################################################################
 
 #include <wx/treectrl.h>
+#include "cpp/overload.h"
 
 MODULE=Wx PACKAGE=Wx::TreeItemData
 
@@ -71,13 +72,13 @@ tiid_spaceship( tid1, tid2, ... )
     // anyway, comparing ids is useless
     RETVAL = -1;
     if( SvROK( tid1 ) && SvROK( tid2 ) &&
-        sv_derived_from( tid1, CHAR_P wxPlTreeItemIdName ) &&
-        sv_derived_from( tid2, CHAR_P wxPlTreeItemIdName ) )
+        sv_derived_from( tid1, CHAR_P "Wx::TreeItemId" ) &&
+        sv_derived_from( tid2, CHAR_P "Wx::TreeItemId" ) )
     {
         Wx_TreeItemId* id1 = (Wx_TreeItemId*)
-            wxPli_sv_2_object( aTHX_ tid1, wxPlTreeItemIdName );
+            wxPli_sv_2_object( aTHX_ tid1, "Wx::TreeItemId" );
         Wx_TreeItemId* id2 = (Wx_TreeItemId*)
-            wxPli_sv_2_object( aTHX_ tid2, wxPlTreeItemIdName );
+            wxPli_sv_2_object( aTHX_ tid2, "Wx::TreeItemId" );
 
         RETVAL = *id1 == *id2 ? 0 : 1;
     } else
@@ -113,8 +114,19 @@ Wx_TreeEvent::GetPoint()
   OUTPUT:
     RETVAL
 
+#if WXPERL_W_VERSION_GE( 2, 3, 3 )
+
+bool
+Wx_TreeEvent::IsEditCancelled()
+
+#endif
+
+#if WXWIN_COMPATIBILITY_2_2
+
 int
 Wx_TreeEvent::GetCode()
+
+#endif
 
 wxString
 Wx_TreeEvent::GetLabel()
@@ -122,7 +134,7 @@ Wx_TreeEvent::GetLabel()
 MODULE=Wx PACKAGE=Wx::TreeCtrl
 
 Wx_TreeCtrl*
-Wx_TreeCtrl::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = "treeCtrl" )
+Wx_TreeCtrl::new( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
     Wx_Window* parent
     wxWindowID id
     Wx_Point pos
@@ -221,7 +233,7 @@ Wx_TreeCtrl::GetBoundingRect( item, textOnly = FALSE )
     if( ret )
     {
         SV* ret = sv_newmortal();
-        wxPli_non_object_2_sv( aTHX_ ret, new wxRect( rect ), wxPlRectName );
+        wxPli_non_object_2_sv( aTHX_ ret, new wxRect( rect ), "Wx::Rect" );
         XPUSHs( ret );
     }
     else
@@ -278,7 +290,7 @@ Wx_TreeCtrl::GetFirstChild( item )
     EXTEND( SP, 2 );
     PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                                   new wxTreeItemId( ret ),
-                                  wxPlTreeItemIdName ) );
+                                  "Wx::TreeItemId" ) );
     PUSHs( sv_2mortal( newSViv( cookie ) ) );
 
 Wx_TreeItemId*
@@ -328,7 +340,7 @@ Wx_TreeCtrl::GetNextChild( item, cookie )
     EXTEND( SP, 2 );
     PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                                   new wxTreeItemId( ret ),
-                                  wxPlTreeItemIdName ) );
+                                  "Wx::TreeItemId" ) );
     PUSHs( sv_2mortal( newSViv( cookie ) ) );
 
 Wx_TreeItemId*
@@ -346,6 +358,14 @@ Wx_TreeCtrl::GetNextVisible( item )
     RETVAL = new wxTreeItemId( THIS->GetNextVisible( *item ) );
   OUTPUT:
     RETVAL
+
+void
+wxTreeCtrl::GetParent( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( Wx::Window::GetParent )
+        MATCH_REDISP( wxPliOvl_wtid, GetItemParent )
+    END_OVERLOAD( Wx::TreeCtrl::GetParent )
 
 Wx_TreeItemId*
 Wx_TreeCtrl::GetItemParent( item )
@@ -396,7 +416,7 @@ Wx_TreeCtrl::GetSelections()
     {
         PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                                       new wxTreeItemId( selections[i] ),
-                                      wxPlTreeItemIdName ) );
+                                      "Wx::TreeItemId" ) );
     }
 
 Wx_ImageList*
@@ -412,8 +432,16 @@ Wx_TreeCtrl::HitTest( point )
     EXTEND( SP, 2 );
     PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
                                   new wxTreeItemId( ret ),
-                                  wxPlTreeItemIdName ) );
+                                  "Wx::TreeItemId" ) );
     PUSHs( sv_2mortal( newSViv( flags ) ) );
+
+void
+wxTreeCtrl::InsertItem( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wtid_wtid_s_n_n, InsertItemPrev, 3 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wtid_n_s_n_n, InsertItemBef, 3 )
+    END_OVERLOAD( Wx::TreeCtrl::InsertItem )
 
 Wx_TreeItemId*
 Wx_TreeCtrl::InsertItemPrev( parent, previous, text, image = -1, selImage = -1, data = 0 )
@@ -544,6 +572,8 @@ Wx_TreeCtrl::SetItemData( item, data )
     Wx_TreeItemId* item
     Wx_TreeItemData* data
   CODE:
+    wxTreeItemData* tid = THIS->GetItemData( *item );
+    if( tid ) delete tid;
     THIS->SetItemData( *item, data );
 
 void
@@ -551,6 +581,8 @@ Wx_TreeCtrl::SetPlData( item, data )
     Wx_TreeItemId* item
     SV_null* data
   CODE:
+    wxTreeItemData* tid = THIS->GetItemData( *item );
+    if( tid ) delete tid;
     THIS->SetItemData( *item, data ? new wxPliTreeItemData( data ) : 0 );
 
 void

@@ -1,5 +1,16 @@
 Revision history for Perl extension Wx.
 
+0.12  xxx xxx xx xx:xx:xx xxxx
+	- new DEPRECATIONS section in README.txt, please read it
+	- it is now possibile to get the native handle of a Wx::Window
+	- implemented wxWizard and related classes
+	- Document/View framework (thanks to Simon Flack)
+	- Mostly completed wxStyledTextCtrl interface
+          (thanks to Graciliano M. P. and Simon Flack)
+	- implemented wxFontEnumerator and wxFontMapper
+	- implemented wxLogChain and wxLogPassThrough (2.3)
+	- Wx::PlLog, Wx::PlLogPassThrough, for custom logging
+
 0.11  Thu Aug 01 15:59:59 2002
 	- wxTextAttr ( 2.3 )
 	- wxStyledTextControl, based on Scintilla

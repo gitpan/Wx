@@ -13,7 +13,7 @@
 MODULE=Wx PACKAGE=Wx::SpinCtrl
 
 Wx_SpinCtrl*
-Wx_SpinCtrl::new( parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_ARROW_KEYS, min = 0, max = 100, initial = 0, name = "spinCtrl" )
+Wx_SpinCtrl::new( parent, id, value = wxEmptyString, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_ARROW_KEYS, min = 0, max = 100, initial = 0, name = wxT("spinCtrl") )
     Wx_Window* parent
     wxWindowID id
     wxString value
@@ -47,3 +47,12 @@ Wx_SpinCtrl::SetRange( min, max )
 void
 Wx_SpinCtrl::SetValue( text )
     wxString text
+
+#if WXPERL_W_VERSION_GE( 2, 3, 3 ) && !defined(__WXGTK__)
+
+void
+Wx_SpinCtrl::SetSelection( from, to )
+    long from
+    long to
+
+#endif

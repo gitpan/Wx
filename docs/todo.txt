@@ -1,27 +1,43 @@
-MISC:
-
-* tut & man in one file
-
 PRIORITY HIGH:
 
-For 0.12
+0.13
 
-* Overload resolution
-  rewrite _match in C++ and move all overload resolution
-  routines to XS -> eliminate most lib/Wx/*.pm files
+* Modify building system for building external XS modules
 
 PRIORITY NORMAL:
 
+* Overload resolution
+  finish it!
+
+* store events in a C++ file and autogenerate them
+* rewrite lib/Wx/_Constants.pm in C++
+* try to have constants inlined where appropriate
+
+* wxCalendarCtrl
+    GetAttr
+    SetAttr
+    ResetAttr
+    HitTest
+    
+* wxFontEnumerator virtual functions
+
+* wxDocManager::FileHistoryLoad/Save
+  wxDocument  CommandProcessor functions
+  wxDocument::Load/Save, investigate
+
+* testing
+    tests for all overloaded methods
+    tests for all events
+    tests for all classes creation/deletion
+
 * Threads
-   cloning of objects with a DESTROY
+    cloning of objects with a DESTROY
 
 * wxGrid
     GetTable
     SetTable
 
 * Wx::PlGridCellEditor/Renderer
-
-* wxMenu::Prepend*
 
 * wxXmlResource::LoadMenuBar
     overload
@@ -59,6 +75,12 @@ PRIORITY NORMAL:
 * Wx::Stream
     Better READLINE
     Support for $/, etc?
+
+* Wx::StyledTextCtrl
+    AddStyledText
+    GetStyledText
+    GetCurLine
+    SendMsg
 
 PRIORITY LOW:
 
@@ -108,6 +130,21 @@ PRIORITY LOW:
 
 DOCUMENTATTION:
 
+* Add notes for:
+  - implemented/not implemented classes
+  - non-implemented functions
+
+* Documente Wx::PlValidator, Wx::PlLog, Wx::PlLogPassThrough
+
+* Document wxStatusBar::GetFieldRect
+
+* Document wxListBox::GetCount/Number is deprecated
+
+* Document wxDocTemplate::new
+
+* wxFontMapper
+   GetAltForEncoding
+
 -- not documented in wxWindows --
 
 * Wx::MultipleChoiceDialog
@@ -115,13 +152,8 @@ DOCUMENTATTION:
 * Wx::NativeFontInfo
 
 CLASSES:
-  wxWizard
-  wxWizardPageSimple
-  wxWizardPage
+  wxGLCanvas
 
-  wxFileHistory
-
-  wxCalendarCtrl
   wxDirCtrl
   wxMetafileDC
   wxDCClipper
@@ -137,9 +169,11 @@ CLASSES:
   wxDDE*
   wxTCP*
 
-  Document/View
-
   wxMimeTypesManager
-  wxFontMapper
   wxEncodingConverter
-  wxFontEnumerator
+
+FEATURE REQUESTS
+
+* wxWave
+* wxMemoryFSHandler
+* wxAutomationObject
