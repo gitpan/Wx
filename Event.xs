@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Event.xs,v 1.41 2005/01/04 17:14:34 mbarbon Exp $
+// RCS-ID:      $Id: Event.xs,v 1.47 2005/06/26 14:08:17 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -18,6 +18,7 @@
 #include <wx/event.h>
 #include <wx/window.h>
 #include <wx/dc.h>
+#include <wx/menu.h>
 #include <stdarg.h>
 
 #include <wx/clntdata.h>
@@ -62,11 +63,12 @@ wxEvent::GetEventObject()
     wxObject* obj = THIS->GetEventObject();
     wxWindow* win = wxDynamicCast( obj, wxWindow );
 
+    EXTEND( SP, 1 );
     if(win == NULL)
         PUSHs( &PL_sv_undef );
     else
-        PUSHs( wxPli_evthandler_2_sv( aTHX_ NEWSV( 0, 0 ), win ) );
-
+        PUSHs( wxPli_object_2_sv( aTHX_ NEWSV( 0, 0 ), win ) );
+        
 wxEventType
 wxEvent::GetEventType()
 
@@ -144,6 +146,21 @@ wxCommandEvent::SetInt( intCommand )
 void
 wxCommandEvent::SetString( string )
     wxString string
+
+MODULE=Wx_Evt PACKAGE=Wx::ContextMenuEvent
+
+wxContextMenuEvent*
+wxContextMenuEvent::new( type = 0, id = 0, pos = wxDefaultPosition )
+    wxEventType type
+    int id
+    wxPoint pos
+
+wxPoint
+wxContextMenuEvent::GetPosition()
+
+void
+wxContextMenuEvent::SetPosition( pos )
+    wxPoint pos
 
 MODULE=Wx_Evt PACKAGE=Wx::PlEvent
 
@@ -405,6 +422,13 @@ wxMenuEvent::GetMenuId()
 
 bool
 wxMenuEvent::IsPopup()
+
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+wxMenu*
+wxMenuEvent::GetMenu()
+
+#endif
 
 MODULE=Wx_Evt PACKAGE=Wx::MouseEvent
 
@@ -688,5 +712,25 @@ wxNavigationKeyEvent::GetCurrentFocus()
 void
 wxNavigationKeyEvent::SetCurrentFocus(focus)
     wxWindow* focus
+
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+
+bool
+wxNavigationKeyEvent::IsFromTab()
+
+void
+wxNavigationKeyEvent::SetFromTab( fromTab )
+    bool fromTab
+
+#endif
+
+MODULE=Wx_Evt PACKAGE=Wx::ChildFocusEvent
+
+wxChildFocusEvent*
+wxChildFocusEvent::new( win = NULL )
+    wxWindow* win
+
+wxWindow*
+wxChildFocusEvent::GetWindow() 
 
 MODULE=Wx_Evt

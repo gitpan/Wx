@@ -29,8 +29,7 @@ build/Wx/build/MakeMaker.pm
 build/Wx/build/Options.pm
 build/Wx/build/Utils.pm
 
-docs/bugs.txt
-docs/install.txt
+docs/INSTALL.pod
 docs/todo.txt
 
 script/XSpp.pod
@@ -59,12 +58,20 @@ t/Tests_Helper.pm
 
 lib/Wx/Api.pod
 lib/Wx/App.pm
+lib/Wx/ArtProvider.pm
 lib/Wx/Event.pm
 lib/Wx/Locale.pm
 lib/Wx/Menu.pm
 lib/Wx/RadioBox.pm
 lib/Wx/Region.pm
 lib/Wx/Timer.pm
+
+samples/artprov/artprov.pl
+samples/artprov/error.xpm
+samples/artprov/info.xpm
+samples/artprov/null.xpm
+samples/artprov/question.xpm
+samples/artprov/warning.xpm
 
 samples/controls/controls.pl
 samples/controls/icons/choice.bmp
@@ -153,6 +160,7 @@ Wx.xs
 
 XS/Accelerators.xs
 XS/App.xs
+XS/ArtProvider.xsp
 XS/Bitmap.xs
 XS/BitmapButton.xs
 XS/BookCtrl.xsp
@@ -190,6 +198,7 @@ XS/ListBox.xs
 XS/ListCtrl.xs
 XS/Locale.xs
 XS/Log.xs
+XS/MimeTypes.xsp
 XS/Menu.xs
 XS/MultiChoiceDialog.xs
 XS/Notebook.xs
@@ -197,6 +206,7 @@ XS/Palette.xs
 XS/Panel.xs
 XS/Pen.xs
 XS/PlWindow.xsp
+XS/PopupWindow.xsp
 XS/Process.xs
 XS/ProgressDialog.xs
 XS/RadioBox.xs
@@ -260,6 +270,7 @@ cpp/validators.h
 cpp/v_cback.h
 cpp/window.h
 cpp/wizard.h
+cpp/wxsizer.h
 
 cpp/controls.cpp
 cpp/e_cback.cpp
@@ -279,6 +290,7 @@ ext/calendar/t/02_inheritance.t
 ext/calendar/typemap
 ext/calendar/XS/CalendarCtrl.xsp
 ext/calendar/XS/CalendarDateAttr.xsp
+ext/calendar/XS/DatePickerCtrl.xsp
 
 ext/datetime/DateTime.pm
 ext/datetime/DateTime.xs
@@ -381,6 +393,7 @@ ext/print/XS/PrintData.xs
 ext/print/XS/Preview.xs
 ext/print/XS/PrintDialog.xs
 ext/print/XS/PrintDialogData.xs
+ext/print/XS/PrintFactory.xsp
 ext/print/XS/PrintPreview.xs
 ext/print/XS/Printer.xs
 ext/print/XS/Printout.xs
@@ -484,6 +497,7 @@ demo/splash.pl
 demo/wxCalendarCtrl.pm
 demo/wxCheckListBox.pm
 demo/wxClipboard.pm
+demo/wxDatePickerCtrl.pm
 demo/wxFileSystem.pm
 demo/wxGrid.pm
 demo/wxGridCER.pm

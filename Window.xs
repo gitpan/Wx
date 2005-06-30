@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Window.xs,v 1.54 2005/01/04 17:14:34 mbarbon Exp $
+// RCS-ID:      $Id: Window.xs,v 1.59 2005/05/03 20:44:31 mbarbon Exp $
 // Copyright:   (c) 2000-2002, 2004-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -275,6 +275,12 @@ wxWindow::FitInside()
 void
 wxWindow::Freeze()
 
+wxAcceleratorTable*
+wxWindow::GetAcceleratorTable()
+  CODE:
+    RETVAL = new wxAcceleratorTable( *THIS->GetAcceleratorTable() );
+  OUTPUT: RETVAL
+
 #if WXPERL_W_VERSION_GE( 2, 5, 3 )
 
 wxBackgroundStyle
@@ -309,7 +315,7 @@ void
 wxWindow::GetChildren()
   PPCODE:
     const wxWindowList& list = THIS->GetChildren();
-    wxWindowListNode* node;
+    wxWindowList::compatibility_iterator node;
     
     EXTEND( SP, (IV) list.GetCount() );
 
@@ -372,7 +378,18 @@ wxWindow::GetForegroundColour()
 wxWindow*
 wxWindow::GetGrandParent()
 
-#if WXPERL_W_VERSION_GE( 2, 5, 1 ) && defined( __WXMSW__ )
+#if defined( __WXMSW__ )
+
+wxWindow*
+wxWindow::CreateWindowFromHWND( parent, hWnd )
+    wxWindow* parent
+    void* hWnd
+  C_ARGS: parent, (WXHWND) hWnd
+
+#endif
+
+#if ( WXPERL_W_VERSION_GE( 2, 5, 1 ) && defined( __WXMSW__ ) ) \
+    || WXPERL_W_VERSION_GE( 2, 5, 4 )
 
 void*
 wxWindow::GetHandle()
@@ -405,6 +422,24 @@ wxWindow::GetLabel()
 
 wxLayoutConstraints*
 wxWindow::GetConstraints()
+
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+
+wxSize*
+wxWindow::GetMinSize()
+  CODE:
+    RETVAL = new wxSize( THIS->GetMinSize() );
+  OUTPUT:
+    RETVAL
+
+wxSize*
+wxWindow::GetMaxSize()
+  CODE:
+    RETVAL = new wxSize( THIS->GetMaxSize() );
+  OUTPUT:
+    RETVAL
+
+#endif
 
 wxString
 wxWindow::GetName()
@@ -706,8 +741,7 @@ wxWindow::ScrollWindow( x, y, rect = 0 )
 void
 wxWindow::SetAcceleratorTable( accel )
     wxAcceleratorTable* accel
-  CODE:
-    THIS->SetAcceleratorTable( *accel );
+  C_ARGS: *accel
 
 void
 wxWindow::SetAutoLayout( autoLayout )
@@ -734,6 +768,14 @@ wxWindow::SetBackgroundColour( colour )
     wxColour* colour
   CODE:
     THIS->SetBackgroundColour( *colour );
+
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+
+void
+wxWindow::SetBestFittingSize( size = wxDefaultSize )
+    wxSize size
+
+#endif
 
 void
 wxWindow::SetCaret( caret )
@@ -846,6 +888,18 @@ wxWindow::SetFont( font )
   CODE:
     THIS->SetFont( *font );
 
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+
+void
+wxWindow::SetMinSize( size )
+    wxSize size
+
+void
+wxWindow::SetMaxSize( size )
+    wxSize size
+
+#endif
+
 void
 wxWindow::SetSize( ... )
   PPCODE:
@@ -951,6 +1005,10 @@ wxWindow::SetToolTipTip( tooltip )
     wxToolTip* tooltip
   CODE:
     THIS->SetToolTip( tooltip );
+
+#endif
+
+#if wxPERL_USE_TOOLTIPS || WXPERL_W_VERSION_GE( 2, 5, 3 )
 
 void
 wxWindow::SetToolTipString( string )

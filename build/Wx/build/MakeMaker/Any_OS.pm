@@ -4,20 +4,13 @@ use strict;
 use base 'Wx::build::MakeMaker';
 use File::Spec::Functions qw(curdir);
 use Wx::build::Options;
-use Wx::build::Utils qw(xs_dependencies lib_file);
-use File::Find qw(find);
+use Wx::build::Utils qw(xs_dependencies lib_file
+                        files_with_overload files_with_constants);
 
 my $exp = lib_file( 'Wx/Wx_Exp.pm' );
 my $ovl = lib_file( 'Wx/_Ovl.pm' );
 my $ovlc = File::Spec->catfile( qw(cpp ovl_const.cpp) );
 my $ovlh = File::Spec->catfile( qw(cpp ovl_const.h) );
-
-# try workarounding 5.005_3 crash....
-# *catdir = File::Spec->can( 'catdir' );
-# *updir = File::Spec->can( 'updir' );
-# *curdir = File::Spec->can( 'curdir' );
-# *catfile = File::Spec->can( 'catfile' );
-# *canonpath = File::Spec->can( 'canonpath' );
 
 sub configure_core {
   my $this = shift;
@@ -29,7 +22,7 @@ sub configure_core {
 
   $config{clean} =
     { FILES => "$ovlc $ovlh .exists overload Opt copy_files files.lst" .
-               " cpp/setup.h" };
+               " cpp/setup.h cpp/plwindow.h cpp/artprov.h cpp/popupwin.h" };
 
   return %config;
 }
@@ -175,73 +168,6 @@ sub files_to_install {
   return ( 'Opt', Wx::build::Utils::arch_file( 'Wx/build/Opt.pm' ),
            ( map { ( $_ => Wx::build::Utils::lib_file( "Wx/$_" ) ) } @api ),
          );
-}
-
-##############################################################################
-# Utility routines
-##############################################################################
-
-sub files_with_constants {
-  my @files;
-
-  my $wanted = sub {
-    my $name = $File::Find::name;
-
-    m/\.(?:pm|xsp?|cpp|h)$/i && do {
-      local *IN;
-      my $line;
-
-      open IN, "< $_" || warn "unable to open '$_'";
-      while( defined( $line = <IN> ) ) {
-        $line =~ m/^\W+\!\w+:/ && do {
-          push @files, $name;
-          return;
-        };
-      };
-    };
-  };
-
-  find( $wanted, curdir );
-
-  return @files;
-}
-
-sub files_with_overload {
-  my @files;
-
-  my $wanted = sub {
-    my $name = $File::Find::name;
-
-    m/\.pm$/i && do {
-      my $line;
-      local *IN;
-
-      open IN, "< $_" || warn "unable to open '$_'";
-      while( defined( $line = <IN> ) ) {
-        $line =~ m/Wx::_match/ && do {
-          push @files, $name;
-          return;
-        };
-      }
-    };
-
-    m/\.xsp?$/i && do {
-      my $line;
-      local *IN;
-
-      open IN, "< $_" || warn "unable to open '$_'";
-      while( defined( $line = <IN> ) ) {
-        $line =~ m/wxPli_match_arguments|BEGIN_OVERLOAD\(\)/ && do {
-          push @files, $name;
-          return;
-        };
-      }
-    };
-  };
-
-  find( $wanted, curdir );
-
-  return @files;
 }
 
 1;

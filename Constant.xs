@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.112 2005/01/04 22:09:38 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.123 2005/06/26 13:55:14 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -45,6 +45,7 @@
 #include <wx/sizer.h>
 #include <wx/toolbar.h>
 #include <wx/gauge.h>
+#include <wx/slider.h>
 #if defined(__WXMSW__) || defined(wxHAS_TASK_BAR_ICON)
 #include <wx/taskbar.h>
 #endif
@@ -52,6 +53,7 @@
 #include <wx/wizard.h>
 #include <wx/filefn.h>
 #include <wx/dirdlg.h>
+#include <wx/statusbr.h>
 
 #include "cpp/wxapi.h"
 #include "cpp/setup.h"
@@ -124,10 +126,37 @@ static wxPlEVT evts[] =
     SEVT( EVT_WIZARD_PAGE_CHANGING, 3 )
     SEVT( EVT_WIZARD_CANCEL, 3 )
     SEVT( EVT_WIZARD_HELP, 3 )
+    SEVT( EVT_CHILD_FOCUS, 2 )
     { 0, 0, 0 }
 };
 
 #include "cpp/e_cback.h"
+
+// THIS, function
+XS(Connect2);
+XS(Connect2)
+{
+    dXSARGS;
+    assert( items == 2 );
+    SV* THISs = ST(0);
+    wxEvtHandler *THISo =
+        (wxEvtHandler*)wxPli_sv_2_object( aTHX_ THISs, "Wx::EvtHandler" );
+    SV* func = ST(1);
+    I32 evtID = CvXSUBANY(cv).any_i32;
+
+    if( SvOK( func ) )
+    {
+        THISo->Connect( -1, -1, evtID,
+                        wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
+                        new wxPliEventCallback( func, THISs ) );
+    }
+    else
+    {
+        THISo->Disconnect( -1, -1, evtID,
+                           wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
+                           0 );
+    }
+}
 
 // THIS, ID, function
 XS(Connect3);
@@ -145,13 +174,13 @@ XS(Connect3)
     if( SvOK( func ) )
     {
         THISo->Connect( id, -1, evtID,
-                        (wxObjectEventFunction)&wxPliEventCallback::Handler,
+                        wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                         new wxPliEventCallback( func, THISs ) );
     }
     else
     {
         THISo->Disconnect( id, -1, evtID,
-                           (wxObjectEventFunction)&wxPliEventCallback::Handler,
+                           wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                            0 );
     }
 }
@@ -167,10 +196,16 @@ void CreateEventMacro( const char* name, unsigned char args, int id )
 
     switch( args )
     {
+    case 2:
+        cv = (CV*)newXS( buffer, Connect2, "Constants.xs" );
+        sv_setpv((SV*)cv, "$$");
+        break;
     case 3:
         cv = (CV*)newXS( buffer, Connect3, "Constants.xs" );
         sv_setpv((SV*)cv, "$$$");
         break;
+    default:
+        return;
     }
 
     CvXSUBANY(cv).any_i32 = id;
@@ -199,6 +234,9 @@ static wxPlINH inherit[] =
 {
     I( EvtHandler,      Object )
     I( Window,          EvtHandler )
+    I( PopupWindow,     Window )
+    I( PopupTransientWindow, PopupWindow )
+    I( PlPopupTransientWindow, PopupTransientWindow )
     I( Menu,            EvtHandler )
     I( PlWindow,        Window )
     I( PlControl,       Control )
@@ -418,7 +456,9 @@ static wxPlINH inherit[] =
     I( PlCommandEvent,  CommandEvent )
     I( ActivateEvent,   Event )
     I( CommandEvent,    Event )
+    I( ContextMenuEvent, CommandEvent )
     I( CloseEvent,      Event )
+    I( ChildFocusEvent, CommandEvent )
     I( EraseEvent,      Event )
     I( FindDialogEvent, CommandEvent )
     I( FocusEvent,      Event )
@@ -457,6 +497,7 @@ static wxPlINH inherit[] =
     I( TextUrlEvent,    CommandEvent )
     I( TimerEvent,      Event )
     I( Timer,           EvtHandler )
+    I( TaskBarIconEvent, Event )
     I( TreeEvent,       NotifyEvent )
     I( UpdateUIEvent,   CommandEvent )
     I( WizardEvent,     NotifyEvent )
@@ -573,7 +614,6 @@ static double constant( const char *name, int arg )
     r( wxCAP_ROUND );                   // pen
     r( wxCAP_PROJECTING );              // pen
     r( wxCAP_BUTT );                    // pen
-    r( wxCAP_ROUND );                   // pen
 
     r( wxCB_SIMPLE );                   // combobox
     r( wxCB_DROPDOWN );                 // combobox
@@ -597,8 +637,8 @@ static double constant( const char *name, int arg )
 #endif
 
 #if WXPERL_W_VERSION_GE( 2, 5, 3 )
-    r( wxCHB_BOTTOM );
-    r( wxCHB_TOP );
+    r( wxCHB_BOTTOM );                  // choicebook
+    r( wxCHB_TOP );                     // choicebook
 #endif
 
     r( wxCLEAR );                       // dc
@@ -661,9 +701,9 @@ static double constant( const char *name, int arg )
     r( wxDIALOG_NO_PARENT );            // dialog
     r( wxDIALOG_EX_CONTEXTHELP );       // dialog
 
-    r( wxDD_NEW_DIR_BUTTON );
+    r( wxDD_NEW_DIR_BUTTON );           // dirdialog
 #if WXPERL_W_VERSION_GE( 2, 5, 3 )
-    r( wxDD_DEFAULT_STYLE );
+    r( wxDD_DEFAULT_STYLE );            // dirdialog
 #endif
 
     r( wxDOT );                         // pen
@@ -763,6 +803,7 @@ static double constant( const char *name, int arg )
 
     r( wxEVT_CHAR );
     r( wxEVT_CHAR_HOOK );
+    r( wxEVT_CHILD_FOCUS );
     r( wxEVT_NAVIGATION_KEY );
     r( wxEVT_KEY_DOWN );
     r( wxEVT_KEY_UP );
@@ -854,9 +895,12 @@ static double constant( const char *name, int arg )
 //    r( wxEVT_WIZARD_HELP );
 
     r( wxEXPAND );                      // sizer
-    r( wxEXEC_SYNC );
-    r( wxEXEC_ASYNC );
-    r( wxEXEC_NOHIDE );
+    r( wxEXEC_SYNC );                   // execute
+    r( wxEXEC_ASYNC );                  // execute
+    r( wxEXEC_NOHIDE );                 // execute
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+    r( wxEXEC_NODISABLE );              // execute
+#endif
     break;
   case 'F':
     r( wxFDIAGONAL_HATCH );             // brush pen
@@ -874,7 +918,7 @@ static double constant( const char *name, int arg )
     r( wxFONTENCODING_DEFAULT );        // font
     r( wxFONTENCODING_SYSTEM );         // font
     r( wxFRAME_FLOAT_ON_PARENT );       // frame
-    r( wxFRAME_NO_WINDOW_MENU );
+    r( wxFRAME_NO_WINDOW_MENU );        // frame
     r( wxFRAME_NO_TASKBAR );            // frame
     r( wxFRAME_TOOL_WINDOW );           // frame
     r( wxFRAME_EX_CONTEXTHELP );        // frame
@@ -934,9 +978,10 @@ static double constant( const char *name, int arg )
     r( wxFULLSCREEN_NOCAPTION );        // frame dialog
     r( wxFULLSCREEN_ALL );              // frame dialog
 
-#if WXPERL_W_VERSION_GE( 2, 5, 1 )
-    r( wxFULL_REPAINT_ON_RESIZE );      // window
+#if WXPERL_W_VERSION_LE( 2, 5, 0 )
+#define wxFULL_REPAINT_ON_RESIZE 0
 #endif
+    r( wxFULL_REPAINT_ON_RESIZE );      // window
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
@@ -984,8 +1029,8 @@ static double constant( const char *name, int arg )
     r( wxID_HELP_PROCEDURES );          // id
     r( wxID_HELP_CONTEXT );             // id
     r( wxID_HELP );                     // id
-    r( wxID_HIGHEST );
-    r( wxID_LOWEST );
+    r( wxID_HIGHEST );                  // id
+    r( wxID_LOWEST );                   // id
 
     r( wxID_CUT );                      // id
     r( wxID_COPY );                     // id
@@ -1054,6 +1099,11 @@ static double constant( const char *name, int arg )
     r( wxIMAGELIST_DRAW_SELECTED );     // imagelist
     r( wxIMAGELIST_DRAW_FOCUSED );      // imagelist
 
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    r( wxIMAGE_RESOLUTION_INCHES );     // image
+    r( wxIMAGE_RESOLUTION_CM );         // image
+#endif
+
     r( wxINVERT );                      // dc
 
     r( wxITALIC );                      // font
@@ -1095,6 +1145,7 @@ static double constant( const char *name, int arg )
         r( WXK_MBUTTON );               // keycode
         r( WXK_CLEAR );                 // keycode
         r( WXK_SHIFT );                 // keycode
+        r( WXK_ALT );                   // keycode
         r( WXK_CONTROL );               // keycode
         r( WXK_MENU );                  // keycode
         r( WXK_PAUSE );                 // keycode
@@ -1464,20 +1515,20 @@ static double constant( const char *name, int arg )
     r( wxNB_RIGHT );                    // notebook
     r( wxNB_BOTTOM );                   // notebook
     r( wxNB_MULTILINE );                // notebook
-    r( wxNO );
+    r( wxNO );                          // dialog
     r( wxNO_BORDER );                   // frame toolbar
     r( wxNO_3D );                       // dialog window
     r( wxNO_FULL_REPAINT_ON_RESIZE );   // window
     r( wxNORMAL );                      // font
     r( wxNOT_FOUND );             
-    r( wxNO_DEFAULT );
+    r( wxNO_DEFAULT );                  // dialog
 
     r( wxNAND );                        // dc
     r( wxNOR );                         // dc
     r( wxNO_OP );                       // dc
     break;
   case 'O':
-    r( wxOK );
+    r( wxOK );                          // dialog
     r( wxOPEN );                        // filedialog
     r( wxOVERWRITE_PROMPT );            // filedialog
     
@@ -1535,13 +1586,18 @@ static double constant( const char *name, int arg )
     //    r( wxSB_SIZEGRIP );
     r( wxSB_HORIZONTAL );               // scrollbar
     r( wxSB_VERTICAL );                 // scrollbar
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+    r( wxSB_NORMAL );                   // statusbar
+    r( wxSB_FLAT );                     // statusbar
+    r( wxSB_RAISED );                   // statusbar
+#endif
     r( wxSCRIPT );                      // font
     r( wxSIMPLE_BORDER );               // window
     r( wxSLANT );                       // font
     r( wxSTATIC_BORDER );               // window
     r( wxSTAY_ON_TOP );                 // frame dialog
     r( wxST_NO_AUTORESIZE );            // statictext
-    r( wxST_SIZEGRIP );
+    r( wxST_SIZEGRIP );                 // statusbar
     r( wxSUNKEN_BORDER );               // window
     r( wxSYSTEM_MENU );                 // frame dialog
     r( wxSWISS );                       // font
@@ -1553,6 +1609,9 @@ static double constant( const char *name, int arg )
     r( wxSL_RIGHT );                    // slider
     r( wxSL_TOP );                      // slider
     r( wxSL_SELRANGE );                 // slider
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    r( wxSL_INVERSE );                  // slider
+#endif
 
     r( wxSIZE_AUTO_WIDTH );             // window
     r( wxSIZE_AUTO_HEIGHT );            // window
@@ -1620,88 +1679,88 @@ static double constant( const char *name, int arg )
     r( wxSameAs );                      // layout constraints
 
     // fonts
-    r( wxSYS_OEM_FIXED_FONT );
-    r( wxSYS_ANSI_FIXED_FONT );
-    r( wxSYS_ANSI_VAR_FONT );
-    r( wxSYS_SYSTEM_FONT ); 
-    r( wxSYS_DEVICE_DEFAULT_FONT );
-    r( wxSYS_DEFAULT_GUI_FONT );
+    r( wxSYS_OEM_FIXED_FONT );          // systemsettings
+    r( wxSYS_ANSI_FIXED_FONT );         // systemsettings
+    r( wxSYS_ANSI_VAR_FONT );           // systemsettings
+    r( wxSYS_SYSTEM_FONT );             // systemsettings
+    r( wxSYS_DEVICE_DEFAULT_FONT );     // systemsettings
+    r( wxSYS_DEFAULT_GUI_FONT );        // systemsettings
 
     // colours
-    r( wxSYS_COLOUR_SCROLLBAR );
-    r( wxSYS_COLOUR_BACKGROUND );
-    r( wxSYS_COLOUR_ACTIVECAPTION );
-    r( wxSYS_COLOUR_INACTIVECAPTION );
-    r( wxSYS_COLOUR_MENU );
-    r( wxSYS_COLOUR_WINDOW );
-    r( wxSYS_COLOUR_WINDOWFRAME );
-    r( wxSYS_COLOUR_MENUTEXT );
-    r( wxSYS_COLOUR_WINDOWTEXT );
-    r( wxSYS_COLOUR_CAPTIONTEXT );
-    r( wxSYS_COLOUR_ACTIVEBORDER );
-    r( wxSYS_COLOUR_INACTIVEBORDER );
-    r( wxSYS_COLOUR_APPWORKSPACE );
-    r( wxSYS_COLOUR_HIGHLIGHT );
-    r( wxSYS_COLOUR_HIGHLIGHTTEXT );
-    r( wxSYS_COLOUR_BTNFACE );
-    r( wxSYS_COLOUR_BTNSHADOW );
-    r( wxSYS_COLOUR_GRAYTEXT );
-    r( wxSYS_COLOUR_BTNTEXT );
-    r( wxSYS_COLOUR_INACTIVECAPTIONTEXT );
-    r( wxSYS_COLOUR_BTNHIGHLIGHT );
+    r( wxSYS_COLOUR_SCROLLBAR );        // systemsettings
+    r( wxSYS_COLOUR_BACKGROUND );       // systemsettings
+    r( wxSYS_COLOUR_ACTIVECAPTION );    // systemsettings
+    r( wxSYS_COLOUR_INACTIVECAPTION );  // systemsettings
+    r( wxSYS_COLOUR_MENU );             // systemsettings
+    r( wxSYS_COLOUR_WINDOW );           // systemsettings
+    r( wxSYS_COLOUR_WINDOWFRAME );      // systemsettings
+    r( wxSYS_COLOUR_MENUTEXT );         // systemsettings
+    r( wxSYS_COLOUR_WINDOWTEXT );       // systemsettings
+    r( wxSYS_COLOUR_CAPTIONTEXT );      // systemsettings
+    r( wxSYS_COLOUR_ACTIVEBORDER );     // systemsettings
+    r( wxSYS_COLOUR_INACTIVEBORDER );   // systemsettings
+    r( wxSYS_COLOUR_APPWORKSPACE );     // systemsettings
+    r( wxSYS_COLOUR_HIGHLIGHT );        // systemsettings
+    r( wxSYS_COLOUR_HIGHLIGHTTEXT );    // systemsettings
+    r( wxSYS_COLOUR_BTNFACE );          // systemsettings
+    r( wxSYS_COLOUR_BTNSHADOW );        // systemsettings
+    r( wxSYS_COLOUR_GRAYTEXT );         // systemsettings
+    r( wxSYS_COLOUR_BTNTEXT );          // systemsettings
+    r( wxSYS_COLOUR_INACTIVECAPTIONTEXT ); // systemsettings
+    r( wxSYS_COLOUR_BTNHIGHLIGHT );     // systemsettings
 
-    r( wxSYS_COLOUR_3DDKSHADOW );
-    r( wxSYS_COLOUR_3DLIGHT );
-    r( wxSYS_COLOUR_INFOTEXT );
-    r( wxSYS_COLOUR_INFOBK );
+    r( wxSYS_COLOUR_3DDKSHADOW );       // systemsettings
+    r( wxSYS_COLOUR_3DLIGHT );          // systemsettings
+    r( wxSYS_COLOUR_INFOTEXT );         // systemsettings
+    r( wxSYS_COLOUR_INFOBK );           // systemsettings
 
-    r( wxSYS_COLOUR_LISTBOX );
+    r( wxSYS_COLOUR_LISTBOX );          // systemsettings
 
-    r( wxSYS_COLOUR_DESKTOP );
-    r( wxSYS_COLOUR_3DFACE );
-    r( wxSYS_COLOUR_3DSHADOW );
-    r( wxSYS_COLOUR_3DHIGHLIGHT );
-    r( wxSYS_COLOUR_3DHILIGHT );
-    r( wxSYS_COLOUR_BTNHILIGHT );
+    r( wxSYS_COLOUR_DESKTOP );          // systemsettings
+    r( wxSYS_COLOUR_3DFACE );           // systemsettings
+    r( wxSYS_COLOUR_3DSHADOW );         // systemsettings
+    r( wxSYS_COLOUR_3DHIGHLIGHT );      // systemsettings
+    r( wxSYS_COLOUR_3DHILIGHT );        // systemsettings
+    r( wxSYS_COLOUR_BTNHILIGHT );       // systemsettings
 
     // metrics
-    r( wxSYS_MOUSE_BUTTONS );
-    r( wxSYS_BORDER_X );
-    r( wxSYS_BORDER_Y );
-    r( wxSYS_CURSOR_X );
-    r( wxSYS_CURSOR_Y );
-    r( wxSYS_DCLICK_X );
-    r( wxSYS_DCLICK_Y );
-    r( wxSYS_DRAG_X );
-    r( wxSYS_DRAG_Y );
-    r( wxSYS_EDGE_X );
-    r( wxSYS_EDGE_Y );
-    r( wxSYS_HSCROLL_ARROW_X );
-    r( wxSYS_HSCROLL_ARROW_Y );
-    r( wxSYS_HTHUMB_X );
-    r( wxSYS_ICON_X );
-    r( wxSYS_ICON_Y );
-    r( wxSYS_ICONSPACING_X );
-    r( wxSYS_ICONSPACING_Y );
-    r( wxSYS_WINDOWMIN_X );
-    r( wxSYS_WINDOWMIN_Y );
-    r( wxSYS_SCREEN_X );
-    r( wxSYS_SCREEN_Y );
-    r( wxSYS_FRAMESIZE_X );
-    r( wxSYS_FRAMESIZE_Y );
-    r( wxSYS_SMALLICON_X );
-    r( wxSYS_SMALLICON_Y );
-    r( wxSYS_HSCROLL_Y );
-    r( wxSYS_VSCROLL_X );
-    r( wxSYS_VSCROLL_ARROW_X );
-    r( wxSYS_VSCROLL_ARROW_Y );
-    r( wxSYS_VTHUMB_Y );
-    r( wxSYS_CAPTION_Y );
-    r( wxSYS_MENU_Y );
-    r( wxSYS_NETWORK_PRESENT );
-    r( wxSYS_PENWINDOWS_PRESENT );
-    r( wxSYS_SHOW_SOUNDS );
-    r( wxSYS_SWAP_BUTTONS );
+    r( wxSYS_MOUSE_BUTTONS );           // systemsettings
+    r( wxSYS_BORDER_X );                // systemsettings
+    r( wxSYS_BORDER_Y );                // systemsettings
+    r( wxSYS_CURSOR_X );                // systemsettings
+    r( wxSYS_CURSOR_Y );                // systemsettings
+    r( wxSYS_DCLICK_X );                // systemsettings
+    r( wxSYS_DCLICK_Y );                // systemsettings
+    r( wxSYS_DRAG_X );                  // systemsettings
+    r( wxSYS_DRAG_Y );                  // systemsettings
+    r( wxSYS_EDGE_X );                  // systemsettings
+    r( wxSYS_EDGE_Y );                  // systemsettings
+    r( wxSYS_HSCROLL_ARROW_X );         // systemsettings
+    r( wxSYS_HSCROLL_ARROW_Y );         // systemsettings
+    r( wxSYS_HTHUMB_X );                // systemsettings
+    r( wxSYS_ICON_X );                  // systemsettings
+    r( wxSYS_ICON_Y );                  // systemsettings
+    r( wxSYS_ICONSPACING_X );           // systemsettings
+    r( wxSYS_ICONSPACING_Y );           // systemsettings
+    r( wxSYS_WINDOWMIN_X );             // systemsettings
+    r( wxSYS_WINDOWMIN_Y );             // systemsettings
+    r( wxSYS_SCREEN_X );                // systemsettings
+    r( wxSYS_SCREEN_Y );                // systemsettings
+    r( wxSYS_FRAMESIZE_X );             // systemsettings
+    r( wxSYS_FRAMESIZE_Y );             // systemsettings
+    r( wxSYS_SMALLICON_X );             // systemsettings
+    r( wxSYS_SMALLICON_Y );             // systemsettings
+    r( wxSYS_HSCROLL_Y );               // systemsettings
+    r( wxSYS_VSCROLL_X );               // systemsettings
+    r( wxSYS_VSCROLL_ARROW_X );         // systemsettings
+    r( wxSYS_VSCROLL_ARROW_Y );         // systemsettings
+    r( wxSYS_VTHUMB_Y );                // systemsettings
+    r( wxSYS_CAPTION_Y );               // systemsettings
+    r( wxSYS_MENU_Y );                  // systemsettings
+    r( wxSYS_NETWORK_PRESENT );         // systemsettings
+    r( wxSYS_PENWINDOWS_PRESENT );      // systemsettings
+    r( wxSYS_SHOW_SOUNDS );             // systemsettings
+    r( wxSYS_SWAP_BUTTONS );            // systemsettings
 
     // capabilities
     r( wxSYS_CAN_DRAW_FRAME_DECORATIONS );
@@ -1717,6 +1776,7 @@ static double constant( const char *name, int arg )
     r( wxTB_TEXT );                     // toolbar
     r( wxTB_NOICONS );                  // toolbar
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
+    r( wxTB_HORZ_LAYOUT );              // toolbar
     r( wxTB_HORZ_TEXT );                // toolbar
 #endif
     r( wxTE_PROCESS_ENTER );            // textctrl
@@ -1732,6 +1792,12 @@ static double constant( const char *name, int arg )
     r( wxTE_CENTRE );                   // textctrl
     r( wxTE_CENTER );                   // textctrl
     r( wxTE_AUTO_URL );                 // textctrl
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    r( wxTE_DONTWRAP );                 // textctrl
+    r( wxTE_WORDWRAP );                 // textctrl
+    r( wxTE_CHARWRAP );                 // textctrl
+    r( wxTE_BESTWRAP );                 // textctrl
+#endif
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
     r( wxTE_HT_UNKNOWN );               // textctrl
     r( wxTE_HT_BEFORE );                // textctrl
@@ -1740,10 +1806,10 @@ static double constant( const char *name, int arg )
     r( wxTE_HT_BEYOND );                // textctrl
 #endif
     r( wxTHICK_FRAME );                 // frame dialog
-    r( wxTINY_CAPTION_HORIZ );
-    r( wxTINY_CAPTION_VERT );
-    r( wxTIMER_CONTINUOUS );
-    r( wxTIMER_ONE_SHOT );
+    r( wxTINY_CAPTION_HORIZ );          // miniframe
+    r( wxTINY_CAPTION_VERT );           // miniframe
+    r( wxTIMER_CONTINUOUS );            // timer
+    r( wxTIMER_ONE_SHOT );              // timer
     r( wxTOP );                         // sizer layout constraints
     r( wxTRANSPARENT_WINDOW );          // window
     r( wxTRANSPARENT );                 // dc brush pen
@@ -1771,8 +1837,8 @@ static double constant( const char *name, int arg )
     r( wxUnconstrained );               // layout constraints
     r( wxUSER_DASH );                   // pen
 #if WXPERL_W_VERSION_GE( 2, 5, 3 )
-    r( wxUSER_ATTENTION_INFO );
-    r( wxUSER_ATTENTION_ERROR );
+    r( wxUSER_ATTENTION_INFO );         // toplevelwindow
+    r( wxUSER_ATTENTION_ERROR );        // toplevelwindow
 #endif
     break;
   case 'V':
@@ -1781,22 +1847,22 @@ static double constant( const char *name, int arg )
     r( wxVSCROLL );                     // window
     break;
   case 'W':
-    r( wxWANTS_CHARS );
+    r( wxWANTS_CHARS );                 // window
     r( wxWINDING_RULE );                // dc
     r( wxWidth );                       // layout constraints
     r( wxWIZARD_EX_HELPBUTTON );
 
-    r( wxWS_EX_VALIDATE_RECURSIVELY );
-    r( wxWS_EX_BLOCK_EVENTS );
-    r( wxWS_EX_TRANSIENT );
+    r( wxWS_EX_VALIDATE_RECURSIVELY );  // window
+    r( wxWS_EX_BLOCK_EVENTS );          // window
+    r( wxWS_EX_TRANSIENT );             // window
     break;
   case 'X':
     r( wxXOR );                         // dc
     break;
   case 'Y':
-    r( wxYES );
-    r( wxYES_NO );
-    r( wxYES_DEFAULT );
+    r( wxYES );                         // dialog
+    r( wxYES_NO );                      // dialog
+    r( wxYES_DEFAULT );                 // dialog
     break;
   default:
     break;
@@ -1805,7 +1871,7 @@ static double constant( const char *name, int arg )
 #undef r
   // now search for modules...
   {
-    wxPlConstantFunctions::Node* node;
+    wxPlConstantFunctions::compatibility_iterator node;
     PL_CONST_FUNC* func;
     double ret;
 
@@ -1819,11 +1885,6 @@ static double constant( const char *name, int arg )
   }
 
   WX_PL_CONSTANT_CLEANUP();
-/*
- not_there:
-  errno = ENOENT;
-  return 0;
-*/
 }
 
 // XXX hacky
@@ -1854,6 +1915,24 @@ static void wxPli_make_const( const char* name )
     newCONSTSUB( stash, (char*)name, sv );
 }
 
+static void wxPli_make_const_str( const char* name, const wxChar* value )
+{
+    dTHX;
+    char buffer[256];
+    SV* tmp;
+
+    wxPli_make_const( name );
+
+    strcpy( buffer, "Wx::" );
+    strcpy( buffer + 4, name );
+
+    tmp = get_sv( buffer, 0 );
+    wxPli_wxChar_2_sv( aTHX_ value, tmp );
+}
+
+#define wxPli_make_const_string( v ) \
+    wxPli_make_const_str( #v, v )
+
 static void wxPli_set_const( const char* name, const char* klass, void* ptr )
 {
     dTHX;
@@ -1870,14 +1949,14 @@ static void wxPli_set_const( const char* name, const char* klass, void* ptr )
 #undef sv_setref_pv
 #define sv_setref_pv( s, p, pt ) my_sv_setref_pv( aTHX_ s, p, pt )
 
-// !parser: sub { $_[0] =~ m<^\s*wxPli_\w+\(\s*\"(wx\w+)\"\s*\);\s*(?://(.*))?$> }
+// !parser: sub { $_[0] =~ m<^\s*wxPli_\w+\(\s*\"?(wx\w+)\"?\s*\);\s*(?://(.*))?$> }
 // !package: Wx
 
 void SetConstantsOnce()
 {
     dTHX;
 
-    wxPli_make_const( "wxVERSION_STRING" );
+    wxPli_make_const_string( wxVERSION_STRING );
 
     wxPli_make_const( "wxTheClipboard" );       // clipboard
     wxPli_make_const( "wxDefaultValidator" );   // misc
@@ -1934,27 +2013,22 @@ void SetConstantsOnce()
     wxPli_make_const( "wxCYAN_BRUSH" );         // brush
     wxPli_make_const( "wxRED_BRUSH" );          // brush
 
-    wxPli_make_const( "wxIMAGE_OPTION_BMP_FORMAT" );    // image
-    wxPli_make_const( "wxIMAGE_OPTION_CUR_HOTSPOT_X" ); // image
-    wxPli_make_const( "wxIMAGE_OPTION_CUR_HOTSPOT_Y" ); // image
-    wxPli_make_const( "wxIMAGE_OPTION_FILENAME" );      // image
+    wxPli_make_const_string( wxIMAGE_OPTION_BMP_FORMAT );      // image
+    wxPli_make_const_string( wxIMAGE_OPTION_CUR_HOTSPOT_X );   // image
+    wxPli_make_const_string( wxIMAGE_OPTION_CUR_HOTSPOT_Y );   // image
+    wxPli_make_const_string( wxIMAGE_OPTION_FILENAME );        // image
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    wxPli_make_const_string( wxIMAGE_OPTION_QUALITY );         // image
+    wxPli_make_const_string( wxIMAGE_OPTION_RESOLUTION );      // image
+    wxPli_make_const_string( wxIMAGE_OPTION_RESOLUTIONX );     // image
+    wxPli_make_const_string( wxIMAGE_OPTION_RESOLUTIONY );     // image
+    wxPli_make_const_string( wxIMAGE_OPTION_RESOLUTIONUNIT );  // image
+#endif
+
+    wxPli_make_const_string( wxFileSelectorDefaultWildcardStr ); // filedialog
 
     // these are correctly cloned
     SV* tmp;
-    tmp = get_sv( "Wx::wxVERSION_STRING", 0 );
-    wxPli_wxChar_2_sv( aTHX_ wxVERSION_STRING, tmp );
-
-    tmp = get_sv( "Wx::wxIMAGE_OPTION_BMP_FORMAT", 0 );
-    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_BMP_FORMAT, tmp );
-
-    tmp = get_sv( "Wx::wxIMAGE_OPTION_CUR_HOTSPOT_X", 0 );
-    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_CUR_HOTSPOT_X, tmp );
-
-    tmp = get_sv( "Wx::wxIMAGE_OPTION_CUR_HOTSPOT_Y", 0 );
-    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_CUR_HOTSPOT_Y, tmp );
-
-    tmp = get_sv( "Wx::wxIMAGE_OPTION_FILENAME", 0 );
-    wxPli_wxChar_2_sv( aTHX_ wxIMAGE_OPTION_FILENAME, tmp );
 
     int universal;
     int xstatic;

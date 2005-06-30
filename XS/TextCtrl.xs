@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: TextCtrl.xs,v 1.16 2004/07/10 21:49:46 mbarbon Exp $
-## Copyright:   (c) 2000-2003 Mattia Barbon
+## RCS-ID:      $Id: TextCtrl.xs,v 1.18 2005/02/26 11:30:45 mbarbon Exp $
+## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -174,6 +174,11 @@ void
 wxTextCtrl::DiscardEdits()
 
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
+
+bool
+wxTextCtrl::EmulateKeyPress( event )
+    wxKeyEvent* event
+  C_ARGS: *event
 
 void
 wxTextCtrl::MarkDirty()

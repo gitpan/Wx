@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp,v 1.66 2005/01/03 21:06:40 mbarbon Exp $
-// Copyright:   (c) 2000-2004 Mattia Barbon
+// RCS-ID:      $Id: helpers.cpp,v 1.71 2005/05/03 20:44:31 mbarbon Exp $
+// Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -605,7 +605,7 @@ AV* wxPli_objlist_2_av( pTHX_ const wxList& objs )
 {
     AV* av = newAV();
     size_t i;
-    wxList::Node* node;
+    wxList::compatibility_iterator node;
 
     av_extend( av, objs.GetCount() );
     for( node = objs.GetFirst(), i = 0; node; ++i, node = node->GetNext() )
@@ -869,7 +869,7 @@ int wxPli_av_2_wxcharparray( pTHX_ SV* avref, wxChar*** array )
 }
 
 #if wxUSE_UNICODE
-wxChar* wxPli_copy_string( SV* scalar, wxChar** )
+static wxChar* wxPli_copy_string( SV* scalar, wxChar** )
 {
     dTHX;
     STRLEN length;
@@ -885,7 +885,7 @@ wxChar* wxPli_copy_string( SV* scalar, wxChar** )
 }
 #endif
 
-char* wxPli_copy_string( SV* scalar, char** )
+static char* wxPli_copy_string( SV* scalar, char** )
 {
     dTHX;
     STRLEN length;
@@ -897,29 +897,31 @@ char* wxPli_copy_string( SV* scalar, char** )
     return buffer;
 }
 
-void wxPli_delete_argv( void* argv, bool unicode )
+void wxPli_delete_argv( void*** argv, bool unicode )
 {
 #if wxUSE_UNICODE
     if( unicode )
     {
-        wxChar** arg = (wxChar**)argv;
-        wxChar** i;
-        for( i = arg; *i; ++i ) { /*delete[] ( *arg );*/ }
+        wxChar** arg = *(wxChar***)argv;
+        if( arg != NULL )
+            for( wxChar** i = arg; *i; ++i ) delete[] *i;
         delete[] arg;
+        *(wxChar***)argv = NULL;
     }
     else
     {
 #endif
-        char** arg = (char**)argv;
-        char** i;
-        for( i = arg; *i; ++i ) { /*delete[] ( *arg );*/ }
+        char** arg = *(char***)argv;
+        if( arg != NULL )
+            for( char** i = arg; *i; ++i ) delete[] *i;
         delete[] arg;
+        *(char***)argv = NULL;
 #if wxUSE_UNICODE
     }
 #endif
 }
 
-int wxPli_get_args_argc_argv( void* argvp, bool unicode ) 
+int wxPli_get_args_argc_argv( void*** argvp, bool unicode ) 
 {
     dTHX;
 #if wxUSE_UNICODE
@@ -941,7 +943,7 @@ int wxPli_get_args_argc_argv( void* argvp, bool unicode )
         argv_w[argc] = 0;
         argv_w[0] = wxPli_copy_string( progname, argv_w );
 
-        for( i=0; i < arg_num; ++i )
+        for( i = 0; i < arg_num; ++i )
         {
             argv_w[i + 1] = wxPli_copy_string( *av_fetch( args, i, 0 ), argv_w );
         }
@@ -955,7 +957,7 @@ int wxPli_get_args_argc_argv( void* argvp, bool unicode )
         argv_a[argc] = 0;
         argv_a[0] = wxPli_copy_string( progname, argv_a );
 
-        for( i=0; i < arg_num; ++i )
+        for( i = 0; i < arg_num; ++i )
         {
             argv_a[i + 1] = wxPli_copy_string( *av_fetch( args, i, 0 ), argv_a );
         }

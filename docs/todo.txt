@@ -1,7 +1,6 @@
 PRIORITY HIGH:
 
 * rewrite docs in POD (?)
-* put a README in the DMG
 
 PRIORITY NORMAL:
 
@@ -78,13 +77,6 @@ PRIORITY LOW:
 
 * Wx::PageSetupDialogData
     overloaded constructors
-
-* Wx::PreviewFrame
-    CreateControlBar
-    CreateCanvas
-
-* Wx::PreviewControlBar
-    CreateButtons
 
 * operator == and != (are they useful/have side effects?)
     Wx::AcceleratorTable

@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h,v 1.70 2005/01/03 21:06:40 mbarbon Exp $
-// Copyright:   (c) 2000-2004 Mattia Barbon
+// RCS-ID:      $Id: helpers.h,v 1.75 2005/05/03 20:44:31 mbarbon Exp $
+// Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -17,11 +17,17 @@
 #include <wx/list.h>
 #include <wx/gdicmn.h>
 
+#if wxUSE_STL
+#include <wx/dynarray.h>
+#include <wx/arrstr.h>
+#else
+class WXDLLEXPORT wxArrayInt;
+#endif
+
 // forward declare Wx_*Stream
 class WXDLLEXPORT wxInputStream;
 class WXDLLEXPORT wxOutputStream;
 class WXDLLEXPORT wxEvtHandler;
-class WXDLLEXPORT wxArrayInt;
 class WXDLLEXPORT wxClientDataContainer;
 typedef wxInputStream Wx_InputStream;
 typedef wxOutputStream Wx_OutputStream;
@@ -181,8 +187,25 @@ AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings );
 AV* wxPli_uchararray_2_av( pTHX_ const unsigned char* array, int count );
 AV* FUNCPTR( wxPli_objlist_2_av )( pTHX_ const wxList& objs );
 
-void wxPli_delete_argv( void* argv, bool unicode );
-int wxPli_get_args_argc_argv( void* argv, bool unicode );
+template<class A, class E>
+void wxPli_nonobjarray_push( pTHX_ const A& objs, const char* klass )
+{
+    dSP;
+
+    size_t mx = objs.GetCount();
+    EXTEND( SP, IV(mx) );
+    for( size_t i = 0; i < mx; ++i )
+    {
+        PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
+               new E( objs[i] ), klass ) );
+    }
+
+    PUTBACK;
+}
+
+
+void wxPli_delete_argv( void*** argv, bool unicode );
+int wxPli_get_args_argc_argv( void*** argv, bool unicode );
 void wxPli_get_args_objectarray( pTHX_ SV** sp, int items,
                                          void** array, const char* package );
 
@@ -489,6 +512,14 @@ wxPliClassInfo name::sm_class##name((wxChar *) wxT(#name), \
     {                                                              \
         m_callback.SetSelf( wxPli_make_object( this, package ), incref );\
     }
+
+#define WXPLI_CONSTRUCTOR_2( name, packagename, incref, argt1, argt2 )     \
+     name( const char* package, argt1 _arg1, argt2 _arg2 )                 \
+         :m_callback( packagename )                                        \
+     {                                                                     \
+         m_callback.SetSelf( wxPli_make_object( this, package ), incref ); \
+         Create( _arg1, _arg2 );                                           \
+     }
 
 #define WXPLI_CONSTRUCTOR_5( name, packagename, incref, argt1, argt2, argt3, argt4, argt5 ) \
      name( const char* package, argt1 _arg1, argt2 _arg2, argt3 _arg3,     \

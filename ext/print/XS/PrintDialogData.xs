@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     02/06/2001
-## RCS-ID:      $Id: PrintDialogData.xs,v 1.3 2004/12/21 21:12:55 mbarbon Exp $
-## Copyright:   (c) 2001, 2004 Mattia Barbon
+## RCS-ID:      $Id: PrintDialogData.xs,v 1.7 2005/02/26 15:47:41 mbarbon Exp $
+## Copyright:   (c) 2001, 2004-2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -106,9 +106,13 @@ void
 wxPrintDialogData::SetSelection( selection )
     bool selection
 
+#if WXPERL_W_VERSION_GE( 2, 5, 3 ) && WXPERL_W_VERSION_LE( 2, 5, 3 )
+
 void
 wxPrintDialogData::SetSetupDialog( flag )
     bool flag
+
+#endif
 
 void
 wxPrintDialogData::SetToPage( page )

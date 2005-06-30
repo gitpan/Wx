@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/12/2001
-## RCS-ID:      $Id: Grid.xs,v 1.21 2005/01/04 17:15:08 mbarbon Exp $
+## RCS-ID:      $Id: Grid.xs,v 1.24 2005/04/13 20:12:49 mbarbon Exp $
 ## Copyright:   (c) 2001-2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -462,13 +462,26 @@ wxGrid::GetRowSize( row )
 void
 wxGrid::GetSelectedCells()
   PPCODE:
-    wxGridCellCoordsArray selection = THIS->GetSelectedCells();
-    EXTEND( SP, (IV) selection.GetCount() );
+    PUTBACK;
+    wxPli_nonobjarray_push<wxGridCellCoordsArray, wxGridCellCoords>
+        ( aTHX_ THIS->GetSelectedCells(), "Wx::GridCellCoords" );
+    SPAGAIN;
 
-    for( size_t i = 0; i < selection.GetCount(); ++i )
-      PUSHs( wxPli_non_object_2_sv( aTHX_ sv_newmortal(),
-             new wxGridCellCoords( selection[i] ),
-             "Wx::GridCellCoords" ) );
+void
+wxGrid::GetSelectionBlockTopLeft()
+  PPCODE:
+    PUTBACK;
+    wxPli_nonobjarray_push<wxGridCellCoordsArray, wxGridCellCoords>
+        ( aTHX_ THIS->GetSelectionBlockTopLeft(), "Wx::GridCellCoords" );
+    SPAGAIN;
+
+void
+wxGrid::GetSelectionBlockBottomRight()
+  PPCODE:
+    PUTBACK;
+    wxPli_nonobjarray_push<wxGridCellCoordsArray, wxGridCellCoords>
+        ( aTHX_ THIS->GetSelectionBlockBottomRight(), "Wx::GridCellCoords" );
+    SPAGAIN;
 
 void
 wxGrid::GetSelectedCols()
@@ -630,6 +643,10 @@ wxGrid::RegisterDataType( typeName, renderer, editor )
     wxString typeName
     wxGridCellRenderer* renderer
     wxGridCellEditor* editor
+  CODE:
+    renderer->IncRef();
+    editor->IncRef();
+    THIS->RegisterDataType( typeName, renderer, editor );
 
 void
 wxGrid::SaveEditControlValue()
@@ -917,8 +934,9 @@ wxGrid::SetSelectionMode( selmode )
     wxGridSelectionModes selmode
 
 void
-wxGrid::SetTable( table )
+wxGrid::SetTable( table, selMode = wxGrid::wxGridSelectCells )
     wxGridTableBase* table
+    wxGridSelectionModes selMode
 
 void
 wxGrid::ShowCellEditControl()

@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: typemap,v 1.69 2005/01/04 17:14:35 mbarbon Exp $
+## RCS-ID:      $Id: typemap,v 1.75 2005/06/11 06:41:45 mbarbon Exp $
 ## Copyright:   (c) 2000-2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -41,6 +41,10 @@ wxFindReplaceDialogStyles T_ENUM
 wxFindReplaceFlags      T_ENUM
 
 wxBackgroundStyle       T_ENUM
+wxSystemColour          T_ENUM
+wxSystemFont            T_ENUM
+wxSystemMetric          T_ENUM
+wxOrientation           T_ENUM
 
 wxLogTraceMask          T_UV 
 wxLogLevel              T_UV 
@@ -72,6 +76,9 @@ wxFrame *               O_WXOBJECT
 wxTopLevelWindow *      O_WXOBJECT
 wxEvtHandler *          O_WXOBJECT
 wxMiniFrame *           O_WXOBJECT
+wxPopupWindow *         O_WXOBJECT
+wxPopupTransientWindow * O_WXOBJECT
+wxPlPopupTransientWindow * O_WXOBJECT
 
 wxMenuBar *             O_WXOBJECT
 wxMenu *                O_WXOBJECT
@@ -263,6 +270,7 @@ wxRegion *              O_WXOBJECT
 Wx_Icon *               O_WXOBJECT
 wxIcon *                O_WXOBJECT
 wxIconBundle *          O_NON_WXOBJECT
+wxIconLocation *        O_NON_WXOBJECT
 Wx_Bitmap *             O_WXOBJECT
 wxBitmap *              O_WXOBJECT
 Wx_Cursor *             O_WXOBJECT
@@ -277,6 +285,9 @@ wxBrush *               O_WXOBJECT
 wxBitmapHandler *       O_WXOBJECT
 Wx_Palette *            O_WXOBJECT
 wxPalette *             O_WXOBJECT
+wxMimeTypesManager *    O_NON_WXOBJECT
+wxFileType *            O_NON_WXOBJECT
+wxFileTypeInfo *        O_NON_WXOBJECT
 
 wxImage *               O_WXOBJECT
 wxImageHandler *        O_WXOBJECT
@@ -312,6 +323,7 @@ wxActivateEvent *       O_WXOBJECT
 wxBookCtrlEvent *       O_WXOBJECT
 wxCloseEvent *          O_WXOBJECT
 wxCommandEvent *        O_WXOBJECT
+wxContextMenuEvent *    O_WXOBJECT
 wxEraseEvent *          O_WXOBJECT
 wxFindDialogEvent *     O_WXOBJECT
 wxFocusEvent *          O_WXOBJECT
@@ -337,6 +349,7 @@ wxScrollWinEvent *      O_WXOBJECT
 wxSpinEvent *           O_WXOBJECT
 wxSplitterEvent *       O_WXOBJECT
 wxSysColourChangedEvent * O_WXOBJECT
+wxTaskBarIconEvent *    O_WXOBJECT
 wxTimerEvent *          O_WXOBJECT
 wxTreeEvent *           O_WXOBJECT
 wxUpdateUIEvent *       O_WXOBJECT
@@ -345,6 +358,7 @@ wxProcessEvent *        O_WXOBJECT
 wxWizardEvent *         O_WXOBJECT
 wxTreebookEvent *       O_WXOBJECT
 wxNavigationKeyEvent *  O_WXOBJECT
+wxChildFocusEvent *     O_WXOBJECT
 
 wxPlEvent *             O_WXOBJECT
 wxPlCommandEvent *      O_WXOBJECT
@@ -352,6 +366,9 @@ wxPlThreadEvent *       O_WXOBJECT
 
 wxConfigBase *          O_NON_WXOBJECT
 wxConfig *              O_NON_WXOBJECT
+
+wxArtProvider *         O_WXOBJECT
+wxPlArtProvider *       O_WXOBJECT
 
 OUTPUT
 O_WXOBJECT
