@@ -53,7 +53,7 @@ class wxNotebook;
 class wxNotebookSizer : public wxBookCtrlSizer
 {
 public:
-    wxDEPRECATED( wxNotebookSizer(wxNotebook *nb) );
+    wxNotebookSizer(wxNotebook *nb);
 
     wxNotebook *GetNotebook() const { return (wxNotebook *)m_bookctrl; }
 
