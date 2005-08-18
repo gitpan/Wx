@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h,v 1.75 2005/05/03 20:44:31 mbarbon Exp $
+// RCS-ID:      $Id: helpers.h,v 1.77 2005/08/07 21:20:31 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -152,6 +152,9 @@ void wxPli_push_args( pTHX_ SV*** stack, const char* argtypes, va_list &list );
 
 void* FUNCPTR( wxPli_sv_2_object )( pTHX_ SV* scalar, const char* classname );
 SV* FUNCPTR( wxPli_object_2_sv )( pTHX_ SV* var, wxObject* object );
+SV* FUNCPTR( wxPli_clientdatacontainer_2_sv )( pTHX_ SV* var,
+                                               wxClientDataContainer* cdc,
+                                               const char* klass );
 SV* FUNCPTR( wxPli_evthandler_2_sv )( pTHX_ SV* var, wxEvtHandler* evth );
 SV* FUNCPTR( wxPli_non_object_2_sv )( pTHX_ SV* var, void* data,
                                       const char* package );
@@ -212,6 +215,11 @@ void wxPli_get_args_objectarray( pTHX_ SV** sp, int items,
 wxPoint FUNCPTR( wxPli_sv_2_wxpoint_test )( pTHX_ SV* scalar, bool* ispoint );
 wxPoint FUNCPTR( wxPli_sv_2_wxpoint )( pTHX_ SV* scalar );
 wxSize FUNCPTR( wxPli_sv_2_wxsize )( pTHX_ SV* scalar );
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+class WXDLLEXPORT wxGBPosition; class WXDLLEXPORT wxGBSpan;
+wxGBPosition wxPli_sv_2_wxgbposition( pTHX_ SV* scalar );
+wxGBSpan wxPli_sv_2_wxgbspan( pTHX_ SV* scalar );
+#endif
 wxKeyCode wxPli_sv_2_keycode( pTHX_ SV* scalar );
 
 int wxPli_av_2_pointlist( pTHX_ SV* array, wxList *points, wxPoint** tmp );
@@ -322,6 +330,9 @@ struct wxPliHelpers
                                                  bool allow_more );
     AV* (* m_wxPli_objlist_2_av )( pTHX_ const wxList& objs );
     void (* m_wxPli_intarray_push )( pTHX_ const wxArrayInt& );
+    SV* (* m_wxPli_clientdatacontainer_2_sv )( pTHX_ SV* var,
+                                               wxClientDataContainer* cdc,
+                                               const char* klass );
 };
 
 #define DEFINE_PLI_HELPERS( name ) \
@@ -336,7 +347,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
  &wxPli_get_wxwindowid, &wxPli_av_2_stringarray, &wxPliInputStream_ctor, \
  &wxPli_cpp_class_2_perl, &wxPli_push_arguments, &wxPli_attach_object, \
  &wxPli_detach_object, &wxPli_create_evthandler, \
- &wxPli_match_arguments_skipfirst, &wxPli_objlist_2_av, &wxPli_intarray_push }
+ &wxPli_match_arguments_skipfirst, &wxPli_objlist_2_av, &wxPli_intarray_push, \
+ &wxPli_clientdatacontainer_2_sv }
 
 #if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
 
@@ -371,6 +383,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
   wxPli_match_arguments_skipfirst = name->m_wxPli_match_arguments_skipfirst; \
   wxPli_objlist_2_av = name->m_wxPli_objlist_2_av; \
   wxPli_intarray_push = name->m_wxPli_intarray_push; \
+  wxPli_clientdatacontainer_2_sv = name->m_wxPli_clientdatacontainer_2_sv; \
   \
   WXPLI_INIT_CLASSINFO();
 
@@ -394,7 +407,11 @@ public:
         m_data = data ? newSVsv( data ) : NULL;
     }
 
-    ~wxPliUserDataO();
+    ~wxPliUserDataO()
+    {
+        dTHX;
+        SvREFCNT_dec( m_data );
+    }
 
     SV* GetData() { return m_data; }
 private:
@@ -670,7 +687,11 @@ public:
         m_data = data ? newSVsv( data ) : NULL;
     }
 
-    ~wxPliUserDataCD();
+    ~wxPliUserDataCD()
+    {
+        dTHX;
+        SvREFCNT_dec( m_data );
+    }
 
     SV* GetData() { return m_data; }
 private:

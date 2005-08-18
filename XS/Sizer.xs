@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      $Id: Sizer.xs,v 1.38 2005/07/10 18:57:22 mbarbon Exp $
+## RCS-ID:      $Id: Sizer.xs,v 1.39.2.1 2005/08/16 20:55:13 mbarbon Exp $
 ## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -94,6 +94,14 @@
                                     int option = 0,
                                     int flag = 0, int border = 0,
                                     Wx_UserDataO* data = NULL );
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+    %name{GetItemWindow} wxSizerItem* GetItem( wxWindow* window,
+                                               bool recursive = false );
+    %name{GetItemSizer} wxSizerItem* GetItem( wxSizer* sizer,
+                                              bool recursive = false );
+    %name{GetItemNth} wxSizerItem* GetItem( size_t index );
 #endif
 
     void RecalcSizes();
@@ -259,6 +267,28 @@ wxSizer::Remove( ... )
         MATCH_REDISP( wxPliOvl_wszr, RemoveSizer )
         MATCH_REDISP( wxPliOvl_n, RemoveNth )
     END_OVERLOAD( Wx::Sizer::Remove )
+
+void
+wxSizer::Detach( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_wwin, DetachWindow )
+        MATCH_REDISP( wxPliOvl_wszr, DetachSizer )
+        MATCH_REDISP( wxPliOvl_n, DetachNth )
+    END_OVERLOAD( Wx::Sizer::Detach )
+
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+void
+wxSizer::GetItem( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP( wxPliOvl_wwin_s, GetItemWindow )
+        MATCH_REDISP( wxPliOvl_wszr_s, GetItemSizer )
+        MATCH_REDISP( wxPliOvl_n, GetItemNth )
+    END_OVERLOAD( Wx::Sizer::GetItem )
+
+#endif
 
 void
 wxSizer::SetItemMinSize( ... )

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp,v 1.71 2005/05/03 20:44:31 mbarbon Exp $
+// RCS-ID:      $Id: helpers.cpp,v 1.74 2005/08/13 23:10:59 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -15,6 +15,9 @@
 
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
     #include <wx/arrstr.h>
+#endif
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+    #include <wx/gbsizer.h>
 #endif
 
 #define wxPL_USE_MAGIC 1
@@ -94,18 +97,6 @@ my_magic* wxPli_get_or_create_magic( pTHX_ SV* rv )
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
-
-wxPliUserDataCD::~wxPliUserDataCD()
-{
-    dTHX;
-    SvREFCNT_dec( m_data );
-}
-
-wxPliUserDataO::~wxPliUserDataO()
-{
-    dTHX;
-    SvREFCNT_dec( m_data );
-}
 
 int wxCALLBACK ListCtrlCompareFn( long item1, long item2, long comparefn )
 {
@@ -381,6 +372,25 @@ SV* wxPli_non_object_2_sv( pTHX_ SV* var, void* data, const char* package )
     return var;
 }
 
+SV* wxPli_clientdatacontainer_2_sv( pTHX_ SV* var, wxClientDataContainer* cdc, const char* klass )
+{
+    if( cdc == NULL )
+    {
+        sv_setsv( var, &PL_sv_undef );
+        return var;
+    }
+
+    wxPliUserDataCD* clientData = (wxPliUserDataCD*) cdc->GetClientObject();
+
+    if( clientData != NULL )
+    {
+        SvSetSV_nosteal( var, clientData->GetData() );
+        return var;
+    }
+
+    return wxPli_non_object_2_sv( aTHX_ var, cdc, klass );
+}
+
 SV* wxPli_evthandler_2_sv( pTHX_ SV* var, wxEvtHandler* cdc )
 {
     if( cdc == NULL )
@@ -514,6 +524,19 @@ void* wxPli_detach_object( pTHX_ SV* object )
         return tmp;
     }
 }
+
+/*
+SV* wxPli_create_clientdatacontainer( pTHX_ wxClientDataContainer* object,
+                                      const char* classname )
+{
+    SV* sv = wxPli_make_object( object, classname );
+    wxPliUserDataCD* clientData = new wxPliUserDataCD( sv );
+
+    object->SetClientObject( clientData );
+
+    return sv;
+}
+*/
 
 SV* wxPli_create_evthandler( pTHX_ wxEvtHandler* object,
                              const char* classname )
@@ -1045,37 +1068,49 @@ wxPoint wxPli_sv_2_wxpoint_test( pTHX_ SV* scalar, bool* ispoint )
     return dummy;
 }
 
-wxSize wxPli_sv_2_wxsize( pTHX_ SV* scalar )
+template<class T>
+inline T wxPli_sv_2_wxthing( pTHX_ SV* scalar, const char* name )
 {
     if( SvROK( scalar ) ) 
     {
         SV* ref = SvRV( scalar );
         
-        if( sv_derived_from( scalar, CHAR_P "Wx::Size" ) ) 
-        {
-            return *INT2PTR( wxSize*, SvIV( ref ) );
-        }
+        if( sv_derived_from( scalar, CHAR_P name ) ) 
+            return *INT2PTR( T*, SvIV( ref ) );
         else if( SvTYPE( ref ) == SVt_PVAV )
         {
             AV* av = (AV*) ref;
             
             if( av_len( av ) != 1 )
-            {
                 croak( "the array reference must have 2 elements" );
-            }
             else
-            {
-                int x = SvIV( *av_fetch( av, 0, 0 ) );
-                int y = SvIV( *av_fetch( av, 1, 0 ) );
-                
-                return wxSize( x, y );
-            }
+                return T( SvIV( *av_fetch( av, 0, 0 ) ),
+                          SvIV( *av_fetch( av, 1, 0 ) ) );
         }
     }
     
-    croak( "variable is not of type Wx::Size" );
-    return wxSize();
+    croak( "variable is not of type %s", name );
+    return T(); // to appease the compilers
 }
+
+wxSize wxPli_sv_2_wxsize( pTHX_ SV* scalar )
+{
+    return wxPli_sv_2_wxthing<wxSize>( aTHX_ scalar, "Wx::Size" );
+}
+
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+wxGBPosition wxPli_sv_2_wxgbposition( pTHX_ SV* scalar )
+{
+    return wxPli_sv_2_wxthing<wxGBPosition>( aTHX_ scalar, "Wx::GBPosition" );
+}
+
+wxGBSpan wxPli_sv_2_wxgbspan( pTHX_ SV* scalar )
+{
+    return wxPli_sv_2_wxthing<wxGBSpan>( aTHX_ scalar, "Wx::GBSpan" );
+}
+
+#endif
 
 wxKeyCode wxPli_sv_2_keycode( pTHX_ SV* sv )
 {

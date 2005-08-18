@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Log.xs,v 1.23 2005/07/10 19:00:37 mbarbon Exp $
+## RCS-ID:      $Id: Log.xs,v 1.26 2005/07/24 17:47:01 mbarbon Exp $
 ## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -83,12 +83,21 @@ wxLog::GetVerbose()
 
 void
 _SetTimestamp( format, buffer )
-    const wxChar* format
+    SV* format
     SV* buffer
   CODE:
-    STRLEN size = wxStrlen( format ) * sizeof(wxChar) + sizeof(wxChar);
-    SvUPGRADE( buffer, SVt_PV );
-    wxLog::SetTimestamp( wxStrcpy( (wxChar*)SvGROW( buffer, size ), format ) );
+    if( SvOK( ST(0) ) ) {
+        const wxString format_tmp = ( SvUTF8( format ) ) ?
+                  ( wxString( SvPVutf8_nolen( format ), wxConvUTF8 ) )
+                : ( wxString( SvPV_nolen( format ), wxConvLibc ) );
+        wxChar* fmt = (wxChar*)format_tmp.c_str();
+        STRLEN size = wxStrlen( fmt ) * sizeof(wxChar) + sizeof(wxChar);
+        SvUPGRADE( buffer, SVt_PV );
+        wxLog::SetTimestamp( wxStrcpy( (wxChar*)SvGROW( buffer, size ),
+                             fmt ) );
+    } else {
+        wxLog::SetTimestamp( NULL );
+    }
 
 const wxChar*
 wxLog::GetTimestamp()
@@ -274,3 +283,9 @@ wxPlLogPassThrough::new()
     RETVAL = new wxPlLogPassThrough( CLASS );
   OUTPUT:
     RETVAL
+
+MODULE=Wx PACKAGE=Wx::LogStderr
+
+wxLogStderr*
+wxLogStderr::new( fp = NULL )
+    FILE* fp;
