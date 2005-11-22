@@ -126,7 +126,9 @@ sub new {
 sub Create {
   my( $self, $parent, $id, $evthandler ) = @_;
 
-  $self->SetControl( Wx::TextCtrl->new( $parent, $id, 'Default value' ) );
+  $self->SetControl( Wx::TextCtrl->new( $parent, $id, 'Default value', [-1,-1], [-1,-1], Wx::wxTE_PROCESS_TAB ) );
+
+  $self->GetControl->PushEventHandler( $evthandler );
 
   Wx::LogMessage( 'Create called' );
 }

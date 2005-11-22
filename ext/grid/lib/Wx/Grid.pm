@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/12/2001
-## RCS-ID:      $Id: Grid.pm,v 1.15.2.1 2005/08/15 16:17:13 mbarbon Exp $
+## RCS-ID:      $Id: Grid.pm,v 1.16 2005/11/01 22:16:04 mbarbon Exp $
 ## Copyright:   (c) 2001-2002, 2004 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -19,6 +19,7 @@ use vars qw($VERSION);
 
 $VERSION = '0.01';
 
+Wx::load_dll( 'adv' );
 Wx::wx_boot( 'Wx::Grid', $VERSION );
 
 #
@@ -42,6 +43,7 @@ package Wx::GridCellBoolRenderer; @ISA = qw(Wx::GridCellRenderer);
 package Wx::PlGridCellRenderer; @ISA = qw(Wx::GridCellRenderer);
 
 package Wx::GridCellEditor;
+package Wx::GridCellEditorEvtHandler; @ISA = qw(Wx::EvtHandler);
 package Wx::GridCellBoolEditor; @ISA = qw(Wx::GridCellEditor);
 package Wx::GridCellTextEditor; @ISA = qw(Wx::GridCellEditor);
 package Wx::GridCellFloatEditor; @ISA = qw(Wx::GridCellEditor);

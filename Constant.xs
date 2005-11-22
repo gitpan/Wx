@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.125 2005/07/24 17:46:58 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.129 2005/10/16 21:03:29 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -54,6 +54,7 @@
 #include <wx/filefn.h>
 #include <wx/dirdlg.h>
 #include <wx/statusbr.h>
+#include <wx/dcbuffer.h>
 
 #include "cpp/wxapi.h"
 #include "cpp/setup.h"
@@ -70,6 +71,26 @@
 #include <wx/splash.h>
 #include <wx/fdrepdlg.h>
 #include <wx/list.h>
+
+#if WXPERL_W_VERSION_GE( 2, 7, 0 ) && !WXWIN_COMPATIBILITY_2_6
+#define wxCHB_DEFAULT         wxBK_DEFAULT
+#define wxCHB_TOP             wxBK_TOP
+#define wxCHB_BOTTOM          wxBK_BOTTOM
+#define wxCHB_LEFT            wxBK_LEFT
+#define wxCHB_RIGHT           wxBK_RIGHT
+#define wxCHB_ALIGN_MASK      wxBK_ALIGN_MASK
+#define wxLB_DEFAULT          wxBK_DEFAULT
+#define wxLB_TOP              wxBK_TOP
+#define wxLB_BOTTOM           wxBK_BOTTOM
+#define wxLB_LEFT             wxBK_LEFT
+#define wxLB_RIGHT            wxBK_RIGHT
+#define wxLB_ALIGN_MASK       wxBK_ALIGN_MASK
+#define wxNB_DEFAULT          wxBK_DEFAULT
+#define wxNB_TOP              wxBK_TOP
+#define wxNB_BOTTOM           wxBK_BOTTOM
+#define wxNB_LEFT             wxBK_LEFT
+#define wxNB_RIGHT            wxBK_RIGHT
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // implementation for wxPlConstantsModule OnInit/OnExit
@@ -127,6 +148,7 @@ static wxPlEVT evts[] =
     SEVT( EVT_WIZARD_CANCEL, 3 )
     SEVT( EVT_WIZARD_HELP, 3 )
     SEVT( EVT_CHILD_FOCUS, 2 )
+    EVT( EVT_MENU_HIGHLIGHT_ALL, 2, wxEVT_MENU_HIGHLIGHT )
     { 0, 0, 0 }
 };
 
@@ -278,7 +300,11 @@ static wxPlINH inherit[] =
     I( ScrollBar,       Control )
     I( StatusBarGeneric,Window )
     I( GenericScrolledWindow, Panel )
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+    I( GenericTreeCtrl, Control )
+#else
     I( GenericTreeCtrl, ScrolledWindow )
+#endif
     I( MiniFrame,       Frame )
     I( SplitterWindow,  Window )
     I( SplashScreen,    Frame )
@@ -310,8 +336,6 @@ static wxPlINH inherit[] =
     I( MultiChoiceDialog, Dialog )
 
     I( Validator,       EvtHandler )
-    I( TextValidator,   Validator )
-    I( GenericValidator, Validator )
     I( PlValidator,     Validator )
 
     I( Font,            GDIObject )
@@ -323,6 +347,8 @@ static wxPlINH inherit[] =
 
     I( WindowDC,        DC )
     I( ClientDC,        WindowDC )
+    I( BufferedDC,      MemoryDC )
+    I( BufferedPaintDC, BufferedDC )
 
     I( BMPHandler,      ImageHandler )
     I( PNGHandler,      ImageHandler )
@@ -359,6 +385,7 @@ static wxPlINH inherit[] =
     I( BookCtrlSizer,   Sizer )
     I( PlSizer,         Sizer )
     I( GBSizerItem,     SizerItem )
+    I( StdDialogButtonSizer, BoxSizer )
 
     I( TaskBarIcon,     EvtHandler )
     I( Process,         EvtHandler )
@@ -602,10 +629,19 @@ static double constant( const char *name, int arg )
     r( wxBottom );                      // layout constraints 
     r( wxBelow );                       // layout constraints
 
+    r( wxBUFFER_VIRTUAL_AREA );         // dc
+    r( wxBUFFER_CLIENT_AREA );          // dc
 #if WXPERL_W_VERSION_GE( 2, 5, 3 )
     r( wxBG_STYLE_SYSTEM );             // window
     r( wxBG_STYLE_COLOUR );             // window
     r( wxBG_STYLE_CUSTOM );             // window
+#endif
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+    r( wxBK_DEFAULT );                  // bookctrl
+    r( wxBK_TOP );                      // bookctrl
+    r( wxBK_BOTTOM );                   // bookctrl
+    r( wxBK_LEFT );                     // bookctrl
+    r( wxBK_RIGHT );                    // bookctrl
 #endif
     break;
   case 'C':
@@ -925,6 +961,7 @@ static double constant( const char *name, int arg )
     r( wxFRAME_NO_TASKBAR );            // frame
     r( wxFRAME_TOOL_WINDOW );           // frame
     r( wxFRAME_EX_CONTEXTHELP );        // frame
+    r( wxFRAME_EX_METAL );              // frame
 #if WXPERL_W_VERSION_GE( 2, 4, 1 )
     r( wxFRAME_SHAPED );                // frame
 #endif
@@ -1621,6 +1658,9 @@ static double constant( const char *name, int arg )
     r( wxSIZE_AUTO );                   // window
     r( wxSIZE_USE_EXISTING );           // window
     r( wxSIZE_ALLOW_MINUS_ONE );        // window
+#if WXPERL_W_VERSION_GE( 2, 6, 2 )
+    r( wxSIZE_FORCE );                  // window
+#endif
 
     r( wxSIGNONE );                     // process
     r( wxSIGHUP );                      // process
@@ -1786,6 +1826,7 @@ static double constant( const char *name, int arg )
     r( wxTE_PROCESS_TAB );              // textctrl
     r( wxTE_MULTILINE );                // textctrl
     r( wxTE_NOHIDESEL );                // textctrl
+    r( wxTE_NO_VSCROLL );               // textctrl
     r( wxTE_PASSWORD );                 // textctrl
     r( wxTE_READONLY );                 // textctrl
     r( wxTE_RICH );                     // textctrl
@@ -1858,6 +1899,8 @@ static double constant( const char *name, int arg )
     r( wxWS_EX_VALIDATE_RECURSIVELY );  // window
     r( wxWS_EX_BLOCK_EVENTS );          // window
     r( wxWS_EX_TRANSIENT );             // window
+    r( wxWS_EX_PROCESS_IDLE );          // window
+    r( wxWS_EX_PROCESS_UI_UPDATES );    // window
     break;
   case 'X':
     r( wxXOR );                         // dc

@@ -65,6 +65,9 @@ wxDialog::EndModal( retCode )
 int
 wxDialog::GetReturnCode()
 
+wxString
+wxDialog::GetTitle()
+
 void
 wxDialog::Iconize( iconize )
     bool iconize
@@ -102,6 +105,10 @@ wxDialog::SetIcons( icons )
 void
 wxDialog::SetReturnCode( retCode )
     int retCode
+
+void
+wxDialog::SetTitle( title )
+    wxString title
 
 int
 wxDialog::ShowModal()

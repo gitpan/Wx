@@ -188,6 +188,10 @@ double stc_constant( const char* name, int arg )
         r( wxSTC_CMD_PAGEUPEXTEND );
         r( wxSTC_CMD_PAGEDOWN );
         r( wxSTC_CMD_PAGEDOWNEXTEND );
+        r( wxSTC_CMD_PARADOWN );
+        r( wxSTC_CMD_PARADOWNEXTEND );
+        r( wxSTC_CMD_PARAUP );
+        r( wxSTC_CMD_PARAUPEXTEND );
         r( wxSTC_CMD_EDITTOGGLEOVERTYPE );
         r( wxSTC_CMD_CANCEL );
         r( wxSTC_CMD_DELETEBACK );

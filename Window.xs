@@ -523,8 +523,20 @@ wxWindow::GetTextExtent( string, font = 0 )
     PUSHs( sv_2mortal( newSViv( descent ) ) );
     PUSHs( sv_2mortal( newSViv( externalLeading ) ) );
 
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+
 wxString
 wxWindow::GetTitle()
+  CODE:
+    RETVAL = THIS->GetLabel();
+  OUTPUT: RETVAL
+
+#else
+
+wxString
+wxWindow::GetTitle()
+
+#endif
 
 #if wxPERL_USE_TOOLTIPS
 
@@ -986,9 +998,21 @@ wxWindow::SetSizerAndFit( sizer, deleteOld = true )
     wxSizer* sizer
     bool deleteOld
 
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+
 void
 wxWindow::SetTitle( title )
     wxString title
+  CODE:
+    THIS->SetLabel( title );
+
+#else
+
+void
+wxWindow::SetTitle( title )
+    wxString title
+
+#endif
 
 #if wxPERL_USE_TOOLTIPS
 

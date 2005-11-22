@@ -45,6 +45,7 @@ double html_constant( const char* name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
         r( wxHW_NO_SELECTION );
 #endif
+        r( wxHW_SCROLLBAR_NEVER );
 
         r( wxHTML_ALIGN_LEFT );
         r( wxHTML_ALIGN_CENTER );

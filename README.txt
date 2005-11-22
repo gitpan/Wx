@@ -1,5 +1,4 @@
-wxPerl is a wrapper built around the wxWidgets
-(formerly known as wxWindows) GUI toolkit
+wxPerl is a wrapper for the wxWidgets (formerly known as wxWindows) GUI toolkit
 
 Copyright (c) 2000-2005 Mattia Barbon.
 This package is free software; you can redistribute it and/or
@@ -58,19 +57,23 @@ The following features have been deprecated and may disappear in the future
     At some point in the future this will be changed so that only
     _user-defined_ classes derived from Wx::Window
     (or from any class derived from Wx::Window)
-    will yield an hash reference, hence the following code will not work:
+    will yield an hash reference, hence the following code will not
+    work anymore:
 
     my $button = Wx::Button->new( ... );
-    my $window = Wx::Window->new( ... );
-    $button->{a} = 'b';
-    $window->{c} = 'd';
+    $button->{attribute} = 'value';
 
     while the following code will work as it did before:
 
-    my $button = MyButton->new( ... ); # MyButton ISA Wx::Button
-    my $window = MyWindow->new( ... ); # MyWindow ISA Wx::Window
-    $button->{a} = 'b';
-    $window->{c} = 'd';
+    package MyButton;
+    use base qw(Wx::Button);
+
+    sub new {
+        my $class = shift;
+        my $self = $class->SUPER::new;	# always returns hash
+        $self->{attribure} = 'value;
+	return $self;
+    }
 
 2 - Use of $Wx::_foo
 

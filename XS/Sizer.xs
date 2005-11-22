@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      $Id: Sizer.xs,v 1.39.2.1 2005/08/16 20:55:13 mbarbon Exp $
+## RCS-ID:      $Id: Sizer.xs,v 1.40 2005/10/16 21:03:41 mbarbon Exp $
 ## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,6 +21,8 @@
 %typemap{wxFlexSizerGrowMode}{simple};
 %typemap{wxSizerItem*}{simple};
 %typemap{Wx_UserDataO*}{simple};
+%typemap{wxStdDialogButtonSizer*}{simple};
+%typemap{wxButton*}{simple};
 
 %name{Wx::Sizer} class wxSizer
 {
@@ -96,13 +98,11 @@
                                     Wx_UserDataO* data = NULL );
 #endif
 
-#if WXPERL_W_VERSION_GE( 2, 6, 0 )
     %name{GetItemWindow} wxSizerItem* GetItem( wxWindow* window,
                                                bool recursive = false );
     %name{GetItemSizer} wxSizerItem* GetItem( wxSizer* sizer,
                                               bool recursive = false );
     %name{GetItemNth} wxSizerItem* GetItem( size_t index );
-#endif
 
     void RecalcSizes();
     void Clear( bool deleteWindows = true );
@@ -198,6 +198,29 @@
 #endif
 };
 
+#if WXPERL_W_VERSION_GE( 2, 6, 1 )
+
+%name{Wx::StdDialogButtonSizer} class wxStdDialogButtonSizer
+{
+    wxStdDialogButtonSizer();
+
+    void AddButton( wxButton* button );
+
+    void SetAffirmativeButton( wxButton* button );
+    void SetNegativeButton( wxButton* button );
+    void SetCancelButton( wxButton* button );
+
+    void Realize();
+
+    wxButton *GetAffirmativeButton() const;
+    wxButton *GetApplyButton() const;
+    wxButton *GetNegativeButton() const;
+    wxButton *GetCancelButton() const;
+    wxButton *GetHelpButton() const;
+};
+
+#endif
+
 %{
 MODULE=Wx PACKAGE=Wx::Sizer
 
@@ -277,8 +300,6 @@ wxSizer::Detach( ... )
         MATCH_REDISP( wxPliOvl_n, DetachNth )
     END_OVERLOAD( Wx::Sizer::Detach )
 
-#if WXPERL_W_VERSION_GE( 2, 6, 0 )
-
 void
 wxSizer::GetItem( ... )
   PPCODE:
@@ -287,8 +308,6 @@ wxSizer::GetItem( ... )
         MATCH_REDISP( wxPliOvl_wszr_s, GetItemSizer )
         MATCH_REDISP( wxPliOvl_n, GetItemNth )
     END_OVERLOAD( Wx::Sizer::GetItem )
-
-#endif
 
 void
 wxSizer::SetItemMinSize( ... )

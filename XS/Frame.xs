@@ -109,6 +109,9 @@ wxFrame::GetStatusBar()
 int
 wxFrame::GetStatusBarPane()
 
+wxString
+wxFrame::GetTitle()
+
 wxToolBar*
 wxFrame::GetToolBar()
 
@@ -181,6 +184,10 @@ wxFrame::SetShape( region )
 void
 wxFrame::SetStatusBar( statusBar )
     wxStatusBar* statusBar
+
+void
+wxFrame::SetTitle( title )
+    wxString title
 
 void
 wxFrame::SetToolBar( toolbar )
