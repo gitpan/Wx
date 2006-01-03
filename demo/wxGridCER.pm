@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     05/06/2003
-## RCS-ID:      $Id: wxGridCER.pm,v 1.3 2005/02/26 11:31:02 mbarbon Exp $
+## RCS-ID:      $Id: wxGridCER.pm,v 1.4 2005/11/22 22:47:39 mbarbon Exp $
 ## Copyright:   (c) 2003, 2005 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
