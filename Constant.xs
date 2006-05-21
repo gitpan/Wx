@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.134 2006/04/16 15:11:07 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.137 2006/05/07 16:37:51 mbarbon Exp $
 // Copyright:   (c) 2000-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -738,7 +738,12 @@ static double constant( const char *name, int arg )
     r( wxDEFAULT );                     // font
     r( wxDEFAULT_DIALOG_STYLE );        // dialog
     r( wxDEFAULT_FRAME_STYLE );         // frame
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxDIALOG_MODAL );                // dialog
+#endif
+#if WXPERL_W_VERSION_GE( 2, 6, 2 )
+    r( wxDIALOG_EX_METAL );             // dialog
+#endif
     r( wxDOUBLE_BORDER );               // window
     r( wxDIALOG_NO_PARENT );            // dialog
     r( wxDIALOG_EX_CONTEXTHELP );       // dialog
@@ -1038,7 +1043,9 @@ static double constant( const char *name, int arg )
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
     r( wxGA_VERTICAL );                 // gauge
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxGA_PROGRESSBAR );              // gauge
+#endif
     r( wxGA_SMOOTH );                   // gauge
     r( wxGROW );                        // sizer
     break;
@@ -1202,8 +1209,10 @@ static double constant( const char *name, int arg )
         r( WXK_MENU );                  // keycode
         r( WXK_PAUSE );                 // keycode
         r( WXK_CAPITAL );               // keycode
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
         r( WXK_PRIOR );                 // keycode
         r( WXK_NEXT );                  // keycode
+#endif
         r( WXK_END );                   // keycode
         r( WXK_HOME );                  // keycode
         r( WXK_LEFT );                  // keycode
@@ -1567,9 +1576,15 @@ static double constant( const char *name, int arg )
     r( wxNB_RIGHT );                    // notebook
     r( wxNB_BOTTOM );                   // notebook
     r( wxNB_MULTILINE );                // notebook
+    r( wxNB_HITTEST_NOWHERE );          // notebook
+    r( wxNB_HITTEST_ONICON );           // notebook
+    r( wxNB_HITTEST_ONLABEL );          // notebook
+    r( wxNB_HITTEST_ONITEM );           // notebook
     r( wxNO );                          // dialog
     r( wxNO_BORDER );                   // frame toolbar
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxNO_3D );                       // dialog window
+#endif
     r( wxNO_FULL_REPAINT_ON_RESIZE );   // window
     r( wxNORMAL );                      // font
     r( wxNOT_FOUND );             
@@ -1592,7 +1607,9 @@ static double constant( const char *name, int arg )
     r( wxOutRegion );                   // region
     break;
   case 'P':
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxPROCESS_ENTER );
+#endif
 
     r( wxPD_APP_MODAL );                // progressdialog
     r( wxPD_AUTO_HIDE );                // progressdialog
@@ -1699,7 +1716,9 @@ static double constant( const char *name, int arg )
     r( wxSP_3D );                       // splitterwindow
     r( wxSP_3DSASH );                   // splitterwindow
     r( wxSP_3DBORDER );                 // splitterwindow
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxSP_FULLSASH );                 // splitterwindow
+#endif
     r( wxSP_BORDER );                   // splitterwindow
     r( wxSP_NOBORDER );                 // splitterwindow
     r( wxSP_PERMIT_UNSPLIT );           // splitterwindow
@@ -1861,7 +1880,9 @@ static double constant( const char *name, int arg )
     r( wxTE_HT_BELOW );                 // textctrl
     r( wxTE_HT_BEYOND );                // textctrl
 #endif
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxTHICK_FRAME );                 // frame dialog
+#endif
     r( wxTINY_CAPTION_HORIZ );          // miniframe
     r( wxTINY_CAPTION_VERT );           // miniframe
     r( wxTIMER_CONTINUOUS );            // timer

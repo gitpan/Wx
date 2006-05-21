@@ -28,8 +28,12 @@ wxDirDialog::GetPath()
 wxString
 wxDirDialog::GetMessage()
 
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
+
 long
 wxDirDialog::GetStyle()
+
+#endif
 
 void
 wxDirDialog::SetMessage( message )
@@ -39,9 +43,13 @@ void
 wxDirDialog::SetPath( path )
     wxString path
 
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
+
 void
 wxDirDialog::SetStyle( style )
     long style
+
+#endif
 
 int
 wxDirDialog::ShowModal()

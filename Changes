@@ -1,5 +1,10 @@
 Revision history for Perl extension Wx.
 
+0.49_06  Sun May 21 22:34:21 CEST 2006
+	- Compatibility with wxWidgets CVS HEAD.
+	- Added various missing functions for wxWidgets 2.6.x
+	  and 2.7.x.
+
 0.49_05  Mon May  1 18:27:14 CEST 2006
 	- When Alien::wxWidgets is missing try to retrigger
 	  rebuilding of the Makefile using a dummy dependency.
