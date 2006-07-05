@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     01/10/2000
-// RCS-ID:      $Id: Wx.xs,v 1.75 2006/06/18 15:42:46 mbarbon Exp $
+// RCS-ID:      $Id: Wx.xs,v 1.78 2006/06/27 20:59:00 mbarbon Exp $
 // Copyright:   (c) 2000-2002, 2004-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -229,11 +229,11 @@ BOOT:
   SV* tmp = get_sv( "Wx::_exports", 1 );
   sv_setiv( tmp, (IV)(void*)&st_wxPliHelpers );
 
-void 
+bool 
 Load()
   CODE:
     wxPerlAppCreated = wxTheApp != NULL;
-    if( wxPerlInitialized ) { XSRETURN_EMPTY; }
+    if( wxPerlInitialized ) { XSRETURN( true ); }
     wxPerlInitialized = true;
 
     NV ver = wxMAJOR_VERSION + wxMINOR_VERSION / 1000.0 + 
@@ -271,7 +271,7 @@ Load()
     wxChar** argv = 0;
 
     argc = wxPli_get_args_argc_argv( (void***) &argv, 1 );
-    wxEntryStart( argc, argv );
+    wxPerlInitialized = wxEntryStart( argc, argv );
 #if WXPERL_W_VERSION_LE( 2, 5, 2 )
     wxPli_delete_argv( (void***) &argv, 1 );
 #endif
@@ -279,11 +279,13 @@ Load()
     char** argv = 0;
 
     argc = wxPli_get_args_argc_argv( (void***) &argv, 0 );
-    wxEntryStart( argc, argv );
+    wxPerlInitialized = wxEntryStart( argc, argv );
 #if WXPERL_W_VERSION_LE( 2, 5, 2 )
     wxPli_delete_argv( (void***) &argv, 0 );
 #endif
 #endif
+    RETVAL = wxPerlInitialized;
+  OUTPUT: RETVAL
 
 void
 SetConstants()
@@ -398,6 +400,8 @@ INCLUDE: XS/Wave.xs
 INCLUDE: perl ./script/xsubppp.pl --typemap=typemap.xsp XS/ArtProvider.xsp |
 
 INCLUDE: perl ./script/xsubppp.pl --typemap=typemap.xsp XS/MimeTypes.xsp |
+
+INCLUDE: perl ./script/xsubppp.pl --typemap=typemap.xsp XS/Sound.xsp |
 
 # this is here for debugging purpouses
 INCLUDE: XS/ClassInfo.xs
