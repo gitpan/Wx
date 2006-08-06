@@ -6,7 +6,7 @@
 use strict;
 use Wx;
 use lib './t';
-use Test::More 'tests' => 171;
+use Test::More 'tests' => 172;
 use Tests_Helper qw(test_app);
 
 my $nolog = Wx::LogNull->new;
@@ -239,15 +239,32 @@ SKIP: {
 # Wx::Icon
 ##############################################################################
 {
-my( $newnull, $newfile ) = ( 0, 0 );
+my( $newnull, $newfile, $newiconloc ) = ( 0, 0, 0 );
 hijack( 'Wx::Icon::newNull' => sub { $newnull = 1 },
-        'Wx::Icon::newFile' => sub { $newfile = 1 } );
+        'Wx::Icon::newFile' => sub { $newfile = 1 },
+        ( Wx::wxVERSION() >= 2.005002
+          ? ( 'Wx::Icon::newLocation' => sub { $newiconloc = 1 } )
+          : () ),
+        );
 
 Wx::Icon->new();
 ok( $newnull, "Wx::Icon::newNull" );
 
 Wx::Icon->new( 'demo/data/logo.jpg', Wx::wxBITMAP_TYPE_JPEG() );
 ok( $newfile, "Wx::Icon::newFile" );
+
+SKIP: {
+  skip "Only for wxWidgets 2.5.2+", 1 unless Wx::wxVERSION >= 2.005002;
+
+  my $mtm = Wx::MimeTypesManager->new;
+  my $filet = $mtm->GetFileTypeFromExtension( 'jpg' );
+
+  skip "No jpg file type", 1 unless $filet;
+  my $location = $filet->GetIcon;
+  skip "No icon for jpg file type", 1 unless $location;
+  my $icon = Wx::Icon->new( $location );
+  ok( $newiconloc, "Wx::Icon::newLocation" );
+}
 }
 
 ##############################################################################
@@ -631,7 +648,7 @@ ok( $replico, "Wx::ImageList::ReplaceIcon" );
 my( $appmen, $appstr, $appite, $delite, $delid, $desite, $desid,
     $remite, $remid, $prepite, $prepstr, $insite, $insstr )
   = ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 );
-hijack( 'Wx::Menu::AppendSubMenu' => sub { $appmen = 1 },
+hijack( 'Wx::Menu::AppendSubMenu_'=> sub { $appmen = 1 },
         'Wx::Menu::AppendString'  => sub { $appstr = 1 },
         'Wx::Menu::AppendItem'    => sub { $appite = 1 },
         'Wx::Menu::DeleteItem'    => sub { $delite = 1 },
@@ -657,7 +674,7 @@ $me->Append( 11, 'My' );
 ok( $appstr, "Wx::Menu::AppendString" );
 
 $me->Append( 12, 'Sub', $me2 );
-ok( $appmen, "Wx::Menu::AppendSubMenu" );
+ok( $appmen, "Wx::Menu::AppendSubMenu_" );
 
 $me->Append( $i1 );
 ok( $appite, "Wx::Menu::AppendItem" );
