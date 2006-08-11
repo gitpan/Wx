@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Frames.xs,v 1.21 2005/03/19 17:51:16 mbarbon Exp $
-// Copyright:   (c) 2000-2003, 2005 Mattia Barbon
+// RCS-ID:      $Id: Frames.xs,v 1.23 2006/08/11 19:54:58 mbarbon Exp $
+// Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,6 @@
 #define PERL_NO_GET_CONTEXT
 
 #include "cpp/wxapi.h"
-#include "cpp/typedef.h"
 #include "cpp/v_cback.h"
 
 #undef THIS

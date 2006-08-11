@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Log.xs,v 1.26 2005/07/24 17:47:01 mbarbon Exp $
-## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
+## RCS-ID:      $Id: Log.xs,v 1.28 2006/08/11 19:55:00 mbarbon Exp $
+## Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -135,6 +135,7 @@ MODULE=Wx PACKAGE=Wx::LogNull
 wxLogNull*
 wxLogNull::new()
 
+## // thread KO
 void
 wxLogNull::DESTROY()
 

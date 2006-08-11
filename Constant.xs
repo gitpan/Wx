@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.151 2006/07/31 19:31:14 mbarbon Exp $
-// Copyright:   (c) 2000-2005 Mattia Barbon
+// RCS-ID:      $Id: Constant.xs,v 1.153 2006/08/11 19:38:44 mbarbon Exp $
+// Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -1952,6 +1952,7 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxTB_NO_TOOLTIPS );              // toolbar
 #endif
+    r( wxTELETYPE );                    // font
     r( wxTE_PROCESS_ENTER );            // textctrl
     r( wxTE_PROCESS_TAB );              // textctrl
     r( wxTE_MULTILINE );                // textctrl
@@ -2225,6 +2226,7 @@ void SetConstantsOnce()
     int xstatic;
     int unicode;
     int debugging;
+    int threads;
 
 #if defined(__WXUNIVERSAL__)
     universal = 1;
@@ -2250,6 +2252,12 @@ void SetConstantsOnce()
     debugging = 0;
 #endif
 
+#if wxPERL_USE_THREADS
+    threads = 1;
+#else
+    threads = 0;
+#endif
+
     tmp = get_sv( "Wx::_universal", 1 );
     sv_setiv( tmp, universal );
 
@@ -2264,10 +2272,14 @@ void SetConstantsOnce()
     tmp = get_sv( "Wx::wxDEBUG", 1 );
     sv_setiv( tmp, debugging );
 
+    tmp = get_sv( "Wx::wxTHREADS", 1 );
+    sv_setiv( tmp, threads );
+
     // constant functions
     wxPli_make_const( "wxUNICODE" /* don't export */ );
     wxPli_make_const( "wxVERSION" /* don't export */ );
     wxPli_make_const( "wxDEBUG" /* don't export */ );
+    wxPli_make_const( "wxTHREADS" /* don't export */ );
 }
 
 // !parser:

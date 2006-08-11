@@ -4,15 +4,15 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     13/12/2001
-## RCS-ID:      $Id: GridCellEditor.xs,v 1.9 2005/07/30 10:23:54 mbarbon Exp $
-## Copyright:   (c) 2001-2004 Mattia Barbon
+## RCS-ID:      $Id: GridCellEditor.xs,v 1.11 2006/08/11 19:54:59 mbarbon Exp $
+## Copyright:   (c) 2001-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 MODULE=Wx PACKAGE=Wx::GridCellEditor
 
-## XXX threads
+## // thread KO
 void
 wxGridCellEditor::DESTROY()
   CODE:

@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: GDI.xs,v 1.20 2005/10/16 21:03:40 mbarbon Exp $
-// Copyright:   (c) 2000-2003 Mattia Barbon
+// RCS-ID:      $Id: GDI.xs,v 1.22 2006/08/11 19:54:58 mbarbon Exp $
+// Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -14,7 +14,6 @@
 #define PERL_NO_GET_CONTEXT
 
 #include "cpp/wxapi.h"
-#include "cpp/typedef.h"
 
 #undef THIS
 

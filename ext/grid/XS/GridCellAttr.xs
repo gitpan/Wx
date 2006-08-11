@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     05/12/2001
-## RCS-ID:      $Id: GridCellAttr.xs,v 1.8 2004/12/21 21:12:52 mbarbon Exp $
-## Copyright:   (c) 2001-2002, 2004 Mattia Barbon
+## RCS-ID:      $Id: GridCellAttr.xs,v 1.10 2006/08/11 19:54:59 mbarbon Exp $
+## Copyright:   (c) 2001-2002, 2004, 2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -15,7 +15,7 @@ MODULE=Wx PACKAGE=Wx::GridCellAttr
 wxGridCellAttr*
 wxGridCellAttr::new()
 
-## XXX threads
+## // thread KO
 void
 wxGridCellAttr::DESTROY()
   CODE:

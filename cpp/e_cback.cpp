@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: e_cback.cpp,v 1.14 2005/07/10 18:59:55 mbarbon Exp $
-// Copyright:   (c) 2000-2002, 2004 Mattia Barbon
+// RCS-ID:      $Id: e_cback.cpp,v 1.16 2006/08/11 19:54:58 mbarbon Exp $
+// Copyright:   (c) 2000-2002, 2004-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,8 @@ public:
         {
             dTHX;
 
+            wxPli_thread_sv_unregister( aTHX_ wxPli_get_class( aTHX_ m_sv ),
+                                        (void*)SvIV( m_sv ), m_sv );
             sv_setiv( m_sv, 0 );
         }
     }
@@ -92,6 +94,7 @@ void wxPliEventCallback::Handler( wxEvent& event )
         SvREFCNT_inc( rv );
         sv_2mortal( rv );
         guard.SetSV( rv );
+        wxPli_thread_sv_register( aTHX_ CLASS, &event, e );
     }
 
     PUSHMARK( SP );
