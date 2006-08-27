@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      $Id: Sizer.xs,v 1.48 2006/08/11 19:55:00 mbarbon Exp $
+## RCS-ID:      $Id: Sizer.xs,v 1.50 2006/08/27 15:26:18 mbarbon Exp $
 ## Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -215,6 +215,7 @@
     %name{SetMinSizeWH} void SetMinSize( int x, int y );
     %name{SetMinSizeSize} void SetMinSize( wxSize size );
 #endif
+    void DeleteWindows();
 };
 
 #if WXPERL_W_VERSION_GE( 2, 6, 1 )
@@ -321,18 +322,28 @@ wxSizer::Detach( ... )
         MATCH_REDISP( wxPliOvl_n, DetachNth )
     END_OVERLOAD( Wx::Sizer::Detach )
 
-#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+#if WXPERL_W_VERSION_LE( 2, 5, 3 )
+
+wxSizerItem*
+wxSizer::GetItemNth( index )
+    size_t index
+  CODE:
+    RETVAL = index >= THIS->GetChildren().GetCount() ? NULL :
+                 THIS->GetChildren().Item( index )->GetData();
+  OUTPUT: RETVAL    
+
+#endif
 
 void
 wxSizer::GetItem( ... )
   PPCODE:
     BEGIN_OVERLOAD()
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
         MATCH_REDISP( wxPliOvl_wwin_s, GetItemWindow )
         MATCH_REDISP( wxPliOvl_wszr_s, GetItemSizer )
+#endif
         MATCH_REDISP( wxPliOvl_n, GetItemNth )
     END_OVERLOAD( Wx::Sizer::GetItem )
-
-#endif
 
 void
 wxSizer::SetItemMinSize( ... )

@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     30/03/2001
-// RCS-ID:      $Id: streams.cpp,v 1.12 2004/12/21 20:59:21 mbarbon Exp $
-// Copyright:   (c) 2001-2002, 2004 Mattia Barbon
+// RCS-ID:      $Id: streams.cpp,v 1.14 2006/08/27 15:26:18 mbarbon Exp $
+// Copyright:   (c) 2001-2002, 2004, 2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -16,15 +16,18 @@ typedef wxFileOffset wxPliFileOffset;
 typedef off_t wxPliFileOffset;
 #endif
 
+// thread KO
 const char sub_read[] = "sub { sysread $_[0], $_[1], $_[2] }";
 const char sub_seek[] = "sub { sysseek $_[0], $_[1], $_[2] }";
 const char sub_tell[] = "sub { sysseek $_[0], 0, 1 }";
 const char sub_write[] = "sub { syswrite $_[0], $_[1] }";
+const char sub_length[] = "sub { ( stat $_[0] )[7] }";
 
 SV* sg_read;
 SV* sg_seek;
 SV* sg_tell;
 SV* sg_write;
+SV* sg_length;
 
 class wxPliStreamInitializer
 {
@@ -36,10 +39,12 @@ public:
         sg_seek = eval_pv( CHAR_P sub_seek, 1 );
         sg_tell = eval_pv( CHAR_P sub_tell, 1 );
         sg_write = eval_pv( CHAR_P sub_write, 1 );
+        sg_length = eval_pv( CHAR_P sub_length, 1 );
         SvREFCNT_inc( sg_read );
         SvREFCNT_inc( sg_seek );
         SvREFCNT_inc( sg_tell );
         SvREFCNT_inc( sg_write );
+        SvREFCNT_inc( sg_length );
     }
 
     ~wxPliStreamInitializer()
@@ -57,6 +62,7 @@ wxPliStreamInitializer dummy;
 
 wxPliFileOffset stream_seek( wxStreamBase* stream, SV* fh, wxPliFileOffset seek, wxSeekMode mode );
 wxPliFileOffset stream_tell( const wxStreamBase* stream, SV* fh );
+wxPliFileOffset stream_length( const wxStreamBase* stream, SV* fh );
 
 // input stream
 
@@ -112,7 +118,7 @@ size_t wxPliInputStream::OnSysRead( void* buffer, size_t size )
     PUSHMARK( SP );
     XPUSHs( m_fh );
     XPUSHs( target );
-    XPUSHs( sv_2mortal( newSViv( size ) ) );
+    XPUSHs( sv_2mortal( newSVuv( size ) ) );
     PUTBACK;
 
     call_sv( sg_read, G_SCALAR );
@@ -152,6 +158,20 @@ wxPliFileOffset wxPliInputStream::OnSysTell() const
 {
     return stream_tell( this, m_fh );
 }
+
+wxFileOffset wxPliInputStream::GetLength() const
+{
+    return stream_length( this, m_fh );
+}
+
+#if !WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+size_t wxPliInputStream::GetSize() const
+{
+    return stream_length( this, m_fh );
+}
+
+#endif
 
 // output stream
 
@@ -200,10 +220,11 @@ size_t wxPliOutputStream::OnSysWrite( const void* buffer, size_t size )
     SAVETMPS;
 
     SV* target = sv_2mortal( newSVpvn( CHAR_P ( const char*)buffer, size ) );
+
     PUSHMARK( SP );
     XPUSHs( m_fh );
     XPUSHs( target );
-    XPUSHs( sv_2mortal( newSViv( size ) ) );
+    XPUSHs( sv_2mortal( newSVuv( size ) ) );
     PUTBACK;
 
     call_sv( sg_write, G_SCALAR );
@@ -241,6 +262,20 @@ wxPliFileOffset wxPliOutputStream::OnSysTell() const
 {
     return stream_tell( this, m_fh );
 }
+
+wxFileOffset wxPliOutputStream::GetLength() const
+{
+    return stream_length( this, m_fh );
+}
+
+#if !WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+size_t wxPliOutputStream::GetSize() const
+{
+    return stream_length( this, m_fh );
+}
+
+#endif
 
 // helpers
 
@@ -300,6 +335,30 @@ wxPliFileOffset stream_tell( const wxStreamBase* stream, SV* fh )
     PUTBACK;
 
     call_sv( sg_tell, G_SCALAR );
+
+    SPAGAIN;
+    IV ret = POPi;
+    PUTBACK;
+
+    FREETMPS;
+    LEAVE;
+
+    return ret;
+}
+
+wxPliFileOffset stream_length( const wxStreamBase* stream, SV* fh )
+{
+    dTHX;
+    dSP;
+
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK( SP );
+    XPUSHs( fh );
+    PUTBACK;
+
+    call_sv( sg_length, G_SCALAR );
 
     SPAGAIN;
     IV ret = POPi;
