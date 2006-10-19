@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     31/10/2000
-## RCS-ID:      $Id: Sizer.xs,v 1.50 2006/08/27 15:26:18 mbarbon Exp $
+## RCS-ID:      $Id: Sizer.xs,v 1.53 2006/09/24 15:04:24 mbarbon Exp $
 ## Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -127,6 +127,11 @@
     %name{DetachNth} bool Detach( int nth );
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+    wxWindow* GetContainingWindow();
+    void SetContainingWindow( wxWindow* window );
+#endif
+
     void SetDimension( int x, int y, int width, int height );
 
     %name{SetItemMinSizeWindow}
@@ -219,6 +224,8 @@
 };
 
 #if WXPERL_W_VERSION_GE( 2, 6, 1 )
+
+#include <wx/button.h>
 
 %name{Wx::StdDialogButtonSizer} class wxStdDialogButtonSizer
 {

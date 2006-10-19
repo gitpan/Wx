@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: App.xs,v 1.32 2006/08/11 19:55:00 mbarbon Exp $
+## RCS-ID:      $Id: App.xs,v 1.34 2006/09/24 15:04:24 mbarbon Exp $
 ## Copyright:   (c) 2000-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -213,5 +213,12 @@ wxApp::SendIdleEvents( window, event )
 
 bool
 wxApp::IsActive()
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+
+wxLayoutDirection
+wxApp::GetLayoutDirection()
 
 #endif

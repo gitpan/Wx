@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     09/02/2001
-## RCS-ID:      $Id: Utils.xs,v 1.43 2006/08/11 19:55:00 mbarbon Exp $
+## RCS-ID:      $Id: Utils.xs,v 1.46 2006/09/24 17:15:58 mbarbon Exp $
 ## Copyright:   (c) 2001-2003, 2005-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -18,6 +18,16 @@
 #include <wx/utils.h>
 #include <wx/debug.h>
 #include <wx/tipdlg.h>
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+#ifdef __WXGTK20__
+#define __WXGTK20__DEFINED
+#undef __WXGTK20__
+#endif
+#include <wx/stockitem.h>
+#ifdef __WXGTK20__DEFINED
+#define __WXGTK20__
+#endif
+#endif
 #include "cpp/tipprovider.h"
 
 MODULE=Wx PACKAGE=Wx::CaretSuspend
@@ -49,7 +59,7 @@ MODULE=Wx PACKAGE=Wx::SplashScreen
 #endif
 
 wxSplashScreen*
-wxSplashScreen::new( bitmap, splashStyle, milliseconds, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSIMPLE_BORDER|wxFRAME_NO_TASKBAR|wxSTAY_ON_TOP )
+wxSplashScreen::new( bitmap, splashStyle, milliseconds, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSIMPLE_BORDER|wxFRAME_NO_TASKBAR|wxSTAY_ON_TOP )
     wxBitmap* bitmap
     long splashStyle
     int milliseconds
@@ -254,6 +264,50 @@ IsMain()
 #endif
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
+
+#if WXPERL_W_VERSION_GE( 2, 5, 3 )
+
+bool
+wxIsStockID( wxWindowID id )
+
+bool
+wxIsStockLabel( wxWindowID id, wxString label )
+
+#if WXPERL_W_VERSION_GE( 2, 6, 3 )
+
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+
+wxString
+wxGetStockLabel( wxWindowID id, long flags = wxSTOCK_WITH_MNEMONIC )
+
+#else
+
+wxString
+wxGetStockLabel( wxWindowID id, bool withCodes = true, wxString accelerator = wxEmptyString )
+
+#endif
+
+#else
+
+wxString
+wxGetStockLabel( wxWindowID id )
+
+#endif
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+
+wxAcceleratorEntry*
+wxGetStockAccelerator( wxWindowID id )
+  CODE:
+    RETVAL = new wxAcceleratorEntry( wxGetStockAccelerator( id ) );
+  OUTPUT: RETVAL
+
+wxString
+wxGetStockHelpString( wxWindowID id, wxStockHelpStringClient client = wxSTOCK_MENU )
+
+#endif
 
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
 

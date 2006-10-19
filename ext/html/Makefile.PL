@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     10/03/2001
-## RCS-ID:      $Id: Makefile.PL,v 1.12 2004/12/21 21:12:53 mbarbon Exp $
-## Copyright:   (c) 2001-2004 Mattia Barbon
+## RCS-ID:      $Id: Makefile.PL,v 1.14 2006/09/24 17:15:59 mbarbon Exp $
+## Copyright:   (c) 2001-2004, 2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -16,7 +16,7 @@ use Wx::build::MakeMaker;
 
 wxWriteMakefile( NAME         => 'Wx::Html',
                  VERSION_FROM => 'lib/Wx/Html.pm',
-                 clean        => { FILES => 'cpp/htmltag.h' },
+                 clean        => { FILES => 'cpp/htmltag.h cpp/htmllbox.h' },
                  WX_CORE_LIB  => 'html core base',
                );
 

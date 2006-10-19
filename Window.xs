@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Window.xs,v 1.69 2006/08/19 18:24:33 mbarbon Exp $
+// RCS-ID:      $Id: Window.xs,v 1.72 2006/09/24 15:04:24 mbarbon Exp $
 // Copyright:   (c) 2000-2002, 2004-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -73,7 +73,7 @@ newDefault( CLASS )
   OUTPUT: RETVAL
 
 wxWindow*
-newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr )
+newFull( CLASS, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr )
     PlClassName CLASS
     wxWindow* parent
     wxWindowID id
@@ -86,7 +86,7 @@ newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style
   OUTPUT: RETVAL
 
 bool
-wxWindow::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr)
+wxWindow::Create( parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = 0 , name = wxPanelNameStr)
     wxWindow* parent
     wxWindowID id
     wxPoint pos
@@ -1093,6 +1093,13 @@ bool
 wxWindow::Show( show = true )
     bool show
 
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+
+bool
+wxWindow::HasMultiplePages()
+
+#endif
+
 bool
 wxWindow::Hide()
 
@@ -1142,11 +1149,31 @@ wxWindow::WarpPointer( x, y )
     int x
     int y
 
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+
+wxLayoutDirection
+wxWindow::GetLayoutDirection()
+
+void
+wxWindow::SetLayoutDirection( direction )
+    wxLayoutDirection direction
+
+bool
+wxWindow::SetTransparent( alpha )
+    wxByte alpha
+
+bool
+wxWindow::CanSetTransparent()
+
+#endif
+
 INCLUDE: XS/Accelerators.xs
 
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/PlWindow.xsp |
 
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/SplitterWindow.xs |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/VScrolledWindow.xsp |
 
 INCLUDE: XS/ScrolledWindow.xs
 INCLUDE: XS/Validators.xs

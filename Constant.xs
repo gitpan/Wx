@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.154 2006/08/27 15:26:18 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.160 2006/10/01 12:58:01 mbarbon Exp $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -13,6 +13,10 @@
 #undef bool
 #define PERL_NO_GET_CONTEXT
 #define WXINTL_NO_GETTEXT_MACRO 1
+
+#ifdef __WXWINCE__
+#include <time.h> // must see struct tm early
+#endif
 
 #include <wx/defs.h>
 
@@ -74,8 +78,16 @@
 #include <wx/toolbook.h>
 #include <wx/treebook.h>
 #include <wx/hyperlink.h>
-#include <wx/power.h>
+#ifdef __WXGTK20__
+  #define __WXGTK20__DEFINED
+  #undef __WXGTK20__
 #endif
+#include <wx/stockitem.h>
+#ifdef __WXGTK20__DEFINED
+  #define __WXGTK20__
+#endif
+#endif
+#include <wx/progdlg.h>
 #include <wx/tglbtn.h>
 #include <wx/timer.h>
 #include <wx/splash.h>
@@ -104,6 +116,15 @@
 #define wxNB_HITTEST_ONICON   wxBK_HITTEST_ONICON
 #define wxNB_HITTEST_ONLABEL  wxBK_HITTEST_ONLABEL
 #define wxNB_HITTEST_ONITEM   wxBK_HITTEST_ONITEM
+#endif
+
+#if !WXPERL_W_VERSION_GE( 2, 7, 0 )
+#define wxFD_OPEN wxOPEN
+#define wxFD_SAVE wxSAVE
+#define wxFD_OVERWRITE_PROMPT wxOVERWRITE_PROMPT
+#define wxFD_FILE_MUST_EXIST wxFILE_MUST_EXIST
+#define wxFD_MULTIPLE wxMULTIPLE
+#define wxFD_CHANGE_DIR wxCHANGE_DIR
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -163,6 +184,12 @@ static wxPlEVT evts[] =
     SEVT( EVT_WIZARD_HELP, 3 )
     SEVT( EVT_CHILD_FOCUS, 2 )
     SEVT( EVT_WIZARD_FINISHED, 3 )
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+    SEVT( EVT_MOUSE_CAPTURE_CHANGED, 2 )
+#endif
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+    SEVT( EVT_MOUSE_CAPTURE_LOST, 2 )
+#endif
     EVT( EVT_MENU_HIGHLIGHT_ALL, 2, wxEVT_MENU_HIGHLIGHT )
     { 0, 0, 0 }
 };
@@ -183,13 +210,14 @@ XS(Connect2)
 
     if( SvOK( func ) )
     {
-        THISo->Connect( -1, -1, evtID,
+
+        THISo->Connect( wxID_ANY, wxID_ANY, evtID,
                         wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                         new wxPliEventCallback( func, THISs ) );
     }
     else
     {
-        THISo->Disconnect( -1, -1, evtID,
+        THISo->Disconnect( wxID_ANY, wxID_ANY, evtID,
                            wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                            0 );
     }
@@ -210,13 +238,13 @@ XS(Connect3)
 
     if( SvOK( func ) )
     {
-        THISo->Connect( id, -1, evtID,
+        THISo->Connect( id, wxID_ANY, evtID,
                         wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                         new wxPliEventCallback( func, THISs ) );
     }
     else
     {
-        THISo->Disconnect( id, -1, evtID,
+        THISo->Disconnect( id, wxID_ANY, evtID,
                            wxPliCastEvtHandler( &wxPliEventCallback::Handler ),
                            0 );
     }
@@ -291,6 +319,8 @@ static wxPlINH inherit[] =
     I( ControlWithItems,Control )
     I( Choice,          ControlWithItems )
     I( ListBox,         ControlWithItems )
+    I( VListBox,        VScrolledWindow )
+    I( PlVListBox,      VListBox )
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
     I( BookCtrl,        Control )
     I( Notebook,        BookCtrl )
@@ -468,6 +498,7 @@ static wxPlINH inherit[] =
 #endif
 
     I( ScrolledWindow,  GenericScrolledWindow )
+    I( VScrolledWindow, Panel )
 
 #if defined(__WXGTK__)
     I( StatusBar,       StatusBarGeneric )
@@ -559,6 +590,8 @@ static wxPlINH inherit[] =
     I( ClipboardTextEvent, CommandEvent )
     I( HyperlinkEvent,  CommandEvent )
     I( PowerEvent,      Event )
+    I( MouseCaptureChangedEvent, Event )
+    I( MouseCaptureLostEvent, Event )
 
     { 0, 0 }
 };
@@ -596,6 +629,11 @@ static double constant( const char *name, int arg )
 
   switch( fl ) {
   case 'A':
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+    r( wxALPHA_OPAQUE );                // color colour
+    r( wxALPHA_TRANSPARENT );           // color colour
+#endif
+
     r( wxALIGN_LEFT );                  // sizer grid statictext
     r( wxALIGN_CENTRE );                // sizer grid statictext
     r( wxALIGN_CENTER );                // sizer grid statictext
@@ -682,6 +720,10 @@ static double constant( const char *name, int arg )
     r( wxBK_LEFT );                     // bookctrl
     r( wxBK_RIGHT );                    // bookctrl
     r( wxBK_BUTTONBAR );                // toolbook
+    r( wxBK_HITTEST_NOWHERE );          // bookctrl
+    r( wxBK_HITTEST_ONICON );           // bookctrl
+    r( wxBK_HITTEST_ONLABEL );          // bookctrl
+    r( wxBK_HITTEST_ONITEM );           // bookctrl
 #endif
     break;
   case 'C':
@@ -957,7 +999,6 @@ static double constant( const char *name, int arg )
     r( wxEVT_SHOW );
     r( wxEVT_ICONIZE );
     r( wxEVT_MAXIMIZE );
-    r( wxEVT_MOUSE_CAPTURE_CHANGED );
     r( wxEVT_PAINT );
     r( wxEVT_ERASE_BACKGROUND );
     r( wxEVT_NC_PAINT );
@@ -1005,11 +1046,6 @@ static double constant( const char *name, int arg )
     r( wxEVT_HELP );
     r( wxEVT_DETAILED_HELP );
 
-//    r( wxEVT_WIZARD_PAGE_CHANGED );
-//    r( wxEVT_WIZARD_PAGE_CHANGING );
-//    r( wxEVT_WIZARD_CANCEL );
-//    r( wxEVT_WIZARD_HELP );
-
     r( wxEXPAND );                      // sizer
     r( wxEXEC_SYNC );                   // execute
     r( wxEXEC_ASYNC );                  // execute
@@ -1025,14 +1061,12 @@ static double constant( const char *name, int arg )
 
     r( wxFDIAGONAL_HATCH );             // brush pen
 
-#if WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxFD_OPEN );                     // filedialog
     r( wxFD_SAVE );                     // filedialog
     r( wxFD_OVERWRITE_PROMPT );         // filedialog
     r( wxFD_FILE_MUST_EXIST );          // filedialog
     r( wxFD_MULTIPLE );                 // filedialog
     r( wxFD_CHANGE_DIR );               // filedialog
-#endif
 
 #if !WXPERL_W_VERSION_GE( 2, 7, 0 ) || WXWIN_COMPATIBILITY_2_6
     r( wxFILE_MUST_EXIST );
@@ -1146,6 +1180,7 @@ static double constant( const char *name, int arg )
     r( wxICON_WARNING );                // icon
     r( wxICON_ERROR );                  // icon
 
+    r( wxID_ANY );                      // id
     r( wxID_OPEN );                     // id
     r( wxID_CLOSE );                    // id
     r( wxID_NEW );                      // id
@@ -1166,6 +1201,9 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxID_HELP_SEARCH );              // id
     r( wxID_HELP_INDEX );               // id
+#endif
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+    r( wxID_PAGE_SETUP );               // id
 #endif
     r( wxID_HELP );                     // id
     r( wxID_HIGHEST );                  // id
@@ -1389,6 +1427,12 @@ static double constant( const char *name, int arg )
 
     r( wxLOCALE_LOAD_DEFAULT );         // locale
     r( wxLOCALE_CONV_ENCODING );        // locale
+
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+    r( wxLayout_Default );
+    r( wxLayout_LeftToRight );
+    r( wxLayout_RightToLeft );
+#endif
 
     if( strnEQ( name, "wxLANGUAGE_", 11 ) )
     {
@@ -1937,6 +1981,13 @@ static double constant( const char *name, int arg )
     // capabilities
     r( wxSYS_CAN_DRAW_FRAME_DECORATIONS );
     r( wxSYS_CAN_ICONIZE_FRAME );
+
+#if WXPERL_W_VERSION_GE( 2, 7, 1 )
+    r( wxSTOCK_NOFLAGS );
+    r( wxSTOCK_WITH_MNEMONIC );
+    r( wxSTOCK_WITH_ACCELERATOR );
+    r( wxSTOCK_MENU );
+#endif
     break;
   case 'T':
     r( wxTAB_TRAVERSAL );               // panel
@@ -2042,6 +2093,9 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
     r( wxWS_EX_PROCESS_IDLE );          // window
     r( wxWS_EX_PROCESS_UI_UPDATES );    // window
+#endif
+#if WXPERL_W_VERSION_GE( 2, 7, 0 )
+    r( wxWS_EX_CONTEXTHELP );           // window
 #endif
     break;
   case 'X':

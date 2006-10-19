@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: StatusBar.xs,v 1.13 2005/01/09 22:35:54 mbarbon Exp $
-## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
+## RCS-ID:      $Id: StatusBar.xs,v 1.15 2006/09/07 20:45:28 mbarbon Exp $
+## Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -15,7 +15,7 @@
 MODULE=Wx PACKAGE=Wx::StatusBar
 
 wxStatusBar*
-wxStatusBar::new( parent, id, style = 0, name = wxEmptyString )
+wxStatusBar::new( parent, id = wxID_ANY, style = 0, name = wxEmptyString )
     wxWindow* parent
     wxWindowID id
     long style

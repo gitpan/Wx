@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     08/11/2000
-## RCS-ID:      $Id: SpinButton.xs,v 1.9 2004/10/19 20:28:05 mbarbon Exp $
-## Copyright:   (c) 2000-2003 Mattia Barbon
+## RCS-ID:      $Id: SpinButton.xs,v 1.12 2006/09/24 15:04:24 mbarbon Exp $
+## Copyright:   (c) 2000-2003, 2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -46,7 +46,7 @@ newDefault( CLASS )
   OUTPUT: RETVAL
 
 wxSpinButton*
-newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxT("spinButton") )
+newFull( CLASS, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxSPIN_BUTTON_NAME )
     PlClassName CLASS
     wxWindow* parent
     wxWindowID id
@@ -61,7 +61,7 @@ newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style
     RETVAL
 
 bool
-wxSpinButton::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxT("spinButton") )
+wxSpinButton::Create( parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxSP_HORIZONTAL, name = wxSPIN_BUTTON_NAME )
     wxWindow* parent
     wxWindowID id
     wxPoint pos

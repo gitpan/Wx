@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/02/2001
-## RCS-ID:      $Id: TreeCtrl.xs,v 1.30 2006/08/19 18:24:33 mbarbon Exp $
+## RCS-ID:      $Id: TreeCtrl.xs,v 1.33 2006/09/24 15:04:24 mbarbon Exp $
 ## Copyright:   (c) 2001-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -142,7 +142,7 @@ newDefault( CLASS )
   OUTPUT: RETVAL
 
 wxTreeCtrl*
-newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
+newFull( CLASS, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxTreeCtrlNameStr )
     PlClassName CLASS
     wxWindow* parent
     wxWindowID id
@@ -158,7 +158,7 @@ newFull( CLASS, parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style
     RETVAL
 
 bool
-wxTreeCtrl::Create( parent, id, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxT("treeCtrl") )
+wxTreeCtrl::Create( parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxTR_HAS_BUTTONS, validator = (wxValidator*)&wxDefaultValidator, name = wxTreeCtrlNameStr )
     wxWindow* parent
     wxWindowID id
     wxPoint pos
@@ -646,6 +646,16 @@ wxTreeCtrl::SetPlData( item, data )
     wxTreeItemData* tid = THIS->GetItemData( *item );
     if( tid ) delete tid;
     THIS->SetItemData( *item, data ? new wxPliTreeItemData( data ) : 0 );
+
+#if defined( __WXMSW__ )
+
+void
+wxTreeCtrl::SetItemDropHighlight( item, highlight = true )
+    wxTreeItemId* item
+    bool highlight
+  C_ARGS: *item, highlight
+
+#endif
 
 void
 wxTreeCtrl::SetItemFont( item, font )

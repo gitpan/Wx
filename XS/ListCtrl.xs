@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/02/2001
-## RCS-ID:      $Id: ListCtrl.xs,v 1.38 2006/08/19 18:24:33 mbarbon Exp $
+## RCS-ID:      $Id: ListCtrl.xs,v 1.41 2006/10/19 20:00:13 mbarbon Exp $
 ## Copyright:   (c) 2001-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -12,6 +12,10 @@
 
 #include <wx/colour.h>
 #include <wx/listctrl.h>
+
+#if !WXPERL_W_VERSION_GE( 2, 6, 0 )
+#define wxListCtrlNameStr wxT("listCtrl")
+#endif
 
 MODULE=Wx_Evt PACKAGE=Wx::ListEvent
 
@@ -279,7 +283,7 @@ newDefault( CLASS )
   OUTPUT: RETVAL
 
 wxListCtrl*
-newFull( CLASS, parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
+newFull( CLASS, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = wxListCtrlNameStr )
     PlClassName CLASS
     wxWindow* parent
     wxWindowID id
@@ -295,7 +299,7 @@ newFull( CLASS, parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, 
     RETVAL
 
 bool
-wxListCtrl::Create( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
+wxListCtrl::Create( parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_ICON, validator = (wxValidator*)&wxDefaultValidator, name = wxListCtrlNameStr )
     wxWindow* parent
     wxWindowID id
     wxPoint pos
@@ -771,7 +775,7 @@ newDefault( CLASS )
   OUTPUT: RETVAL
 
 wxListView*
-newFull( CLASS, parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
+newFull( CLASS, parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = wxListCtrlNameStr )
     PlClassName CLASS
     wxWindow* parent
     wxWindowID id
@@ -788,7 +792,7 @@ newFull( CLASS, parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, 
     RETVAL
 
 bool
-wxListView::Create( parent, id = -1, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = wxT("listCtrl") )
+wxListView::Create( parent, id = wxID_ANY, pos = wxDefaultPosition, size = wxDefaultSize, style = wxLC_REPORT, validator = (wxValidator*)&wxDefaultValidator, name = wxListCtrlNameStr )
     wxWindow* parent
     wxWindowID id
     wxPoint pos

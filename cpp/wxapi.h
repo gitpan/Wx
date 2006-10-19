@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     21/09/2002
-// RCS-ID:      $Id: wxapi.h,v 1.10 2005/05/03 20:44:31 mbarbon Exp $
-// Copyright:   (c) 2002-2003 Mattia Barbon
+// RCS-ID:      $Id: wxapi.h,v 1.12 2006/09/07 20:45:27 mbarbon Exp $
+// Copyright:   (c) 2002-2003, 2005-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -31,6 +31,10 @@
 #endif
 
 #include "cpp/chkconfig.h"
+
+#if defined(__WXWINCE__)
+#undef __WINDOWS__
+#endif
 
 WXPL_EXTERN_C_START
 #include <EXTERN.h>

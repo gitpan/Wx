@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Menu.xs,v 1.25 2006/08/11 19:55:00 mbarbon Exp $
+## RCS-ID:      $Id: Menu.xs,v 1.28 2006/09/24 15:04:24 mbarbon Exp $
 ## Copyright:   (c) 2000-2004, 2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -30,7 +30,7 @@ wxMenu::AppendSubMenu( submenu, text, help = wxEmptyString )
 #endif
 
 void
-wxMenu::AppendString( id, item, help = wxEmptyString, kind = wxITEM_NORMAL )
+wxMenu::AppendString( id, item = wxEmptyString, help = wxEmptyString, kind = wxITEM_NORMAL )
     int id
     wxString item
     wxString help
@@ -227,7 +227,7 @@ wxMenu::InsertItem( pos, item )
 #endif
 
 void
-wxMenu::InsertString( pos, id, item, helpString = wxEmptyString, kind = wxITEM_NORMAL )
+wxMenu::InsertString( pos, id, item = wxEmptyString, helpString = wxEmptyString, kind = wxITEM_NORMAL )
     int pos
     int id
     wxString item
@@ -304,7 +304,7 @@ wxMenu::IsEnabled( id )
     int id
 
 void
-wxMenu::PrependString( id, item, help = wxEmptyString, kind = wxITEM_NORMAL )
+wxMenu::PrependString( id, item = wxEmptyString, help = wxEmptyString, kind = wxITEM_NORMAL )
     int id
     wxString item
     wxString help
@@ -538,7 +538,7 @@ wxMenuBar::IsEnabledTop( id )
 MODULE=Wx PACKAGE=Wx::MenuItem
 
 wxMenuItem*
-wxMenuItem::new( parentMenu = 0, id = -1, text = wxEmptyString, helpString = wxEmptyString, itemType = wxITEM_NORMAL, subMenu = 0 )
+wxMenuItem::new( parentMenu = 0, id = wxID_ANY, text = wxEmptyString, helpString = wxEmptyString, itemType = wxITEM_NORMAL, subMenu = 0 )
      wxMenu* parentMenu
      int id
      wxString text
@@ -557,7 +557,7 @@ void
 wxMenuItem::Enable( enable )
     bool enable
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 wxColour*
 wxMenuItem::GetBackgroundColour()
@@ -575,9 +575,8 @@ wxMenuItem::GetFont()
 
 #endif
 
-#if defined( __WXMSW__ ) || \
- defined( __WXGTK__ ) || \
- defined( __WXPERL_FORCE__ )
+#if ( defined( __WXMSW__ ) && !defined( __WXWINCE__ ) ) || \
+ defined( __WXGTK__ )
 
 wxBitmap*
 wxMenuItem::GetBitmap()
@@ -608,7 +607,7 @@ GetLabelFromText( text )
   OUTPUT:
     RETVAL
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 int
 wxMenuItem::GetMarginWidth()
@@ -621,7 +620,7 @@ wxMenuItem::GetText()
 wxMenu*
 wxMenuItem::GetSubMenu()
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 wxColour*
 wxMenuItem::GetTextColour()
@@ -644,7 +643,7 @@ wxMenuItem::IsEnabled()
 bool
 wxMenuItem::IsSeparator()
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 void
 wxMenuItem::SetBackgroundColour( colour )
@@ -664,7 +663,7 @@ void
 wxMenuItem::SetHelp( helpString )
     wxString helpString
 
-#if defined( __WXMSW__ ) || defined( __WXPERL_FORCE__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 void
 wxMenuItem::SetMarginWidth( width )
@@ -689,7 +688,7 @@ wxMenuItem::SetBitmaps( checked, unchecked = (wxBitmap*)&wxNullBitmap )
 
 #endif
 
-#if defined( __WXMSW__ ) || defined( __WXGTK__ )
+#if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 void
 wxMenuItem::SetBitmap( bitmap )

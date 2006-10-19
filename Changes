@@ -1,5 +1,11 @@
 Revision history for Perl extension Wx.
 
+0.58  Thu Oct 19 21:54:04 CEST 2006
+	- Added wxVScrolledWindow, wxVListBox, wxHtmlListBox.
+	- Support wxWidgets RTL API (2.7).
+	- Fix various bugs in wxStreams <=> Perl filehandles
+	  interoperability.
+
 0.57  Sun Aug 27 17:25:18 CEST 2006
 	- Added wxHtmlDCRenderer (thanks to Mark Dootson).
 	- Made the XS++ and overload preprocessors installable,
