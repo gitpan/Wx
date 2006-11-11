@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: typemap,v 1.90 2006/09/24 15:04:24 mbarbon Exp $
+## RCS-ID:      $Id: typemap,v 1.93 2006/11/05 16:28:01 mbarbon Exp $
 ## Copyright:   (c) 2000-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -41,6 +41,8 @@ wxByte                  T_U_CHAR
 wxTextCtrlHitTestResult T_ENUM
 wxArrayString           T_ARRAYSTRING
 wxArrayInt              T_ARRAYINT
+wxTextPos               T_IV
+wxTextAttrAlignment     T_ENUM
 
 wxFindReplaceDialogStyles T_ENUM
 wxFindReplaceFlags      T_ENUM
@@ -103,6 +105,7 @@ wxButton *              O_WXEVTHANDLER
 wxStaticText *          O_WXEVTHANDLER
 wxStaticLine *          O_WXEVTHANDLER
 wxTextCtrl *            O_WXOBJECT
+wxTextCtrlBase *        O_WXOBJECT
 wxPlValidator *         O_WXOBJECT
 wxValidator *           O_WXOBJECT
 wxCheckBox *            O_WXEVTHANDLER
@@ -139,6 +142,11 @@ wxChoicebook *          O_WXEVTHANDLER
 wxToolbook *            O_WXEVTHANDLER
 wxTreebook *            O_WXEVTHANDLER
 wxHyperlinkCtrl *       O_WXEVTHANDLER
+wxPickerBase *          O_WXEVTHANDLER
+wxColourPickerCtrl *    O_WXEVTHANDLER
+wxFilePickerCtrl *      O_WXEVTHANDLER
+wxDirPickerCtrl *       O_WXEVTHANDLER
+wxFontPickerCtrl *      O_WXEVTHANDLER
 
 wxWizard *              O_WXOBJECT
 wxWizardPage *          O_WXOBJECT
@@ -210,6 +218,8 @@ wxLanguageInfo *        O_NON_WXOBJECT
 
 wxStopWatch *           O_NON_WXOBJECT_THR
 
+wxAboutDialogInfo *     O_NON_WXOBJECT
+
 wxPoint                 O_POINT
 wxSize                  O_SIZE
 wxColour                O_NON_WXOBJECT_VAL
@@ -278,6 +288,7 @@ wxIFFHandler *          O_WXOBJECT
 wxICOHandler *          O_WXOBJECT
 wxCURHandler *          O_WXOBJECT
 wxANIHandler *          O_WXOBJECT
+wxTGAHandler *          O_WXOBJECT
 
 wxImageList *           O_WXOBJECT_THR
 
@@ -338,6 +349,9 @@ wxNavigationKeyEvent *  O_WXOBJECT_THR
 wxChildFocusEvent *     O_WXOBJECT_THR
 wxHyperlinkEvent *      O_WXOBJECT_THR
 wxPowerEvent *          O_WXOBJECT_THR
+wxColourPickerEvent *   O_WXOBJECT_THR
+wxFileDirPickerEvent *  O_WXOBJECT_THR
+wxFontPickerEvent *     O_WXOBJECT_THR
 
 wxPlEvent *             O_WXOBJECT_THR
 wxPlCommandEvent *      O_WXOBJECT_THR

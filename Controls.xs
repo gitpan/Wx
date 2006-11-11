@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Controls.xs,v 1.42 2006/09/24 15:04:24 mbarbon Exp $
+// RCS-ID:      $Id: Controls.xs,v 1.44 2006/11/05 16:28:00 mbarbon Exp $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -25,6 +25,10 @@
 
 // re-include for client data
 #include "cpp/helpers.h"
+
+#define wxDefaultValidatorPtr (wxValidator*)&wxDefaultValidator
+#define wxBLACKPtr (wxColour*)wxBLACK
+#define wxNORMAL_FONTPtr (wxFont*)wxNORMAL_FONT
 
 #undef THIS
 
@@ -157,7 +161,16 @@ INCLUDE: XS/StaticBox.xs
 INCLUDE: XS/StaticLine.xs
 INCLUDE: XS/StaticText.xs
 INCLUDE: XS/ToggleButton.xs
-INCLUDE: XS/TextCtrl.xs
 INCLUDE: XS/TreeCtrl.xs
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/TextCtrl.xs |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/PickerCtrl.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/ColourPickerCtrl.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/FilePickerCtrl.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/FontPickerCtrl.xsp |
 
 MODULE=Wx_Ctrl PACKAGE=Wx::Control

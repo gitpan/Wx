@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: e_cback.cpp,v 1.16 2006/08/11 19:54:58 mbarbon Exp $
+// RCS-ID:      $Id: e_cback.cpp,v 1.18 2006/11/06 23:50:42 mbarbon Exp $
 // Copyright:   (c) 2000-2002, 2004-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -78,7 +78,12 @@ void wxPliEventCallback::Handler( wxEvent& event )
         wxPliSelfRef* sr = cci->m_func( &event );
 
         if( sr )
-            e = sr->m_self;
+        {
+            // this needs to have the refcount incremented, otherwise
+            // the refcount will be decremented one time too much when
+            // exiting from the handler
+            e = sv_2mortal( newRV_inc( SvRV( sr->m_self ) ) );
+        }
     }
 
     if( !e )

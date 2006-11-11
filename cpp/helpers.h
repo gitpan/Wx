@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h,v 1.86 2006/10/01 13:03:57 mbarbon Exp $
+// RCS-ID:      $Id: helpers.h,v 1.89 2006/11/06 23:50:42 mbarbon Exp $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -22,6 +22,7 @@
 
 class wxPliUserDataCD;
 class wxPliTreeItemData;
+struct wxPliEventDescription;
 
 // forward declare Wx_*Stream
 class WXDLLEXPORT wxInputStream;
@@ -181,7 +182,7 @@ int wxPli_av_2_uchararray( pTHX_ SV* avref, unsigned char** array );
 int wxPli_av_2_svarray( pTHX_ SV* avref, SV*** array );
 int FUNCPTR( wxPli_av_2_intarray )( pTHX_ SV* avref, int** array );
 int wxPli_av_2_userdatacdarray( pTHX_ SV* avref, wxPliUserDataCD*** array );
-int wxPli_av_2_arraystring( pTHX_ SV* avref, wxArrayString* array );
+int FUNCPTR( wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
 int FUNCPTR( wxPli_av_2_arrayint )( pTHX_ SV* avref, wxArrayInt* array );
 
 // pushes the elements of the array into the stack
@@ -252,6 +253,8 @@ void wxPli_sv_2_ostream( pTHX_ SV* scalar, wxPliOutputStream& stream );
 void FUNCPTR( wxPli_stream_2_sv )( pTHX_ SV* scalar, wxStreamBase* stream,
                                    const char* package );
 wxPliInputStream* FUNCPTR( wxPliInputStream_ctor )( SV* sv );
+
+void FUNCPTR( wxPli_set_events )( const wxPliEventDescription* events );
 
 // defined in Constants.xs
 void FUNCPTR( wxPli_add_constant_function )( double (**)( const char*, int ) );
@@ -369,6 +372,8 @@ struct wxPliHelpers
                                        wxPliCloneSV clonefn );
 #endif
     int (* m_wxPli_av_2_arrayint )( pTHX_ SV* avref, wxArrayInt* array );
+    void (* m_wxPli_set_events )( const wxPliEventDescription* events );
+    int (* m_wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
 };
 
 #if wxPERL_USE_THREADS
@@ -399,7 +404,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
  &wxPli_match_arguments_skipfirst, &wxPli_objlist_2_av, &wxPli_intarray_push, \
  &wxPli_clientdatacontainer_2_sv, \
  wxDEFINE_PLI_HELPER_THREADS() \
- &wxPli_av_2_arrayint \
+ &wxPli_av_2_arrayint, &wxPli_set_events, &wxPli_av_2_arraystring \
  }
 
 #if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
@@ -438,6 +443,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
   wxPli_clientdatacontainer_2_sv = name->m_wxPli_clientdatacontainer_2_sv; \
   wxINIT_PLI_HELPER_THREADS( name ) \
   wxPli_av_2_arrayint = name->m_wxPli_av_2_arrayint; \
+  wxPli_set_events = name->m_wxPli_set_events; \
+  wxPli_av_2_arraystring = name->m_wxPli_av_2_arraystring; \
   WXPLI_INIT_CLASSINFO();
 
 #else
@@ -480,11 +487,12 @@ public:
     {
         dTHX;
         m_self = self;
-        if( increment )       
+        if( m_self && increment )       
             SvREFCNT_inc( m_self );
     }
 
     SV* GetSelf() { return m_self; }
+    void DeleteSelf( bool fromDestroy );
 public:
     SV* m_self;
 };
@@ -723,6 +731,21 @@ WXPLI_IMPLEMENT_DYNAMIC_CLASS( wxPli##name, wx##name );
 
 typedef SV SV_null; // equal to SV except that maps C++ 0 <-> Perl undef
 
+// helpers for declaring event macros
+struct wxPliEventDescription
+{
+    const char* name;
+    // 2 - only THIS and function
+    // 3 - THIS, function, one ID
+    // 4 - THIS, function, two ids
+    // 5 - THIS, function, two ids, event id
+    unsigned char args;
+    int evtID;    
+};
+
+#define wxPli_StdEvent( NAME, ARGS )  { #NAME, ARGS, wx##NAME },
+#define wxPli_Event( NAME, ARGS, ID ) { #NAME, ARGS, ID },
+
 #endif // __CPP_HELPERS_H
 
 #if defined( _WX_CLNTDATAH__ )
@@ -751,7 +774,7 @@ private:
 typedef wxPliUserDataCD  Wx_UserDataCD;
 
 #endif // __CPP_HELPERS_H_UDCD
-#endif
+#endif // defined( _WX_CLNTDATAH__ )
 
 #if defined( _WX_TREEBASE_H_ ) || defined( _WX_TREECTRL_H_BASE_ )
 #ifndef __CPP_HELPERS_H_TID
@@ -783,7 +806,7 @@ public:
 };
 
 #endif // __CPP_HELPERS_H_TID
-#endif
+#endif // defined( _WX_TREEBASE_H_ ) || defined( _WX_TREECTRL_H_BASE_ )
 
 // Local variables:
 // mode: c++
