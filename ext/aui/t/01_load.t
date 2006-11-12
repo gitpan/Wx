@@ -5,5 +5,5 @@ use Test::More tests => 1;
 
 use Wx;
 
-use_ok( 'Wx::RichText' );
+use_ok( 'Wx::AUI' );
 
