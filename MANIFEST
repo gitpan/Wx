@@ -3,7 +3,6 @@ typemap
 typemap.xsp
 MANIFEST
 MANIFEST.SKIP
-META.yml
 README.txt
 Changes
 run
@@ -80,7 +79,7 @@ samples/artprov/warning.xpm
 samples/dialog/dialog.pl
 samples/minimal/minimal.pl
 samples/hello/hello.pl
-samples/treectrl/treectrl.pl
+samples/trivial/trivial.pl
 
 samples/toolbar/bitmaps/copy.bmp
 samples/toolbar/bitmaps/copy.xpm
@@ -103,28 +102,6 @@ samples/toolbar/bitmaps/save.xpm
 samples/toolbar/toolbar.pl
 
 samples/caret/caret.pl
-
-samples/listctrl/bitmaps/small1.ico
-samples/listctrl/bitmaps/small1.xpm
-samples/listctrl/bitmaps/toolbrai.ico
-samples/listctrl/bitmaps/toolbrai.xpm
-samples/listctrl/bitmaps/toolchar.ico
-samples/listctrl/bitmaps/toolchar.xpm
-samples/listctrl/bitmaps/toolchec.ico
-samples/listctrl/bitmaps/toolchec.xpm
-samples/listctrl/bitmaps/tooldata.ico
-samples/listctrl/bitmaps/tooldata.xpm
-samples/listctrl/bitmaps/toolgame.ico
-samples/listctrl/bitmaps/toolgame.xpm
-samples/listctrl/bitmaps/toolnote.ico
-samples/listctrl/bitmaps/toolnote.xpm
-samples/listctrl/bitmaps/tooltime.ico
-samples/listctrl/bitmaps/tooltime.xpm
-samples/listctrl/bitmaps/tooltodo.ico
-samples/listctrl/bitmaps/tooltodo.xpm
-samples/listctrl/bitmaps/toolword.ico
-samples/listctrl/bitmaps/toolword.xpm
-samples/listctrl/listctrl.pl
 
 samples/socket/wxSocketClient.pl
 samples/socket/wxSocketClientDatagram.pl
@@ -478,6 +455,7 @@ ext/richtext/Makefile.PL
 ext/richtext/RichText.xs
 ext/richtext/XS/RichTextAttr.xsp
 ext/richtext/XS/RichTextCtrl.xsp
+ext/richtext/XS/RichTextFormattingDialog.xsp
 ext/richtext/XS/RichTextStyle.xsp
 ext/richtext/XS/RichTextStyleCtrl.xsp
 ext/richtext/lib/Wx/RichText.pm
@@ -516,3 +494,4 @@ ext/docview/lib/Wx/DocView.pm
 ext/docview/typemap
 ext/docview/t/01_load.t
 ext/docview/t/02_inheritance.t
+META.yml                                 Module meta-data (added by MakeMaker)

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     05/11/2006
-// RCS-ID:      $Id: RichText.xs,v 1.4 2006/11/12 17:35:25 mbarbon Exp $
+// RCS-ID:      $Id: RichText.xs,v 1.6 2006/11/25 14:26:35 mbarbon Exp $
 // Copyright:   (c) 2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -32,8 +32,10 @@
 
 static wxPliEventDescription evts[] =
 {
+#if WXPERL_W_VERSION_LE( 2, 7, 2 )
     EVT( EVT_RICHTEXT_ITEM_SELECTED, 3, wxEVT_COMMAND_RICHTEXT_ITEM_SELECTED )
     EVT( EVT_RICHTEXT_ITEM_DESELECTED, 3, wxEVT_COMMAND_RICHTEXT_ITEM_DESELECTED )
+#endif
     EVT( EVT_RICHTEXT_LEFT_CLICK, 3, wxEVT_COMMAND_RICHTEXT_LEFT_CLICK )
     EVT( EVT_RICHTEXT_RIGHT_CLICK, 3, wxEVT_COMMAND_RICHTEXT_RIGHT_CLICK )
     EVT( EVT_RICHTEXT_MIDDLE_CLICK, 3, wxEVT_COMMAND_RICHTEXT_MIDDLE_CLICK )
@@ -49,6 +51,10 @@ static wxPliEventDescription evts[] =
 };
 
 #define wxPliRichTextStyleType wxRichTextStyleListBox::wxRichTextStyleType
+#if WXPERL_W_VERSION_LT( 2, 8, 0 )
+#undef _
+#define _( s ) wxT( s )
+#endif
 
 MODULE=Wx__RichText
 
@@ -62,6 +68,8 @@ INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/Ric
 INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextStyle.xsp |
 
 INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextStyleCtrl.xsp |
+
+INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextFormattingDialog.xsp |
 
 MODULE=Wx__RichText PACKAGE=Wx::RichText
 

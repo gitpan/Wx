@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: DC.xs,v 1.34 2006/11/02 18:38:13 mbarbon Exp $
+## RCS-ID:      $Id: DC.xs,v 1.36 2006/11/21 21:08:21 mbarbon Exp $
 ## Copyright:   (c) 2000-2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -30,7 +30,7 @@ DESTROY( THIS )
     if( wxPli_object_is_deleteable( aTHX_ ST(0) ) )
         delete THIS;
 
-#if !WXPERL_W_VERSION_GE( 2, 7, 0 ) || WXWIN_COMPATIBILITY_2_6
+#if WXPERL_W_VERSION_LT( 2, 7, 0 ) || WXWIN_COMPATIBILITY_2_6
 
 void
 wxDC::BeginDrawing()
@@ -238,7 +238,7 @@ wxDC::DrawText( text, x, y )
 void
 wxDC::EndDoc()
 
-#if !WXPERL_W_VERSION_GE( 2, 7, 0 ) || WXWIN_COMPATIBILITY_2_6
+#if WXPERL_W_VERSION_LT( 2, 7, 0 ) || WXWIN_COMPATIBILITY_2_6
 
 void
 wxDC::EndDrawing()
@@ -622,8 +622,16 @@ wxMemoryDC::new()
 void
 wxMemoryDC::SelectObject( bitmap )
     wxBitmap* bitmap
-  CODE:
-    THIS->SelectObject( *bitmap );
+  C_ARGS: *bitmap
+
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+
+void
+wxMemoryDC::SelectObjectAsSource( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::ClientDC
 
@@ -637,6 +645,7 @@ wxClientDC::new( window )
 
 %typemap{wxBufferedDC*}{simple};
 %typemap{wxBufferedPaintDC*}{simple};
+%typemap{wxAutoBufferedPaintDC*}{simple};
 
 %name{Wx::BufferedDC} class wxBufferedDC
 {
@@ -661,6 +670,24 @@ wxClientDC::new( window )
     %name{InitSize} void Init( wxDC *dc, const wxSize &area );
 #endif
 
+%{
+void
+new( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_VOIDM_REDISP( newDefault )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wsiz_n, newSize, 2 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wbmp_n, newBitmap, 1 )
+    END_OVERLOAD( "Wx::BufferedDC::new" )
+
+void
+Init( ... )
+  PPCODE:
+    BEGIN_OVERLOAD()
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wsiz_n, InitSize, 2 )
+        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wbmp_n, InitBitmap, 1 )
+    END_OVERLOAD( "Wx::BufferedDC::Init" )
+%}
     void UnMask();
 
 #if WXPERL_W_VERSION_GE( 2, 6, 0 )
@@ -682,31 +709,7 @@ wxClientDC::new( window )
                                         const wxBitmap& buffer );
     %name{newWindow} wxBufferedPaintDC( wxWindow* window );
 #endif
-};
-
 %{
-
-MODULE=Wx PACKAGE=Wx::BufferedDC
-
-void
-new( ... )
-  PPCODE:
-    BEGIN_OVERLOAD()
-        MATCH_VOIDM_REDISP( newDefault )
-        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wsiz_n, newSize, 2 )
-        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wbmp_n, newBitmap, 1 )
-    END_OVERLOAD( "Wx::BufferedDC::new" )
-
-void
-Init( ... )
-  PPCODE:
-    BEGIN_OVERLOAD()
-        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wsiz_n, InitSize, 2 )
-        MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wbmp_n, InitBitmap, 1 )
-    END_OVERLOAD( "Wx::BufferedDC::Init" )
-
-MODULE=Wx PACKAGE=Wx::BufferedPaintDC
-
 void
 new( ... )
   PPCODE:
@@ -714,5 +717,20 @@ new( ... )
         MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_wbmp_n, newBitmap, 2 )
         MATCH_REDISP_COUNT_ALLOWMORE( wxPliOvl_wdc_n, newBitmap, 1 )
     END_OVERLOAD( "Wx::BufferedPaintDC::new" )
-
 %}
+};
+
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+
+%name{Wx::AutoBufferedPaintDC} class wxAutoBufferedPaintDC
+{
+    wxAutoBufferedPaintDC( wxWindow* win );
+};
+
+%{
+MODULE=Wx PACKAGE=Wx PREFIX=wx
+%}
+
+wxDC* wxAutoBufferedPaintDCFactory( wxWindow* window );
+
+#endif
