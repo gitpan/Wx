@@ -3,8 +3,8 @@
 ## Purpose:     XS for Wx::SocketBase
 ## Author:      Graciliano M. P.
 ## Created:     27/02/2003
-## RCS-ID:      $Id: SocketBase.xs,v 1.6 2006/09/07 20:45:28 mbarbon Exp $
-## Copyright:   (c) 2003-2004, 2006 Graciliano M. P.
+## RCS-ID:      $Id: SocketBase.xs,v 1.9 2007/03/20 20:23:47 mbarbon Exp $
+## Copyright:   (c) 2003-2004, 2006-2007 Graciliano M. P.
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -112,8 +112,8 @@ wxSocketBase::GetLocal()
   PPCODE:
     wxIPV4address addr ;
     THIS->GetLocal( addr ) ;
-    XPUSHs( sv_2mortal( newSVpvf("%s", (addr.Hostname()).c_str() ) ) );
-    XPUSHs( sv_2mortal( newSVpvf("%d", addr.Service() ) ) );
+    XPUSHs( sv_2mortal( newSVpv( addr.Hostname().mb_str(), 0 ) ) );
+    XPUSHs( sv_2mortal( newSViv( addr.Service() ) ) );
 
 
 void
@@ -121,8 +121,8 @@ wxSocketBase::GetPeer()
   PPCODE:
     wxIPV4address addr ;
     THIS->GetPeer( addr ) ;
-    XPUSHs( sv_2mortal( newSVpvf("%s", (addr.Hostname()).c_str() ) ) );
-    XPUSHs( sv_2mortal( newSVpvf("%d", addr.Service() ) ) );
+    XPUSHs( sv_2mortal( newSVpv( addr.Hostname().mb_str(), 0 ) ) );
+    XPUSHs( sv_2mortal( newSViv( addr.Service() ) ) );
 
 
 void

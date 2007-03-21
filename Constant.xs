@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.173 2007/03/16 19:24:12 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.176 2007/03/21 22:27:25 mbarbon Exp $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -791,6 +791,7 @@ static double constant( const char *name, int arg )
     r( wxDIRP_DIR_MUST_EXIST );
     r( wxDIRP_CHANGE_DIR );
 #endif
+    r( wxDOWN );
     break;
   case 'E':
     r( wxEQUIV );                       // dc
@@ -1003,6 +1004,7 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 5, 4 )
     r( wxEXEC_NODISABLE );              // execute
 #endif
+    r( wxEAST );
     break;
   case 'F':
     r( wxFromStart );
@@ -1235,6 +1237,7 @@ static double constant( const char *name, int arg )
     r( wxID_REMOVE );                   // id
     r( wxID_REVERT_TO_SAVED );          // id
     r( wxID_STOP );                     // id
+    r( wxID_SYSTEM_MENU );              // id
     r( wxID_UNDELETE );                 // id
     r( wxID_UNDERLINE );                // id
     r( wxID_UNINDENT );                 // id
@@ -1758,6 +1761,7 @@ static double constant( const char *name, int arg )
     r( wxNAND );                        // dc
     r( wxNOR );                         // dc
     r( wxNO_OP );                       // dc
+    r( wxNORTH );
     break;
   case 'O':
     r( wxOK );                          // dialog
@@ -2019,12 +2023,21 @@ static double constant( const char *name, int arg )
     r( wxSYS_CAN_DRAW_FRAME_DECORATIONS );
     r( wxSYS_CAN_ICONIZE_FRAME );
 
+#if WXPERL_W_VERSION_GE( 2, 6, 2 )
+    r( wxSYS_COLOUR_HOTLIGHT );         // systemsettings
+    r( wxSYS_COLOUR_GRADIENTACTIVECAPTION ); // systemsettings
+    r( wxSYS_COLOUR_GRADIENTINACTIVECAPTION ); // systemsettings
+    r( wxSYS_COLOUR_MENUHILIGHT );      // systemsettings
+    r( wxSYS_COLOUR_MENUBAR );          // systemsettings
+#endif
+
 #if WXPERL_W_VERSION_GE( 2, 7, 1 )
     r( wxSTOCK_NOFLAGS );
     r( wxSTOCK_WITH_MNEMONIC );
     r( wxSTOCK_WITH_ACCELERATOR );
     r( wxSTOCK_MENU );
 #endif
+    r( wxSOUTH );
     break;
   case 'T':
     r( wxTAB_TRAVERSAL );               // panel
@@ -2136,6 +2149,7 @@ static double constant( const char *name, int arg )
     r( wxUPDATE_UI_RECURSE );           // window
     r( wxUPDATE_UI_FROMIDLE );          // window
 #endif
+    r( wxUP );
     break;
   case 'V':
     r( wxVERTICAL );                    // window dialog frame sizer
@@ -2158,6 +2172,7 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 7, 1 )
     r( wxWS_EX_CONTEXTHELP );           // window
 #endif
+    r( wxWEST );
     break;
   case 'X':
     r( wxXOR );                         // dc

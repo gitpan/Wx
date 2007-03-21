@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     29/10/2000
 ## RCS-ID:      $Id: Menu.xs,v 1.30 2007/02/18 18:16:20 mbarbon Exp $
-## Copyright:   (c) 2000-2004, 2006 Mattia Barbon
+## Copyright:   (c) 2000-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
