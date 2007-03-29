@@ -1,5 +1,6 @@
 Makefile.PL
 typemap
+typemap.tmpl
 typemap.xsp
 MANIFEST
 MANIFEST.SKIP
@@ -35,6 +36,7 @@ script/copy_files.pl
 script/fix_alien_path.pl
 script/make_exp_list.pl
 script/make_ppm.pl
+script/make_typemap.pl
 script/pipe.pl
 script/wx_overload.pl
 script/wx_xspp.pl
@@ -314,6 +316,7 @@ ext/grid/t/01_load.t
 ext/grid/t/02_inheritance.t
 ext/grid/t/03_attr.t
 ext/grid/t/04_api.t
+ext/grid/t/05_threads.t
 ext/grid/typemap
 
 ext/help/Help.xs
@@ -325,6 +328,7 @@ ext/help/lib/Wx/Help.pm
 ext/help/typemap
 ext/help/t/01_load.t
 ext/help/t/02_inheritance.t
+ext/help/t/03_threads.t
 
 ext/html/Html.xs
 ext/html/Makefile.PL
@@ -344,6 +348,7 @@ ext/html/typemap
 ext/html/typemap.xsp
 ext/html/t/01_load.t
 ext/html/t/02_inheritance.t
+ext/html/t/03_threads.t
 
 ext/mdi/MDI.xs
 ext/mdi/Makefile.PL
@@ -383,6 +388,7 @@ ext/print/lib/Wx/Print.pm
 ext/print/typemap
 ext/print/t/01_load.t
 ext/print/t/02_inheritance.t
+ext/print/t/03_threads.t
 
 ext/socket/Makefile.PL
 ext/socket/Socket.xs

@@ -7,19 +7,14 @@ use threads;
 
 use Wx qw(:everything);
 use if !Wx::wxTHREADS, 'Test::More' => skip_all => 'No thread support';
-use if Wx::wxMOTIF, 'Test::More' => skip_all => 'Hangs under Motif';
 use Test::More tests => 4;
-use Wx::FS;
+use Wx::Help;
 
 my $app = Wx::App->new( sub { 1 } );
-my $fs = Wx::FileSystem->new;
-my $fs2 = Wx::FileSystem->new;
+my $cth = Wx::ContextHelp->new;
+my $cth2 = Wx::ContextHelp->new;
 
-my $fsfile = $fs->OpenFile( 't/03_threads.t' );
-my $fsfile2 = $fs->OpenFile( 't/02_inheritance.t' );
-
-undef $fs2;
-undef $fsfile2;
+undef $cth2;
 
 my $t = threads->create
   ( sub {

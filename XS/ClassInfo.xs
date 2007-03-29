@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     20/11/2000
 ## RCS-ID:      $Id: ClassInfo.xs,v 1.4 2004/02/28 22:59:06 mbarbon Exp $
-## Copyright:   (c) 2000-2001, 2004 Mattia Barbon
+## Copyright:   (c) 2000-2001 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################

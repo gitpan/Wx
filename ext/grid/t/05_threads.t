@@ -7,19 +7,23 @@ use threads;
 
 use Wx qw(:everything);
 use if !Wx::wxTHREADS, 'Test::More' => skip_all => 'No thread support';
-use if Wx::wxMOTIF, 'Test::More' => skip_all => 'Hangs under Motif';
 use Test::More tests => 4;
-use Wx::FS;
+use Wx::Grid;
 
 my $app = Wx::App->new( sub { 1 } );
-my $fs = Wx::FileSystem->new;
-my $fs2 = Wx::FileSystem->new;
+my $cc = Wx::GridCellCoords->new( 1, 1 );
+my $cc2 = Wx::GridCellCoords->new( 1, 1 );
+my $ce = Wx::GridCellNumberEditor->new;
+my $ce2 = Wx::GridCellNumberEditor->new;
+my $cr = Wx::GridCellStringRenderer->new;
+my $cr2 = Wx::GridCellStringRenderer->new;
+my $attr = Wx::GridCellAttr->new;
+my $attr2 = Wx::GridCellAttr->new;
 
-my $fsfile = $fs->OpenFile( 't/03_threads.t' );
-my $fsfile2 = $fs->OpenFile( 't/02_inheritance.t' );
-
-undef $fs2;
-undef $fsfile2;
+undef $cc2;
+undef $ce2;
+undef $cr2;
+undef $attr2;
 
 my $t = threads->create
   ( sub {

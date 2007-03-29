@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     03/02/2001
 ## RCS-ID:      $Id: MultiChoiceDialog.xs,v 1.9 2004/07/10 21:49:46 mbarbon Exp $
-## Copyright:   (c) 2001-2004 Mattia Barbon
+## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################

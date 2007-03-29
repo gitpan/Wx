@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     02/06/2001
 ## RCS-ID:      $Id: Tests_Helper.pm,v 1.6 2005/07/10 19:02:03 mbarbon Exp $
-## Copyright:   (c) 2001-2003, 2005 Mattia Barbon
+## Copyright:   (c) 2001-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################

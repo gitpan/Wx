@@ -5,7 +5,7 @@
 ## Modified by:
 ## Created:     26/11/2000
 ## RCS-ID:      $Id: EvtHandler.xs,v 1.7 2005/02/26 10:42:22 mbarbon Exp $
-## Copyright:   (c) 2000-2003, 2005 Mattia Barbon
+## Copyright:   (c) 2000-2003 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
