@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs,v 1.176 2007/03/21 22:27:25 mbarbon Exp $
+// RCS-ID:      $Id: Constant.xs,v 1.178 2007/04/11 17:20:08 mbarbon Exp $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -98,6 +98,7 @@
 #include <wx/splash.h>
 #include <wx/fdrepdlg.h>
 #include <wx/list.h>
+#include <wx/stattext.h>
 
 #if WXPERL_W_VERSION_GE( 2, 7, 0 ) && !WXWIN_COMPATIBILITY_2_6
 #define wxCHB_DEFAULT         wxBK_DEFAULT
@@ -181,6 +182,8 @@ static wxPliEventDescription evts[] =
     SEVT( EVT_WIZARD_HELP, 3 )
     SEVT( EVT_CHILD_FOCUS, 2 )
     SEVT( EVT_WIZARD_FINISHED, 3 )
+    SEVT( EVT_ICONIZE, 2 )
+    SEVT( EVT_MAXIMIZE, 2 )
 #if WXPERL_W_VERSION_GE( 2, 6, 0 )
     SEVT( EVT_MOUSE_CAPTURE_CHANGED, 2 )
 #endif
@@ -194,6 +197,10 @@ static wxPliEventDescription evts[] =
     EVT( EVT_FONTPICKER_CHANGED, 3, wxEVT_COMMAND_FONTPICKER_CHANGED )
 #endif
     EVT( EVT_MENU_HIGHLIGHT_ALL, 2, wxEVT_MENU_HIGHLIGHT )
+#if defined(__WXMSW__)
+    EVT( EVT_TREE_STATE_IMAGE_CLICK, 3, wxEVT_COMMAND_TREE_STATE_IMAGE_CLICK )
+    EVT( EVT_TREE_ITEM_GETTOOLTIP, 3, wxEVT_COMMAND_TREE_ITEM_GETTOOLTIP )
+#endif
     { 0, 0, 0 }
 };
 
@@ -447,6 +454,10 @@ static wxPlINH inherit[] =
     I( Cursor,          GDIObject )
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    I( IconBundle,      GDIObject )
+#endif
+
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
     I( Icon,            Bitmap )
 #else
@@ -479,6 +490,7 @@ static wxPlINH inherit[] =
     I( FocusEvent,      Event )
     I( KeyEvent,        Event )
     I( HelpEvent,       CommandEvent )
+    I( MaximizeEvent,   Event )
     I( IconizeEvent,    Event )
     I( IdleEvent,       Event )
     I( InitDialogEvent, Event )
