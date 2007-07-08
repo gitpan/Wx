@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Event.xs,v 1.61 2007/03/13 23:00:24 mbarbon Exp $
+// RCS-ID:      $Id: Event.xs 2069 2007-07-08 15:33:40Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -331,6 +331,9 @@ wxFocusEvent::new( eventType = 0, id = 0 )
     wxEventType eventType
     wxWindowID id
 
+wxWindow*
+wxFocusEvent::GetWindow()
+
 MODULE=Wx_Evt PACKAGE=Wx::IconizeEvent
 
 bool
@@ -428,6 +431,29 @@ wxIdleEvent::MoreRequested()
 void
 wxIdleEvent::RequestMore( needMore = true )
     bool needMore
+
+#if WXPERL_W_VERSION_LT( 2, 9, 0 )
+
+bool
+CanSend( window )
+    wxWindow* window
+  CODE:
+    RETVAL = wxIdleEvent::CanSend( window );
+  OUTPUT: RETVAL
+
+#endif
+
+void
+SetMode( mode )
+    wxIdleMode mode
+  CODE:
+    wxIdleEvent::SetMode( mode );
+
+wxIdleMode
+GetMode()
+  CODE:
+    RETVAL = wxIdleEvent::GetMode();
+  OUTPUT: RETVAL
 
 MODULE=Wx_Evt PACKAGE=Wx::InitDialogEvent
 
@@ -640,6 +666,9 @@ wxMouseEvent::RightUp()
 bool
 wxMouseEvent::ShiftDown()
 
+int
+wxMouseEvent::GetButton()
+
 MODULE=Wx_Evt PACKAGE=Wx::MoveEvent
 
 wxMoveEvent*
@@ -820,6 +849,11 @@ wxClipboardTextEvent::new( type = wxEVT_NULL, id = 0 )
     wxWindowID id
 
 MODULE=Wx:Evt PACKAGE=Wx::MouseCaptureChangedEvent
+
+wxMouseCaptureChangedEvent*
+wxMouseCaptureChangedEvent::new( id = 0, capturedWindow = NULL )
+    wxWindowID id
+    wxWindow* capturedWindow
 
 wxWindow*
 wxMouseCaptureChangedEvent::GetCapturedWindow()

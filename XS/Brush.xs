@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     08/11/2000
-## RCS-ID:      $Id: Brush.xs,v 1.11 2006/08/11 19:55:00 mbarbon Exp $
-## Copyright:   (c) 2000-2004, 2006 Mattia Barbon
+## RCS-ID:      $Id: Brush.xs 2069 2007-07-08 15:33:40Z mbarbon $
+## Copyright:   (c) 2000-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -86,6 +86,13 @@ wxBrush::GetStyle()
 
 bool
 wxBrush::Ok()
+
+#if WXPERL_W_VERSION_GE( 2, 8, 0 )
+
+bool
+wxBrush::IsOk()
+
+#endif
 
 void
 wxBrush::SetColour( ... )

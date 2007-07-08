@@ -3,7 +3,7 @@
 ## Purpose:     XS for Wx::SocketServer
 ## Author:      Graciliano M. P.
 ## Created:     04/03/2003
-## RCS-ID:      $Id: SocketServer.xs,v 1.3 2004/10/19 20:28:11 mbarbon Exp $
+## RCS-ID:      $Id: SocketServer.xs 2057 2007-06-18 23:03:00Z mbarbon $
 ## Copyright:   (c) 2003 Graciliano M. P.
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

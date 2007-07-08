@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp,v 1.90 2007/04/28 18:43:27 mbarbon Exp $
+// RCS-ID:      $Id: helpers.cpp 2074 2007-07-08 20:43:39Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -370,7 +370,7 @@ void* wxPli_sv_2_object( pTHX_ SV* scalar, const char* classname )
         // scalar-ish object that has been marked/unmarked deletable
         // it has mg, but not mg->object
         if( !mg || !mg->object )
-            return INT2PTR( void*, SvOK( ref ) ? SvIV( ref ) : NULL );
+            return INT2PTR( void*, SvOK( ref ) ? SvIV( ref ) : 0 );
 
         return mg->object;
 #else // if !wxPL_USE_MAGIC
@@ -1352,7 +1352,8 @@ I32 my_looks_like_number( pTHX_ SV* sv )
     char wxkey[50];                \
     sprintf( wxkey, "%x", (ptr) ); \
 
-void wxPli_thread_sv_register( pTHX_ const char* package, void* ptr, SV* sv )
+void wxPli_thread_sv_register( pTHX_ const char* package,
+                               const void* ptr, SV* sv )
 {
     if( !SvROK( sv ) )
         croak( "PANIC: no sense in registering a non-reference" );
@@ -1366,7 +1367,8 @@ void wxPli_thread_sv_register( pTHX_ const char* package, void* ptr, SV* sv )
     sv_rvweaken( nsv );
 }
 
-void wxPli_thread_sv_unregister( pTHX_ const char* package, void* ptr, SV* sv )
+void wxPli_thread_sv_unregister( pTHX_ const char* package,
+                                 const void* ptr, SV* sv )
 {
     if( !ptr )
         return;

@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: DC.xs,v 1.39 2007/03/25 14:57:58 mbarbon Exp $
+## RCS-ID:      $Id: DC.xs 2069 2007-07-08 15:33:40Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -472,6 +472,13 @@ wxDC::MinY()
 
 bool
 wxDC::Ok()
+
+#if WXPERL_W_VERSION_GE( 2, 8, 0 )
+
+bool
+wxDC::IsOk()
+
+#endif
 
 void
 wxDC::ResetBoundingBox()

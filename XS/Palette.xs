@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     09/01/2000
-## RCS-ID:      $Id: Palette.xs,v 1.13 2006/11/19 16:11:26 mbarbon Exp $
-## Copyright:   (c) 2001-2002, 2004, 2006 Mattia Barbon
+## RCS-ID:      $Id: Palette.xs 2069 2007-07-08 15:33:40Z mbarbon $
+## Copyright:   (c) 2001-2002, 2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -90,4 +90,11 @@ wxPalette::GetRGB( pixel )
 
 bool
 wxPalette::Ok()
+
+#if WXPERL_W_VERSION_GE( 2, 8, 0 )
+
+bool
+wxPalette::IsOk()
+
+#endif
 

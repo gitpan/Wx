@@ -5,7 +5,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     16/12/2002
-## RCS-ID:      $Id: copy_files.pl,v 1.2 2004/10/19 20:28:15 mbarbon Exp $
+## RCS-ID:      $Id: copy_files.pl 2057 2007-06-18 23:03:00Z mbarbon $
 ## Copyright:   (c) 2002 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

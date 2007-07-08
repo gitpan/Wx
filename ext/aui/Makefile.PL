@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     11/11/2006
-## RCS-ID:      $Id: Makefile.PL,v 1.1 2006/11/11 21:34:07 mbarbon Exp $
+## RCS-ID:      $Id: Makefile.PL 2057 2007-06-18 23:03:00Z mbarbon $
 ## Copyright:   (c) 2006 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

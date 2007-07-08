@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     30/11/2000
-## RCS-ID:      $Id: Locale.xs,v 1.29 2007/03/25 10:22:33 mbarbon Exp $
+## RCS-ID:      $Id: Locale.xs 2074 2007-07-08 20:43:39Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -43,6 +43,43 @@ wxLanguageInfo::DESTROY()
   CODE:
     if( wxPli_object_is_deleteable( aTHX_ ST(0) ) )
         delete THIS;
+
+int
+wxLanguageInfo::GetLanguage()
+  CODE:
+    RETVAL = THIS->Language;
+  OUTPUT: RETVAL
+
+wxString
+wxLanguageInfo::GetCanonicalName()
+  CODE:
+    RETVAL = THIS->CanonicalName;
+  OUTPUT: RETVAL
+
+unsigned int
+wxLanguageInfo::GetWinLang()
+  CODE:
+#if defined( __WXMSW__ )
+    RETVAL = THIS->WinLang;
+#else
+    RETVAL = 0;
+#endif
+  OUTPUT: RETVAL
+
+unsigned int
+wxLanguageInfo::GetWinSublang()
+  CODE:
+#if defined( __WXMSW__ )
+    RETVAL = THIS->WinSublang;
+#else
+    RETVAL = 0;
+#endif
+
+wxString
+wxLanguageInfo::GetDescription()
+  CODE:
+    RETVAL = THIS->Description;
+  OUTPUT: RETVAL
 
 MODULE=Wx PACKAGE=Wx::Locale
 
@@ -186,6 +223,27 @@ wxLocale::IsLoaded( domain )
 
 bool
 wxLocale::IsOk()
+
+const wxLanguageInfo*
+FindLanguageInfo( name )
+    wxString name
+  CODE:
+    RETVAL = wxLocale::FindLanguageInfo( name );
+  OUTPUT:
+    RETVAL
+
+bool
+wxLocale::Init( language, flags = wxLOCALE_LOAD_DEFAULT|wxLOCALE_CONV_ENCODING )
+    int language
+    int flags
+
+const wxLanguageInfo*
+GetLanguageInfo( language )
+    int language
+  CODE:
+    RETVAL = wxLocale::GetLanguageInfo( language );
+  OUTPUT:
+    RETVAL
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 

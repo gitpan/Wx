@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     28/05/2003
-// RCS-ID:      $Id: editor.h,v 1.10 2005/07/30 10:23:55 mbarbon Exp $
+// RCS-ID:      $Id: editor.h 2057 2007-06-18 23:03:00Z mbarbon $
 // Copyright:   (c) 2003-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself

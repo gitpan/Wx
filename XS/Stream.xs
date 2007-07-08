@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     30/03/2001
-## RCS-ID:      $Id: Stream.xs,v 1.12 2004/10/19 20:28:05 mbarbon Exp $
-## Copyright:   (c) 2001-2003 Mattia Barbon
+## RCS-ID:      $Id: Stream.xs 2059 2007-06-21 19:37:14Z mbarbon $
+## Copyright:   (c) 2001-2003, 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -91,16 +91,24 @@ SV*
 Wx_InputStream::READLINE()
   PREINIT:
     char c;
-    wxString val;
+    size_t off = 0;
+    char* buff;
   CODE:
     if( THIS->Eof() ) { XSRETURN_UNDEF; }
+    RETVAL = newSViv( 0 );
+    buff = SvPV_nolen( RETVAL );
 
-    while( THIS->CanRead() && THIS->Read( &c, 1 ).LastRead() != 0 ) {
-        val.Append( c );
+    while( THIS->CanRead() && THIS->Read( &c, 1 ).LastRead() != 0 )
+    {
+        if( SvLEN( RETVAL ) <= off )
+        {
+            buff = SvGROW( RETVAL, off + 15 );
+        }
+        buff[off] = c;
+        ++off;
         if( c == '\n' ) break;
     }
-    RETVAL = newSViv( 0 );
-    WXSTRING_OUTPUT( val, RETVAL );
+    SvCUR_set( RETVAL, off );
   OUTPUT: RETVAL
 
 MODULE=Wx PACKAGE=Wx::OutputStream

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     11/11/2006
-// RCS-ID:      $Id: AUI.xs,v 1.4 2006/11/25 14:30:53 mbarbon Exp $
+// RCS-ID:      $Id: AUI.xs 2057 2007-06-18 23:03:00Z mbarbon $
 // Copyright:   (c) 2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself

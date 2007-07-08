@@ -4,7 +4,7 @@
 ## Author:      Graciliano M. P.
 ## Modified by:
 ## Created:     27/02/2003
-## RCS-ID:      $Id: Makefile.PL,v 1.2 2003/08/23 13:00:38 mbarbon Exp $
+## RCS-ID:      $Id: Makefile.PL 2057 2007-06-18 23:03:00Z mbarbon $
 ## Copyright:   (c) 2003 Graciliano M. P.
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

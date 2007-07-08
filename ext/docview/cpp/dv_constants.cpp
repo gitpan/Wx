@@ -3,8 +3,8 @@
 // Purpose:     constants for Wx::DocView
 // Author:      Simon Flack
 // Created:     11/09/2002
-// RCS-ID:      $Id: dv_constants.cpp,v 1.6 2005/05/03 20:44:37 mbarbon Exp $
-// Copyright:   (c) 2002-2004 Mattia Barbon
+// RCS-ID:      $Id: dv_constants.cpp 2057 2007-06-18 23:03:00Z mbarbon $
+// Copyright:   (c) 2002-2005 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Frames.xs,v 1.26 2006/11/02 18:31:03 mbarbon Exp $
+// RCS-ID:      $Id: Frames.xs 2057 2007-06-18 23:03:00Z mbarbon $
 // Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
