@@ -4,11 +4,13 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp 2074 2007-07-08 20:43:39Z mbarbon $
+// RCS-ID:      $Id: helpers.cpp 2128 2007-08-11 21:27:39Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
+
+#include <wx/geometry.h>
 
 #include "cpp/streams.h"
 #include "cpp/streams.cpp"
@@ -497,6 +499,10 @@ SV* wxPli_object_2_sv( pTHX_ SV* var, const wxObject* object )
     char buffer[WXPL_BUF_SIZE];
     const char* CLASS = wxPli_cpp_class_2_perl( classname, buffer );
 
+    if( strcmp( CLASS, "Wx::Object" ) == 0 ) {
+        warn( "Missing wxRTTI information, using Wx::Object as class" );
+    }
+
     sv_setref_pv( var, CHAR_P CLASS, const_cast<wxObject*>(object) );
 
     return var;
@@ -671,6 +677,24 @@ void wxPli_intarray_push( pTHX_ const wxArrayInt& ints )
 
     PUTBACK;
 }
+
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+
+void wxPli_doublearray_push( pTHX_ const wxArrayDouble& doubles )
+{
+    dSP;
+
+    size_t mx = doubles.GetCount();
+    EXTEND( SP, int(mx) );
+    for( size_t i = 0; i < mx; ++i )
+    {
+        PUSHs( sv_2mortal( newSVnv( doubles[i] ) ) );
+    }
+
+    PUTBACK;
+}
+
+#endif
 
 AV* wxPli_objlist_2_av( pTHX_ const wxList& objs )
 {
@@ -896,6 +920,42 @@ int wxPli_av_2_arrayint( pTHX_ SV* avref, wxArrayInt* array )
 {
     return wxPli_av_2_thingarray( aTHX_ avref, array, convert_int(),
                                   wxarray_thingy<wxArrayInt, int, 0>( array ) );
+}
+
+//Klaas Hartmann: takes an array reference with an even number of numbers
+//and puts the appropriate number of points in points
+int wxPli_av_2_wxPoint2DDouble( pTHX_ SV* avref, wxPoint2DDouble** points)
+{
+    AV* av;
+
+    if( !SvROK( avref ) || 
+        ( SvTYPE( (SV*) ( av = (AV*) SvRV( avref ) ) ) != SVt_PVAV ) )
+    {
+        croak( "the value is not an array reference" );
+        return 0;
+    }
+    
+    int n = av_len( av ) + 1;
+
+    if (n % 2 != 0) 
+    {
+        croak( "the array must contain an even number of points" );
+    }
+
+    n = n / 2;
+
+    *points = new wxPoint2DDouble[n];
+
+    for( int i = 0; i < n; i++ )
+    {
+        double x = SvNV(*av_fetch( av, 2*i, 0 ));
+        double y = SvNV(*av_fetch( av, 2*i+1, 0 ));
+        (*points)[i].m_x = x;
+        (*points)[i].m_y = y;
+
+    }
+
+    return n;
 }
 
 const wxChar wxPliEmptyString[] = wxT("");
@@ -1409,6 +1469,16 @@ void wxPli_thread_sv_clone( pTHX_ const char* package, wxPliCloneSV clonefn )
 // helpers for declaring event macros
 #include "cpp/e_cback.h"
 
+// THIS, (any)
+XS(ConnectDummy);
+XS(ConnectDummy)
+{
+    dXSARGS;
+    SV* THISs = ST(0);
+    wxEvtHandler *THISo = // not needed, but sanity check
+        (wxEvtHandler*)wxPli_sv_2_object( aTHX_ THISs, "Wx::EvtHandler" );
+}
+
 // THIS, function
 XS(Connect2);
 XS(Connect2)
@@ -1501,6 +1571,9 @@ void CreateEventMacro( const char* name, unsigned char args, int id )
 
     switch( args )
     {
+    case 0:
+        cv = (CV*)newXS( buffer, ConnectDummy, "Constants.xs" );
+        break;
     case 2:
         cv = (CV*)newXS( buffer, Connect2, "Constants.xs" );
         sv_setpv((SV*)cv, "$$");

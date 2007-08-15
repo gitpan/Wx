@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Event.xs 2069 2007-07-08 15:33:40Z mbarbon $
+// RCS-ID:      $Id: Event.xs 2148 2007-08-15 17:10:50Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -530,6 +530,12 @@ wxMenuEvent::GetMenu()
 
 #endif
 
+MODULE=Wx_Evt PACKAGE=Wx::MaximizeEvent
+
+wxMouseEvent*
+wxMouseEvent::new( id = 0 )
+    wxWindowID id
+
 MODULE=Wx_Evt PACKAGE=Wx::MouseEvent
 
 wxMouseEvent*
@@ -612,6 +618,13 @@ wxMouseEvent::GetWheelDelta()
 int
 wxMouseEvent::GetLinesPerAction()
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+int
+wxMouseEvent::GetWheelAxis()
+
+#endif
+
 bool
 wxMouseEvent::IsButton()
 
@@ -662,6 +675,34 @@ wxMouseEvent::RightIsDown()
 
 bool
 wxMouseEvent::RightUp()
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+bool
+wxMouseEvent::Aux1DClick()
+
+bool
+wxMouseEvent::Aux1Down()
+
+bool
+wxMouseEvent::Aux1IsDown()
+
+bool
+wxMouseEvent::Aux1Up()
+
+bool
+wxMouseEvent::Aux2DClick()
+
+bool
+wxMouseEvent::Aux2Down()
+
+bool
+wxMouseEvent::Aux2IsDown()
+
+bool
+wxMouseEvent::Aux2Up()
+
+#endif
 
 bool
 wxMouseEvent::ShiftDown()
@@ -761,6 +802,33 @@ wxScrollWinEvent::GetOrientation()
 int
 wxScrollWinEvent::GetPosition()
 
+MODULE=Wx_Evt PACKAGE=Wx::SetCursorEvent
+
+wxSetCursorEvent*
+wxSetCursorEvent::new( x = 0, y = 0 )
+    wxCoord x
+    wxCoord y
+
+wxCoord
+wxSetCursorEvent::GetX()
+
+wxCoord
+wxSetCursorEvent::GetY()
+
+void
+wxSetCursorEvent::SetCursor( cursor )
+    wxCursor* cursor
+  C_ARGS: *cursor
+
+wxCursor*
+wxSetCursorEvent::GetCursor()
+  CODE:
+    RETVAL = new wxCursor( THIS->GetCursor() );
+  OUTPUT: RETVAL
+
+bool
+wxSetCursorEvent::HasCursor()
+
 MODULE=Wx_Evt PACKAGE=Wx::SysColourChangedEvent
 
 wxSysColourChangedEvent*
@@ -858,6 +926,30 @@ wxMouseCaptureChangedEvent::new( id = 0, capturedWindow = NULL )
 wxWindow*
 wxMouseCaptureChangedEvent::GetCapturedWindow()
 
+MODULE=Wx_Evt PACKAGE=Wx::MouseCaptureLostEvent
+
+wxMouseCaptureLostEvent*
+wxMouseCaptureLostEvent::new( eventType = 0 )
+    wxEventType eventType
+
 #endif
+
+MODULE=Wx:Evt PACKAGE=Wx::WindowCreateEvent
+
+wxWindowCreateEvent*
+wxWindowCreateEvent::new( window = NULL )
+    wxWindow* window
+
+wxWindow*
+wxWindowCreateEvent::GetWindow()
+
+MODULE=Wx:Evt PACKAGE=Wx::WindowDestroyEvent
+
+wxWindowDestroyEvent*
+wxWindowDestroyEvent::new( window = NULL )
+    wxWindow* window
+
+wxWindow*
+wxWindowDestroyEvent::GetWindow()
 
 MODULE=Wx_Evt

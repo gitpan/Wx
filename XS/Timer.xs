@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     14/02/2001
-## RCS-ID:      $Id: Timer.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2001-2004, 2006 Mattia Barbon
+## RCS-ID:      $Id: Timer.xs 2125 2007-08-11 14:41:28Z mbarbon $
+## Copyright:   (c) 2001-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -17,6 +17,16 @@ MODULE=Wx PACKAGE=Wx::TimerEvent
 
 int
 wxTimerEvent::GetInterval()
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+wxTimer*
+wxTimerEvent::GetTimer()
+  CODE:
+    RETVAL = &THIS->GetTimer();
+  OUTPUT: RETVAL
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::Timer
 

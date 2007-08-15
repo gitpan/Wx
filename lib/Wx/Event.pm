@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Event.pm 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: Event.pm 2128 2007-08-11 21:27:39Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -239,15 +239,6 @@ sub EVT_MENU_CLOSE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MENU_CLOSE, $_[1] ) 
 # MouseEvent
 #
 
-sub EVT_LEFT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_LEFT_DOWN, $_[1] ) }
-sub EVT_LEFT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_LEFT_UP, $_[1] ) }
-sub EVT_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_LEFT_DCLICK, $_[1] ) }
-sub EVT_MIDDLE_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MIDDLE_DOWN, $_[1] ) }
-sub EVT_MIDDLE_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MIDDLE_UP, $_[1] ) }
-sub EVT_MIDDLE_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MIDDLE_DCLICK, $_[1] ) }
-sub EVT_RIGHT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_RIGHT_DOWN, $_[1] ) }
-sub EVT_RIGHT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_RIGHT_UP, $_[1] ) }
-sub EVT_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_RIGHT_DCLICK, $_[1] ) }
 sub EVT_MOTION($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_MOTION, $_[1] ) }
 sub EVT_ENTER_WINDOW($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_ENTER_WINDOW, $_[1] ) }
 sub EVT_LEAVE_WINDOW($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_LEAVE_WINDOW, $_[1] ) }
@@ -263,6 +254,12 @@ sub EVT_MOUSE_EVENTS($$) {
   EVT_RIGHT_DOWN( $x, $y );
   EVT_RIGHT_UP( $x, $y );
   EVT_RIGHT_DCLICK( $x, $y );
+  EVT_AUX1_DOWN( $x, $y );
+  EVT_AUX1_UP( $x, $y );
+  EVT_AUX1_DCLICK( $x, $y );
+  EVT_AUX2_DOWN( $x, $y );
+  EVT_AUX2_UP( $x, $y );
+  EVT_AUX2_DCLICK( $x, $y );
   EVT_MOTION( $x, $y );
   EVT_ENTER_WINDOW( $x, $y );
   EVT_LEAVE_WINDOW( $x, $y );
@@ -322,6 +319,18 @@ sub EVT_SCROLL_PAGEDOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SCROLL_PAGEDOWN
 sub EVT_SCROLL_THUMBTRACK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SCROLL_THUMBTRACK, $_[1] ) }
 sub EVT_SCROLL_THUMBRELEASE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SCROLL_THUMBRELEASE, $_[1] ) }
 
+sub EVT_SCROLL($$) {
+  my( $x, $y ) = @_;
+  EVT_SCROLL_TOP( $x, $y );
+  EVT_SCROLL_BOTTOM( $x, $y );
+  EVT_SCROLL_LINEUP( $x, $y );
+  EVT_SCROLL_LINEDOWN( $x, $y );
+  EVT_SCROLL_PAGEUP( $x, $y );
+  EVT_SCROLL_PAGEDOWN( $x, $y );
+  EVT_SCROLL_THUMBTRACK( $x, $y );
+  EVT_SCROLL_THUMBRELEASE( $x, $y );
+}
+
 sub EVT_COMMAND_SCROLL_TOP($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_TOP, $_[2] ) }
 sub EVT_COMMAND_SCROLL_BOTTOM($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_BOTTOM, $_[2] ) }
 sub EVT_COMMAND_SCROLL_LINEUP($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_LINEUP, $_[2] ) }
@@ -330,6 +339,18 @@ sub EVT_COMMAND_SCROLL_PAGEUP($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROL
 sub EVT_COMMAND_SCROLL_PAGEDOWN($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_PAGEDOWN, $_[2] ) }
 sub EVT_COMMAND_SCROLL_THUMBTRACK($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_THUMBTRACK, $_[2] ) }
 sub EVT_COMMAND_SCROLL_THUMBRELEASE($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_SCROLL_THUMBRELEASE, $_[2] ) }
+
+sub EVT_COMMAND_SCROLL($$$) {
+  my( $x, $y, $z ) = @_;
+  EVT_COMMAND_SCROLL_TOP( $x, $y, $z );
+  EVT_COMMAND_SCROLL_BOTTOM( $x, $y, $z );
+  EVT_COMMAND_SCROLL_LINEUP( $x, $y, $z );
+  EVT_COMMAND_SCROLL_LINEDOWN( $x, $y, $z );
+  EVT_COMMAND_SCROLL_PAGEUP( $x, $y, $z );
+  EVT_COMMAND_SCROLL_PAGEDOWN( $x, $y, $z );
+  EVT_COMMAND_SCROLL_THUMBTRACK( $x, $y, $z );
+  EVT_COMMAND_SCROLL_THUMBRELEASE( $x, $y, $z );
+}
 
 #
 # ScrollWinEvent
@@ -367,18 +388,6 @@ sub EVT_SPLITTER_DOUBLECLICKED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMM
 #
 
 sub EVT_SYS_COLOUR_CHANGED($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_SYS_COLOUR_CHANGED, $_[1] ) }
-
-#
-# Taskbar
-#
-
-sub EVT_TASKBAR_MOVE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_MOVE, $_[1] ) }
-sub EVT_TASKBAR_LEFT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_DOWN, $_[1] ) }
-sub EVT_TASKBAR_LEFT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_UP, $_[1] ) }
-sub EVT_TASKBAR_RIGHT_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_DOWN, $_[1] ) }
-sub EVT_TASKBAR_RIGHT_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_UP, $_[1] ) }
-sub EVT_TASKBAR_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_LEFT_DCLICK, $_[1] ) }
-sub EVT_TASKBAR_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_TASKBAR_RIGHT_DCLICK, $_[1] ) }
 
 #
 # TreeEvent

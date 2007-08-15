@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2072 2007-07-08 15:41:02Z mbarbon $
+// RCS-ID:      $Id: Constant.xs 2148 2007-08-15 17:10:50Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -59,6 +59,13 @@
 #include <wx/dirdlg.h>
 #include <wx/statusbr.h>
 #include <wx/dcbuffer.h>
+#include <wx/progdlg.h>
+#include <wx/tglbtn.h>
+#include <wx/timer.h>
+#include <wx/splash.h>
+#include <wx/fdrepdlg.h>
+#include <wx/list.h>
+#include <wx/stattext.h>
 
 #include "cpp/wxapi.h"
 #include "cpp/setup.h"
@@ -92,13 +99,16 @@
 #include <wx/filepicker.h>
 #include <wx/fontpicker.h>
 #endif
-#include <wx/progdlg.h>
-#include <wx/tglbtn.h>
-#include <wx/timer.h>
-#include <wx/splash.h>
-#include <wx/fdrepdlg.h>
-#include <wx/list.h>
-#include <wx/stattext.h>
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+#include <wx/combo.h>
+#include <wx/odcombo.h>
+#endif
+#if WXPERL_W_VERSION_GE( 2, 8, 3 )
+#include <wx/srchctrl.h>
+#endif
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+#include <wx/editlbox.h>
+#endif
 
 #if WXPERL_W_VERSION_GE( 2, 7, 0 ) && !WXWIN_COMPATIBILITY_2_6
 #define wxCHB_DEFAULT         wxBK_DEFAULT
@@ -132,6 +142,19 @@
 #define wxFD_MULTIPLE wxMULTIPLE
 #define wxFD_CHANGE_DIR wxCHANGE_DIR
 #endif
+
+#if WXPERL_W_VERSION_LT( 2, 6, 0 )
+#define wxDEFAULT_CONTROL_BORDER wxBORDER_SUNKEN
+#endif
+
+#if WXPERL_W_VERSION_LT( 2, 9, 0 )
+#define wxBORDER_THEME wxBORDER_DEFAULT
+#endif
+
+#define wxNavigateBackward  wxNavigationKeyEvent::IsBackward
+#define wxNavigateForward   wxNavigationKeyEvent::IsForward
+#define wxNavigateWinChange wxNavigationKeyEvent::WinChange
+#define wxNavigateFromTab   wxNavigationKeyEvent::FromTab
 
 //////////////////////////////////////////////////////////////////////////////
 // implementation for wxPlConstantsModule OnInit/OnExit
@@ -167,6 +190,7 @@ void wxPli_remove_constant_function( double (**f)( const char*, int ) )
 // event macros
 #define SEVT( NAME, ARGS )    wxPli_StdEvent( NAME, ARGS )
 #define EVT( NAME, ARGS, ID ) wxPli_Event( NAME, ARGS, ID )
+#define DEVT( NAME )          wxPli_Event( NAME, 0, 0 )
 
 // !package: Wx::Event
 // !tag:
@@ -189,8 +213,11 @@ static wxPliEventDescription evts[] =
 #endif
     SEVT( EVT_CREATE, 3 )
     SEVT( EVT_DESTROY, 3 )
+    EVT( EVT_WINDOW_CREATE, 3, wxEVT_CREATE )
+    EVT( EVT_WINDOW_DESTROY, 3, wxEVT_DESTROY )
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
     SEVT( EVT_MOUSE_CAPTURE_LOST, 2 )
+    SEVT( EVT_SET_CURSOR, 2 )
     EVT( EVT_COLOURPICKER_CHANGED, 3, wxEVT_COMMAND_COLOURPICKER_CHANGED )
     EVT( EVT_FILEPICKER_CHANGED, 3, wxEVT_COMMAND_FILEPICKER_CHANGED )
     EVT( EVT_DIRPICKER_CHANGED, 3, wxEVT_COMMAND_DIRPICKER_CHANGED )
@@ -200,6 +227,46 @@ static wxPliEventDescription evts[] =
 #if defined(__WXMSW__)
     EVT( EVT_TREE_STATE_IMAGE_CLICK, 3, wxEVT_COMMAND_TREE_STATE_IMAGE_CLICK )
     EVT( EVT_TREE_ITEM_GETTOOLTIP, 3, wxEVT_COMMAND_TREE_ITEM_GETTOOLTIP )
+#endif
+    SEVT( EVT_TASKBAR_MOVE, 2 )
+    SEVT( EVT_TASKBAR_LEFT_DOWN, 2 )
+    SEVT( EVT_TASKBAR_LEFT_UP, 2 )
+    SEVT( EVT_TASKBAR_RIGHT_DOWN, 2 )
+    SEVT( EVT_TASKBAR_RIGHT_UP, 2 )
+    SEVT( EVT_TASKBAR_LEFT_DCLICK, 2 )
+    SEVT( EVT_TASKBAR_RIGHT_DCLICK, 2 )
+#if WXPERL_W_VERSION_GE( 2, 8, 3 )
+    SEVT( EVT_TASKBAR_CLICK, 2 )
+#endif
+    SEVT( EVT_LEFT_DOWN, 2 )
+    SEVT( EVT_LEFT_UP, 2 )
+    SEVT( EVT_LEFT_DCLICK, 2 )
+    SEVT( EVT_MIDDLE_DOWN, 2 )
+    SEVT( EVT_MIDDLE_UP, 2 )
+    SEVT( EVT_MIDDLE_DCLICK, 2 )
+    SEVT( EVT_RIGHT_DOWN, 2 )
+    SEVT( EVT_RIGHT_UP, 2 )
+    SEVT( EVT_RIGHT_DCLICK, 2 )
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    SEVT( EVT_MOVE_START, 2 )
+    SEVT( EVT_MOVE_END, 2 )
+    SEVT( EVT_AUX1_DOWN, 2 )
+    SEVT( EVT_AUX1_UP, 2 )
+    SEVT( EVT_AUX1_DCLICK, 2 )
+    SEVT( EVT_AUX2_DOWN, 2 )
+    SEVT( EVT_AUX2_UP, 2 )
+    SEVT( EVT_AUX2_DCLICK, 2 )
+#else
+    DEVT( EVT_AUX1_DOWN )
+    DEVT( EVT_AUX1_UP )
+    DEVT( EVT_AUX1_DCLICK )
+    DEVT( EVT_AUX2_DOWN )
+    DEVT( EVT_AUX2_UP )
+    DEVT( EVT_AUX2_DCLICK )
+#endif
+#if WXPERL_W_VERSION_GE( 2, 8, 3 )
+    EVT( EVT_SEARCHCTRL_CANCEL_BTN, 3, wxEVT_COMMAND_SEARCHCTRL_CANCEL_BTN )
+    EVT( EVT_SEARCHCTRL_SEARCH_BTN, 3, wxEVT_COMMAND_SEARCHCTRL_SEARCH_BTN )
 #endif
     { 0, 0, 0 }
 };
@@ -241,6 +308,7 @@ static wxPlINH inherit[] =
     I( CheckListBox,    ListBox )
     I( ControlWithItems,Control )
     I( Choice,          ControlWithItems )
+    I( EditableListBox, Panel )
     I( ListBox,         ControlWithItems )
     I( VListBox,        VScrolledWindow )
     I( PlVListBox,      VListBox )
@@ -263,6 +331,7 @@ static wxPlINH inherit[] =
     I( Slider,          Control )
     I( SpinCtrl,        Control )
     I( SpinButton,      Control )
+    I( SearchCtrl,      TextCtrl )
     I( RadioBox,        Control )
     I( RadioButton,     Control )
     I( StaticLine,      Control )
@@ -341,6 +410,10 @@ static wxPlINH inherit[] =
     I( ANIHandler,      CURHandler )
     I( TGAHandler,      ImageHandler )
 
+    I( GraphicsObject,  Object )
+    I( GraphicsPath,    GraphicsObject )
+    I( GraphicsMatrix,  GraphicsObject )
+
     I( LogTextCtrl,     Log )
     I( LogWindow,       Log )
     I( LogGui,          Log )
@@ -372,6 +445,7 @@ static wxPlINH inherit[] =
     I( FontPickerCtrl,  PickerBase )
 
     I( ComboCtrlBase,   Control )
+    I( PlComboPopup,    ComboPopup )
 #if WXPERL_W_VERSION_GE( 2, 7, 1 )
     I( GenericComboCtrl,ComboCtrlBase )
     I( ComboCtrl,       GenericComboCtrl )
@@ -379,6 +453,8 @@ static wxPlINH inherit[] =
     I( GenericComboControl,ComboCtrlBase )
     I( ComboCtrl,       GenericComboControl )
 #endif
+    I( OwnerDrawnComboBox, ComboCtrl )
+    I( PlOwnerDrawnComboBox, OwnerDrawnComboBox )
 
     I( TaskBarIcon,     EvtHandler )
     I( Process,         EvtHandler )
@@ -497,8 +573,8 @@ static wxPlINH inherit[] =
     I( JoystickEvent,   Event )
     I( ListEvent,       NotifyEvent )
     I( MenuEvent,       Event )
-    I( CreateEvent,     CommandEvent )
-    I( DestroyEvent,    CommandEvent )
+    I( WindowCreateEvent, CommandEvent )
+    I( WindowDestroyEvent, CommandEvent )
     I( MouseEvent,      Event )
     I( MoveEvent,       Event )
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
@@ -542,6 +618,7 @@ static wxPlINH inherit[] =
     I( ColourPickerEvent, CommandEvent )
     I( FileDirPickerEvent, CommandEvent )
     I( FontPickerEvent, CommandEvent )
+    I( SetCursorEvent,  Event )
 
     { 0, 0 }
 };
@@ -611,6 +688,8 @@ static double constant( const char *name, int arg )
     r( wxAbove );                       // layout constraints
     r( wxAbsolute );                    // layout constraints
     r( wxAsIs );                        // layout constraints
+
+    r( wxALWAYS_SHOW_SB );              // window
     break;
   case 'B':
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
@@ -677,6 +756,16 @@ static double constant( const char *name, int arg )
     r( wxBK_HITTEST_ONLABEL );          // bookctrl
     r( wxBK_HITTEST_ONITEM );           // bookctrl
 #endif
+    r( wxBORDER_DEFAULT );              // window
+    r( wxBORDER_DOUBLE );               // window
+    r( wxBORDER_MASK );                 // window
+    r( wxBORDER_RAISED );               // window
+    r( wxBORDER_SIMPLE );               // window
+    r( wxBORDER_STATIC );               // window
+    r( wxBORDER_SUNKEN );               // window
+    r( wxBORDER_THEME );                // window
+
+    r( wxBACKWARD );                    // sizer
     break;
   case 'C':
     r( wxCANCEL );                      // dialog
@@ -690,6 +779,10 @@ static double constant( const char *name, int arg )
     r( wxCB_DROPDOWN );                 // combobox
     r( wxCB_READONLY );                 // combobox
     r( wxCB_SORT );                     // combobox
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    r( wxCC_SPECIAL_DCLICK );           // comboctrl
+    r( wxCC_STD_BUTTON );               // comboctrl
+#endif
     r( wxCENTER );                      // dialog sizer
     r( wxCENTRE );                      // dialog sizer
     r( wxCENTER_ON_SCREEN );            // window
@@ -777,6 +870,7 @@ static double constant( const char *name, int arg )
     r( wxDEFAULT );                     // font
     r( wxDEFAULT_DIALOG_STYLE );        // dialog
     r( wxDEFAULT_FRAME_STYLE );         // frame
+    r( wxDEFAULT_CONTROL_BORDER );      // control
 #if WXPERL_W_VERSION_LT( 2, 7, 0 )
     r( wxDIALOG_MODAL );                // dialog
 #endif
@@ -886,16 +980,16 @@ static double constant( const char *name, int arg )
     r( wxEVT_MOUSEWHEEL )
     r( wxEVT_LEFT_DOWN );
     r( wxEVT_LEFT_UP );
+    r( wxEVT_LEFT_DCLICK );
     r( wxEVT_MIDDLE_DOWN );
     r( wxEVT_MIDDLE_UP );
+    r( wxEVT_MIDDLE_DCLICK );
     r( wxEVT_RIGHT_DOWN );
     r( wxEVT_RIGHT_UP );
+    r( wxEVT_RIGHT_DCLICK );
     r( wxEVT_MOTION );
     r( wxEVT_ENTER_WINDOW );
     r( wxEVT_LEAVE_WINDOW );
-    r( wxEVT_LEFT_DCLICK );
-    r( wxEVT_MIDDLE_DCLICK );
-    r( wxEVT_RIGHT_DCLICK );
     r( wxEVT_SET_FOCUS );
     r( wxEVT_KILL_FOCUS );
 
@@ -1017,7 +1111,18 @@ static double constant( const char *name, int arg )
 #if WXPERL_W_VERSION_GE( 2, 5, 4 )
     r( wxEXEC_NODISABLE );              // execute
 #endif
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxEXEC_BLOCK );                  // execute
+#endif
     r( wxEAST );
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxEL_ALLOW_NEW );                // editablelistbox
+    r( wxEL_ALLOW_EDIT );               // editablelistbox
+    r( wxEL_ALLOW_DELETE );             // editablelistbox
+    r( wxEL_NO_REORDER );               // editablelistbox
+    r( wxEL_DEFAULT_STYLE );            // editablelistbox
+#endif
     break;
   case 'F':
     r( wxFromStart );
@@ -1155,6 +1260,7 @@ static double constant( const char *name, int arg )
     r( wxFNTP_FONTDESC_AS_LABEL );
     r( wxFNTP_USEFONT_FOR_LABEL );
 #endif
+    r( wxFORWARD );                     // sizer
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge
@@ -1289,6 +1395,34 @@ static double constant( const char *name, int arg )
     r( wxID_ZOOM_OUT );                 // id
 #endif
 
+    r( wxID_CLOSE_ALL );                // id
+    r( wxID_CLOSE_FRAME );              // id
+    r( wxID_DEFAULT );                  // id
+    r( wxID_DELETE );                   // id
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    r( wxID_EDIT );                     // id
+    r( wxID_FILE );                     // id
+#endif
+    r( wxID_FILEDLGG );                 // id
+    r( wxID_ICONIZE_FRAME );            // id
+    r( wxID_MAXIMIZE_FRAME );           // id
+    r( wxID_MORE );                     // id
+    r( wxID_MOVE_FRAME );               // id
+    r( wxID_REPLACE );                  // id
+    r( wxID_REPLACE_ALL );              // id
+    r( wxID_RESET );                    // id
+    r( wxID_RESIZE_FRAME );             // id
+    r( wxID_RESTORE_FRAME );            // id
+    r( wxID_SETUP );                    // id
+    r( wxID_VIEW_DETAILS );             // id
+    r( wxID_VIEW_LARGEICONS );          // id
+    r( wxID_VIEW_LIST );                // id
+    r( wxID_VIEW_SMALLICONS );          // id
+    r( wxID_VIEW_SORTDATE );            // id
+    r( wxID_VIEW_SORTNAME );            // id
+    r( wxID_VIEW_SORTSIZE );            // id
+    r( wxID_VIEW_SORTTYPE );            // id 
+
     r( wxID_SEPARATOR );                // id
 
     r( wxIMAGELIST_DRAW_NORMAL );       // imagelist
@@ -1310,11 +1444,13 @@ static double constant( const char *name, int arg )
 
     r( wxInRegion );                    // region
 
-    r( wxITEM_SEPARATOR );              // menu
-    r( wxITEM_NORMAL );                 // menu
-    r( wxITEM_CHECK );                  // menu
-    r( wxITEM_RADIO );                  // menu
-
+    r( wxITEM_SEPARATOR );              // menu toolbar
+    r( wxITEM_NORMAL );                 // menu toolbar
+    r( wxITEM_CHECK );                  // menu toolbar
+    r( wxITEM_RADIO );                  // menu toolbar
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxITEM_DROPDOWN );               // toolbar
+#endif
     break;
   case 'J':
     r( wxJOIN_BEVEL );                  // pen
@@ -1780,6 +1916,20 @@ static double constant( const char *name, int arg )
     r( wxMM_METRIC );                   // dc
     r( wxMM_LOMETRIC );                 // dc
     r( wxMM_TEXT );                     // dc
+
+    r( wxMORE );                        // sizer
+
+    r( wxMB_DOCKABLE );                 // menu
+
+    r( wxMOUSE_BTN_ANY );
+    r( wxMOUSE_BTN_NONE );
+    r( wxMOUSE_BTN_LEFT );
+    r( wxMOUSE_BTN_MIDDLE );
+    r( wxMOUSE_BTN_RIGHT );
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxMOUSE_BTN_AUX1 );
+    r( wxMOUSE_BTN_AUX2 );
+#endif
     break;
   case 'N':
     r( wxNB_FIXEDWIDTH );               // notebook
@@ -1807,6 +1957,13 @@ static double constant( const char *name, int arg )
     r( wxNOR );                         // dc
     r( wxNO_OP );                       // dc
     r( wxNORTH );
+
+    r( wxNavigateBackward );
+    r( wxNavigateForward );
+    r( wxNavigateWinChange );
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+    r( wxNavigateFromTab );
+#endif
     break;
   case 'O':
     r( wxOK );                          // dialog
@@ -1820,6 +1977,13 @@ static double constant( const char *name, int arg )
     r( wxOR_REVERSE );                  // dc
 
     r( wxOutRegion );                   // region
+
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    r( wxODCB_DCLICK_CYCLES );          // ownerdrawncombobox
+    r( wxODCB_STD_CONTROL_PAINT );      // ownerdrawncombobox
+    r( wxODCB_PAINTING_CONTROL );       // ownerdrawncombobox
+    r( wxODCB_PAINTING_SELECTED );      // ownerdrawncombobox
+#endif
     break;
   case 'P':
 #if WXPERL_W_VERSION_LT( 2, 7, 0 )
@@ -1863,6 +2027,8 @@ static double constant( const char *name, int arg )
 
     r( wxRight );                       // layout constraints
     r( wxRightOf );                     // layout constraints
+
+    r( wxRESET );                       // sizer
     break;
   case 'S':
 
@@ -1896,6 +2062,12 @@ static double constant( const char *name, int arg )
     r( wxSTATIC_BORDER );               // window
     r( wxSTAY_ON_TOP );                 // frame dialog
     r( wxST_NO_AUTORESIZE );            // statictext
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxST_ELLIPSIZE_START );          // statictext
+    r( wxST_ELLIPSIZE_MIDDLE );         // statictext
+    r( wxST_ELLIPSIZE_END );            // statictext
+    r( wxST_MARKUP );                   // statictext
+#endif
     r( wxST_SIZEGRIP );                 // statusbar
     r( wxSUNKEN_BORDER );               // window
     r( wxSYSTEM_MENU );                 // frame dialog
@@ -2089,6 +2261,8 @@ static double constant( const char *name, int arg )
     r( wxSTOCK_MENU );
 #endif
     r( wxSOUTH );
+
+    r( wxSETUP );                       // sizer
     break;
   case 'T':
     r( wxTAB_TRAVERSAL );               // panel
@@ -2670,7 +2844,7 @@ _get_packages()
 #if wxPERL_USE_DATETIME
     "use Wx::DateTime;"
 #endif
-#if wxPERL_USE_MEDIA && WXPERL_W_VERSION_GE( 2, 6, 0 )
+#if wxPERL_USE_MEDIA && wxUSE_MEDIACTRL && WXPERL_W_VERSION_GE( 2, 6, 0 )
     "use Wx::Media;"
 #endif
 #if wxPERL_USE_RICHTEXT && WXPERL_W_VERSION_GE( 2, 7, 0 )

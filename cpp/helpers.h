@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h 2070 2007-07-08 15:35:33Z mbarbon $
+// RCS-ID:      $Id: helpers.h 2111 2007-08-03 19:29:36Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -29,6 +29,7 @@ class WXDLLEXPORT wxInputStream;
 class WXDLLEXPORT wxOutputStream;
 class WXDLLEXPORT wxEvtHandler;
 class WXDLLEXPORT wxClientDataContainer;
+class WXDLLEXPORT wxPoint2DDouble;
 typedef wxInputStream Wx_InputStream;
 typedef wxOutputStream Wx_OutputStream;
 typedef const char* PlClassName; // for typemap
@@ -219,6 +220,7 @@ int FUNCPTR( wxPli_av_2_intarray )( pTHX_ SV* avref, int** array );
 int wxPli_av_2_userdatacdarray( pTHX_ SV* avref, wxPliUserDataCD*** array );
 int FUNCPTR( wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
 int FUNCPTR( wxPli_av_2_arrayint )( pTHX_ SV* avref, wxArrayInt* array );
+int wxPli_av_2_wxPoint2DDouble( pTHX_ SV* avref, wxPoint2DDouble** points);
 
 // pushes the elements of the array into the stack
 // the caller _MUST_ call PUTBACK; before the function
@@ -241,6 +243,9 @@ void wxPli_non_objarray_push( pTHX_ const A& things, const char* package )
 
 void wxPli_stringarray_push( pTHX_ const wxArrayString& strings );
 void FUNCPTR( wxPli_intarray_push )( pTHX_ const wxArrayInt& ints );
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+void wxPli_doublearray_push( pTHX_ const wxArrayDouble& doubles );
+#endif
 AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings );
 AV* wxPli_uchararray_2_av( pTHX_ const unsigned char* array, int count );
 AV* FUNCPTR( wxPli_objlist_2_av )( pTHX_ const wxList& objs );

@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     28/08/2002
-## RCS-ID:      $Id: Wizard.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2002-2004, 2006 Mattia Barbon
+## RCS-ID:      $Id: Wizard.xs 2130 2007-08-11 21:30:15Z mbarbon $
+## Copyright:   (c) 2002-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -82,6 +82,21 @@ wxWizard::SetPageSize( size )
 
 wxSizer*
 wxWizard::GetPageAreaSizer()
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 8, 5 )
+
+wxBitmap*
+wxWizard::GetBitmap()
+  CODE:
+    RETVAL = new wxBitmap( THIS->GetBitmap() );
+  OUTPUT: RETVAL
+
+void
+wxWizard::SetBitmap( bitmap )
+    wxBitmap* bitmap
+  C_ARGS: *bitmap
 
 #endif
 

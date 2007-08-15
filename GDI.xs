@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: GDI.xs 2057 2007-06-18 23:03:00Z mbarbon $
-// Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
+// RCS-ID:      $Id: GDI.xs 2157 2007-08-15 22:11:02Z mbarbon $
+// Copyright:   (c) 2000-2003, 2005-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -33,6 +33,14 @@ INCLUDE: XS/Pen.xs
 INCLUDE: XS/Brush.xs
 INCLUDE: XS/Image.xs
 INCLUDE: XS/Palette.xs
+
+#if 0
+
+INCLUDE: XS/GraphicsContext.xs
+INCLUDE: XS/GraphicsPath.xs
+INCLUDE: XS/GraphicsMatrix.xs
+
+#endif
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 

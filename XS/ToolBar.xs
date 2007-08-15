@@ -4,16 +4,14 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: ToolBar.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2000-2006 Mattia Barbon
+## RCS-ID:      $Id: ToolBar.xs 2125 2007-08-11 14:41:28Z mbarbon $
+## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
 #include <wx/toolbar.h>
-#if 0
-#include <wx/tbarsmpl.h>
-#endif
+#include <wx/menu.h>
 
 MODULE=Wx PACKAGE=Wx::ToolBarToolBase
 
@@ -157,6 +155,17 @@ wxToolBarToolBase::SetBitmap2( bmp )
 void
 wxToolBarToolBase::SetClientData( data = 0 )
     Wx_UserDataO* data
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+void
+wxToolBarToolBase::SetDropdownMenu( menu )
+    wxMenu* menu
+
+wxMenu*
+wxToolBarToolBase::GetDropdownMenu()
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::ToolBarBase
 
@@ -450,10 +459,35 @@ void
 wxToolBarBase::SetToolSeparation( separation )
     int separation
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+void
+wxToolBarBase::SetToolNormalBitmap( id, bitmap )
+    int id
+    wxBitmap* bitmap
+  C_ARGS: id, *bitmap
+
+void
+wxToolBarBase::SetToolDisabledBitmap( id, bitmap );
+    int id
+    wxBitmap* bitmap
+  C_ARGS: id, *bitmap
+
+#endif
+
 void
 wxToolBarBase::ToggleTool( toolId, toggle )
     int toolId
     bool toggle
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+bool
+wxToolBarBase::SetDropdownMenu( toolid, menu )
+    int toolid
+    wxMenu* menu
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::ToolBar
 

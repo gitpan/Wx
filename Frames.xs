@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Frames.xs 2057 2007-06-18 23:03:00Z mbarbon $
-// Copyright:   (c) 2000-2003, 2005-2006 Mattia Barbon
+// RCS-ID:      $Id: Frames.xs 2129 2007-08-11 21:29:29Z mbarbon $
+// Copyright:   (c) 2000-2003, 2005-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,9 @@ INCLUDE: XS/ColourDialog.xs
 INCLUDE: XS/DirDialog.xs
 INCLUDE: XS/FileDialog.xs
 INCLUDE: XS/TextEntryDialog.xs
-INCLUDE: XS/MessageDialog.xs
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/MessageDialog.xsp |
+
 INCLUDE: XS/ProgressDialog.xs
 INCLUDE: XS/SingleChoiceDialog.xs
 INCLUDE: XS/MultiChoiceDialog.xs

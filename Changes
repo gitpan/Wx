@@ -1,5 +1,11 @@
 Revision history for Perl extension Wx.
 
+0.76  Thu Aug 16 00:21:00 CEST 2007
+	- Added wxEditableListBox (2.9).
+	- Added wxSearchCtrl (2.8).
+	- Added wxComboCtrl and wxOwnerDrawnComboBox (2.7).
+	- Added EVT_HTML_XXX event handlers.
+
 0.75  Sun Jul  8 22:43:41 CEST 2007
 	- wxWidgets 2.9.x compatibility.
 	- Changed wxInputStream::READLINE to always return bytes.
@@ -42,7 +48,7 @@ Revision history for Perl extension Wx.
 
 0.64  Sun Nov 26 18:32:03 CET 2006
 	- Removed support for wxWidgets 2.7.0 and 2.7.1.
-        - Added Wx::GridCellAutoWrapStringRenderer,
+	- Added Wx::GridCellAutoWrapStringRenderer,
 	  Wx::GridCellAutoWrapStringEditor, Wx::GridCellEnumRenderer,
 	  Wx::GridCellEnumEditor, Wx::GridCellDateTimeRenderer
 	  (thanks to Mark Dootson).

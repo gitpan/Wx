@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Window.xs 2057 2007-06-18 23:03:00Z mbarbon $
-// Copyright:   (c) 2000-2002, 2004-2006 Mattia Barbon
+// RCS-ID:      $Id: Window.xs 2139 2007-08-12 13:33:17Z mbarbon $
+// Copyright:   (c) 2000-2002, 2004-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -698,6 +698,19 @@ wxWindow::MoveBeforeInTabOrder( window )
 void
 wxWindow::MoveAfterInTabOrder( window )
     wxWindow* window
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+# wxNavigateBackward, wxNavigateForward, wxNavigateWinChange, wxNavigateFromTab
+bool
+wxWindow::NavigateIn( flags = wxNavigationKeyEvent::IsForward )
+    int flags
+
+bool
+wxWindow::Navigate( flags = wxNavigationKeyEvent::IsForward )
+    int flags
 
 #endif
 

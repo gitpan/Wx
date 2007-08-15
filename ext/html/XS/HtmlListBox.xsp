@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     19/09/2006
-## RCS-ID:      $Id: HtmlListBox.xsp,v 1.3 2006/11/02 18:35:30 mbarbon Exp $
-## Copyright:   (c) 2006 Mattia Barbon
+## RCS-ID:      $Id: HtmlListBox.xsp 2129 2007-08-11 21:29:29Z mbarbon $
+## Copyright:   (c) 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -164,7 +164,15 @@ new( ... )
     wxString GetString( unsigned int n ) const;
 ##    wxArrayString GetStrings() const;
     void SetString( unsigned int n, const wxString& s );
-    void Clear();
+##    void Clear();
+
+%{
+void
+wxSimpleHtmlListBox::Clear()
+  CODE:
+    THIS->wxVListBox::Clear();
+%}
+
     void Delete( unsigned int n );
     %name{AppendStrings} void Append( const wxArrayString& strings );
     %name{AppendString} void Append( const wxString& item );

@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     12/11/2006
-## RCS-ID:      $Id: AuiNotebook.xsp,v 1.2 2006/12/03 14:56:38 mbarbon Exp $
-## Copyright:   (c) 2006 Mattia Barbon
+## RCS-ID:      $Id: AuiNotebook.xsp 2139 2007-08-12 13:33:17Z mbarbon $
+## Copyright:   (c) 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -98,5 +98,10 @@ wxAuiNotebook::new( ... )
 
 #if WXPERL_W_VERSION_GE( 2, 8, 0 )
     void Split( size_t page, int direction );
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    const wxAuiManager* GetAuiManager()
+        %code{% RETVAL = &THIS->GetAuiManager(); %};
 #endif
 };

@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/02/2001
-## RCS-ID:      $Id: ListCtrl.xs 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: ListCtrl.xs 2145 2007-08-15 10:22:29Z mbarbon $
 ## Copyright:   (c) 2001-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -282,10 +282,10 @@ wxListItemAttr::GetFont()
 
 MODULE=Wx PACKAGE=Wx::ListCtrl
 
-#! OnGetItemText
-#! OnGetItemImage
-#! OnGetItemAttr
-#! OnGetItemColumnImage
+#!sub OnGetItemText
+#!sub OnGetItemImage
+#!sub OnGetItemAttr
+#!sub OnGetItemColumnImage
 
 void
 new( ... )

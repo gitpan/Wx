@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     13/12/2001
-## RCS-ID:      $Id: Config.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2001-2002, 2004 Mattia Barbon
+## RCS-ID:      $Id: Config.xs 2132 2007-08-11 21:31:18Z mbarbon $
+## Copyright:   (c) 2001-2002, 2004, 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -190,6 +190,20 @@ wxConfigBase::ReadBool( key, def = false )
   OUTPUT:
     RETVAL
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 ) && wxUSE_BASE64
+
+SV*
+wxConfigBase::ReadBinary( key )
+    wxString key
+  CODE:
+    wxMemoryBuffer data;
+    THIS->Read( key, &data );
+    RETVAL = newSVpvn( (const char*)data.GetData(), data.GetDataLen() );
+  OUTPUT:
+    RETVAL
+
+#endif
+
 bool
 wxConfigBase::RenameEntry( oldName, newName )
      wxString oldName
@@ -245,6 +259,22 @@ wxConfigBase::WriteBool( key, value )
     bool value
   CODE:
     THIS->Write( key, value );
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 ) && wxUSE_BASE64
+
+void
+wxConfigBase::WriteBinary( key, value )
+    wxString key
+    SV* value
+  CODE:
+    STRLEN len;
+    char* buffer = SvPV( value, len );
+    wxMemoryBuffer data( len );
+    data.SetDataLen( len );
+    memcpy( data.GetData(), buffer, len );
+    THIS->Write( key, data );
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::RegConfig
 

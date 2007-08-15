@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/02/2001
-## RCS-ID:      $Id: TreeCtrl.xs 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: TreeCtrl.xs 2127 2007-08-11 18:52:34Z mbarbon $
 ## Copyright:   (c) 2001-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -209,6 +209,18 @@ wxTreeCtrl::Collapse( item )
     wxTreeItemId* item
   CODE:
     THIS->Collapse( *item );
+
+#if WXPERL_W_VERSION_GE( 2, 8, 3 )
+
+void
+wxTreeCtrl::CollapseAll()
+
+void
+wxTreeCtrl::CollapseAllChildren( item )
+    wxTreeItemId* item
+  C_ARGS: *item
+
+#endif
 
 void
 wxTreeCtrl::CollapseAndReset( item )
@@ -572,6 +584,13 @@ bool
 wxTreeCtrl::IsVisible( item )
     wxTreeItemId* item
   C_ARGS: *item
+
+#if WXPERL_W_VERSION_GE( 2, 8, 3 )
+
+bool
+wxTreeCtrl::IsEmpty()
+
+#endif
 
 bool
 wxTreeCtrl::ItemHasChildren( item )

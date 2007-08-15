@@ -5,8 +5,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     25/08/2003
-## RCS-ID:      $Id: make_ppm.pl 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2003, 2006 Mattia Barbon
+## RCS-ID:      $Id: make_ppm.pl 2089 2007-07-21 12:10:50Z mbarbon $
+## Copyright:   (c) 2003, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -41,19 +41,19 @@ foreach ( @files ) {
 }
 
 my $auth   = 'Mattia Barbon <mbarbon@cpan.org>';
-my $wx_ver = Module::Info->new_from_file( 'lib/Alien/wxWidgets.pm' )->version;
+my $wx_ver = Module::Info->new_from_file( 'Wx.pm' )->version;
 
 my @ppms =
   ( { files    => [ @bin ],
-      package  => 'Alien-wxWidgets',
+      package  => 'Wx',
       version  => $wx_ver,
-      abstract => 'get information about a wxWidgets build',
+      abstract => 'perl interface to the wxWigdets GUI library',
       author   => $auth,
     },
     { files    => [ @dev ],
-      package  => 'Alien-wxWidgets-dev',
+      package  => 'Wx-dev',
       version  => $wx_ver,
-      abstract => 'developement files for Alien-wxWidgets',
+      abstract => 'developement files for wxPerl',
       author   => $auth,
     },
   );

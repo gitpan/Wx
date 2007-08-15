@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Menu.xs 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: Menu.xs 2141 2007-08-12 15:09:36Z mbarbon $
 ## Copyright:   (c) 2000-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -478,9 +478,21 @@ wxString
 wxMenuBar::GetLabel( id )
     int id
 
+#if !WXPERL_W_VERSION_GE( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+
 wxString
 wxMenuBar::GetLabelTop( id )
     int id
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+wxString
+wxMenuBar::GetMenuLabel( id )
+    int id
+
+#endif
 
 wxMenu*
 wxMenuBar::GetMenu( index )
@@ -526,10 +538,23 @@ wxMenuBar::SetLabel( id, label )
     int id
     wxString label
 
+#if !WXPERL_W_VERSION_GE( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+
 void
 wxMenuBar::SetLabelTop( pos, label )
     int pos
     wxString label
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+void
+wxMenuBar::SetMenuLabel( pos, label )
+    int pos
+    wxString label
+
+#endif
 
 bool
 wxMenuBar::IsEnabledTop( id )
@@ -596,6 +621,8 @@ wxMenuItem::GetId()
 wxItemKind
 wxMenuItem::GetKind()
 
+#if !WXPERL_W_VERSION_GE( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+
 wxString
 wxMenuItem::GetLabel()
 
@@ -607,6 +634,29 @@ GetLabelFromText( text )
   OUTPUT:
     RETVAL
 
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+wxString
+wxMenuItem::GetItemLabel()
+
+wxString
+wxMenuItem::GetItemLabelText()
+
+wxString
+GetLabelText( text )
+    wxString text
+  CODE:
+    RETVAL = wxMenuItem::GetLabelText( text );
+  OUTPUT:
+    RETVAL
+
+#endif
+
+wxMenu*
+wxMenuItem::GetMenu()
+
 #if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 int
@@ -614,8 +664,12 @@ wxMenuItem::GetMarginWidth()
 
 #endif
 
+#if !WXPERL_W_VERSION_GE( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+
 wxString
 wxMenuItem::GetText()
+
+#endif
 
 wxMenu*
 wxMenuItem::GetSubMenu()
@@ -643,6 +697,9 @@ wxMenuItem::IsEnabled()
 bool
 wxMenuItem::IsSeparator()
 
+bool 
+wxMenuItem::IsSubMenu()
+
 #if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 
 void
@@ -662,6 +719,30 @@ wxMenuItem::SetFont( font )
 void
 wxMenuItem::SetHelp( helpString )
     wxString helpString
+
+void 
+wxMenuItem::SetMenu( menu )
+    wxMenu* menu
+
+void 
+wxMenuItem::SetSubMenu( menu )
+    wxMenu* menu
+
+#if !WXPERL_W_VERSION_GE( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+
+void
+wxMenuItem::SetText( text )
+    wxString text
+
+#endif
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+void
+wxMenuItem::SetItemLabel( label )
+    wxString label
+
+#endif
 
 #if defined( __WXMSW__ ) && !defined( __WXWINCE__ )
 

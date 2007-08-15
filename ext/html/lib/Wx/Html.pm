@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     17/03/2001
-## RCS-ID:      $Id: Html.pm 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: Html.pm 2084 2007-07-18 21:34:14Z vadz $
 ## Copyright:   (c) 2001-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -51,6 +51,14 @@ package Wx::PlHtmlListBox;      @ISA = qw(Wx::HtmlListBox);
 package Wx::SimpleHtmlListBox;  @ISA = qw(Wx::HtmlListBox);
 package Wx::HtmlCellEvent;      @ISA = qw(Wx::CommandEvent);
 package Wx::HtmlLinkEvent;      @ISA = qw(Wx::CommandEvent);
+
+package Wx::Event;
+
+use strict;
+
+sub EVT_HTML_CELL_CLICKED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_HTML_CELL_CLICKED, $_[2] ) }
+sub EVT_HTML_CELL_HOVER($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_HTML_CELL_HOVER, $_[2] ) }
+sub EVT_HTML_LINK_CLICKED($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_HTML_LINK_CLICKED, $_[2] ) }
 
 1;
 

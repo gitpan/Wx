@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     11/11/2006
-## RCS-ID:      $Id: typemap.xsp,v 1.2 2006/11/12 17:27:17 mbarbon Exp $
-## Copyright:   (c) 2006 Mattia Barbon
+## RCS-ID:      $Id: typemap.xsp 2143 2007-08-12 19:41:47Z mbarbon $
+## Copyright:   (c) 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -14,6 +14,7 @@
 %typemap{wxAuiNotebookEvent *}{simple};
 %typemap{wxAuiNotebook *}{simple};
 %typemap{wxAuiManager *}{simple};
+%typemap{const wxAuiManager *}{simple};
 %typemap{wxAuiPaneInfo *}{simple};
 %typemap{const wxAuiPaneInfo&}{reference};
 %typemap{wxAuiPaneInfo&}{reference};

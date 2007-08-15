@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Controls.xs 2065 2007-06-24 20:41:54Z mbarbon $
+// RCS-ID:      $Id: Controls.xs 2152 2007-08-15 17:34:56Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -29,6 +29,7 @@
 #define wxDefaultValidatorPtr (wxValidator*)&wxDefaultValidator
 #define wxBLACKPtr (wxColour*)wxBLACK
 #define wxNORMAL_FONTPtr (wxFont*)wxNORMAL_FONT
+#define wxNullBitmapPtr (wxBitmap*) &wxNullBitmap
 
 #undef THIS
 
@@ -49,108 +50,11 @@ wxControl::Command( event )
   CODE:
     THIS->Command( *event );
 
-MODULE=Wx_Ctrl PACKAGE=Wx::ControlWithItems
-
-void
-wxControlWithItems::Append( ... )
-  PPCODE:
-    BEGIN_OVERLOAD()
-        MATCH_REDISP( wxPliOvl_s_s, AppendData )
-        MATCH_REDISP( wxPliOvl_s, AppendString )
-    END_OVERLOAD( Wx::ControlWithItems::Append )
-
-int
-wxControlWithItems::AppendString( item )
-    wxString item
-  CODE:
-    RETVAL = THIS->Append( item );
-  OUTPUT: RETVAL
-
-int
-wxControlWithItems::AppendData( item, data )
-    wxString item
-    wxPliUserDataCD* data
-  CODE:
-    RETVAL = THIS->Append( item, data );
-  OUTPUT: RETVAL
-
-void
-wxControlWithItems::Delete( n )
-    int n
-
-int
-wxControlWithItems::FindString( ... )
-  PPCODE:
-    BEGIN_OVERLOAD()
-#if WXPERL_W_VERSION_GE( 2, 7, 2 )
-        MATCH_REDISP( wxPliOvl_s_b, FindStringCase )
-#endif
-        MATCH_REDISP( wxPliOvl_s, FindStringNoCase )
-    END_OVERLOAD( Wx::ControlWithItems::FindString )
-
-int
-wxControlWithItems::FindStringNoCase( string )
-    wxString string
-  CODE:
-    RETVAL = THIS->FindString( string );
-  OUTPUT: RETVAL
-
-#if WXPERL_W_VERSION_GE( 2, 7, 2 )
-
-int
-wxControlWithItems::FindStringCase( string, sensitiv )
-    wxString string
-    bool sensitiv
-  CODE:
-    RETVAL = THIS->FindString( string, sensitiv );
-  OUTPUT: RETVAL
-
-#endif
-
-int
-wxControlWithItems::GetCount()
-
-int
-wxControlWithItems::GetSelection()
-
-wxString
-wxControlWithItems::GetString( n )
-    int n
-
-void
-wxControlWithItems::GetStrings()
-  PPCODE:
-    wxArrayString strings = THIS->GetStrings();
-    PUTBACK;
-    wxPli_stringarray_push( aTHX_ strings );
-    SPAGAIN;
-
-wxString
-wxControlWithItems::GetStringSelection()
-
-wxPliUserDataCD*
-wxControlWithItems::GetClientData( n )
-    int n
-  CODE:
-    RETVAL = (wxPliUserDataCD*) THIS->GetClientObject( n );
-  OUTPUT:
-    RETVAL
-
-#if WXPERL_W_VERSION_GE( 2, 5, 1 )
-
-bool
-wxControlWithItems::IsEmpty()
-
-#endif
-
-void
-wxControlWithItems::SetClientData( n, data )
-    int n
-    wxPliUserDataCD* data
-  CODE:
-    THIS->SetClientObject( n, data );
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/ControlWithItems.xsp |
 
 INCLUDE: XS/BitmapButton.xs
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/EditableListBox.xsp |
 
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/BookCtrl.xsp |
 
@@ -165,6 +69,14 @@ INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/Treebook.xsp |
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/HyperlinkCtrl.xsp |
 
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/VListBox.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/SearchCtrl.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/ComboPopup.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/ComboCtrl.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/OwnerDrawnComboBox.xsp |
 
 INCLUDE: XS/Button.xs
 INCLUDE: XS/CheckBox.xs

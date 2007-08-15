@@ -45,6 +45,7 @@ wxArrayInt              T_ARRAYINT
 wxTextPos               T_IV
 wxTextAttrAlignment     T_ENUM
 wxIdleMode              T_ENUM
+wxDouble                T_DOUBLE
 
 wxFindReplaceDialogStyles T_ENUM
 wxFindReplaceFlags      T_ENUM
@@ -122,7 +123,14 @@ wxValidator *           O_WXOBJECT
 wxCheckBox *            O_WXEVTHANDLER
 wxChoice *              O_WXEVTHANDLER
 wxComboBox *            O_WXEVTHANDLER
+wxComboCtrl *           O_WXEVTHANDLER
+wxComboCtrlBase *       O_WXEVTHANDLER
+wxComboPopup *          O_NON_WXOBJECT
+wxPlComboPopup *        O_NON_WXOBJECT
+wxOwnerDrawnComboBox *  O_WXEVTHANDLER
+wxPlOwnerDrawnComboBox * O_WXEVTHANDLER
 wxControlWithItems *    O_WXOBJECT
+wxEditableListBox *     O_WXOBJECT
 wxListBox *             O_WXEVTHANDLER
 wxStaticBox *           O_WXEVTHANDLER
 wxRadioButton *         O_WXEVTHANDLER
@@ -145,6 +153,7 @@ wxVScrolledWindow *     O_WXEVTHANDLER
 wxVListBox *            O_WXEVTHANDLER
 wxPlVListBox *          O_WXEVTHANDLER
 wxSplitterWindow *      O_WXEVTHANDLER
+wxSearchCtrl *          O_WXEVTHANDLER
 wxSashWindow *          O_WXEVTHANDLER
 wxToggleButton *        O_WXEVTHANDLER
 wxSplashScreen *        O_WXOBJECT
@@ -317,6 +326,14 @@ wxSingleInstanceChecker * O_NON_WXOBJECT_THR
 
 wxWave *                O_NON_WXOBJECT
 
+wxGraphicsBrush *       O_WXOBJECT
+wxGraphicsContext *     O_WXOBJECT
+wxGraphicsFont *        O_WXOBJECT
+wxGraphicsMatrix *      O_WXOBJECT
+wxGraphicsObject *      O_WXOBJECT
+wxGraphicsPath *        O_WXOBJECT
+wxGraphicsPen *         O_WXOBJECT
+
 # events
 wxEvent *               O_WXOBJECT_THR
 wxActivateEvent *       O_WXOBJECT_THR
@@ -339,6 +356,7 @@ wxListEvent *           O_WXOBJECT_THR
 wxMaximizeEvent *       O_WXOBJECT_THR
 wxMenuEvent *           O_WXOBJECT_THR
 wxMouseCaptureChangedEvent * O_WXOBJECT_THR
+wxMouseCaptureLostEvent * O_WXOBJECT_THR
 wxMouseEvent *          O_WXOBJECT_THR
 wxMoveEvent *           O_WXOBJECT_THR
 wxNotebookEvent *       O_WXOBJECT_THR
@@ -351,6 +369,7 @@ wxScrollEvent *         O_WXOBJECT_THR
 wxScrollWinEvent *      O_WXOBJECT_THR
 wxSpinEvent *           O_WXOBJECT_THR
 wxSplitterEvent *       O_WXOBJECT_THR
+wxSetCursorEvent *      O_WXOBJECT_THR
 wxSysColourChangedEvent * O_WXOBJECT_THR
 wxTaskBarIconEvent *    O_WXOBJECT_THR
 wxTimerEvent *          O_WXOBJECT_THR
@@ -367,6 +386,8 @@ wxPowerEvent *          O_WXOBJECT_THR
 wxColourPickerEvent *   O_WXOBJECT_THR
 wxFileDirPickerEvent *  O_WXOBJECT_THR
 wxFontPickerEvent *     O_WXOBJECT_THR
+wxWindowCreateEvent *   O_WXOBJECT_THR
+wxWindowDestroyEvent *  O_WXOBJECT_THR
 
 wxPlEvent *             O_WXOBJECT_THR
 wxPlCommandEvent *      O_WXOBJECT_THR
