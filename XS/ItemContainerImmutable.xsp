@@ -1,10 +1,10 @@
 #############################################################################
-## Name:        XS/ItemContainerImmutable.xs
+## Name:        XS/ItemContainerImmutable.xsp
 ## Purpose:     XS for Wx::ItemContainerImmutable
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     14/08/2007
-## RCS-ID:      $Id: ItemContainerImmutable.xsp 2152 2007-08-15 17:34:56Z mbarbon $
+## RCS-ID:      $Id: ItemContainerImmutable.xsp 2163 2007-08-15 22:46:51Z mbarbon $
 ## Copyright:   (c) 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

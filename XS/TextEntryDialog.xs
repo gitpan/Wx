@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     27/11/2000
-## RCS-ID:      $Id: TextEntryDialog.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2000-2001, 2004 Mattia Barbon
+## RCS-ID:      $Id: TextEntryDialog.xs 2180 2007-08-18 20:31:57Z mbarbon $
+## Copyright:   (c) 2000-2001, 2004, 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -15,7 +15,7 @@
 MODULE=Wx PACKAGE=Wx::TextEntryDialog
 
 wxTextEntryDialog*
-wxTextEntryDialog::new( parent, message, caption = wxGetTextFromUserPromptStr, defaultValue = wxEmptyString, style = wxOK|wxCANCEL|wxCENTRE, pos = wxDefaultPosition )
+wxTextEntryDialog::new( parent, message, caption = wxGetTextFromUserPromptStr, defaultValue = wxEmptyString, style = wxTextEntryDialogStyle, pos = wxDefaultPosition )
     wxWindow* parent
     wxString message
     wxString caption
@@ -32,6 +32,21 @@ wxTextEntryDialog::SetValue( string )
 
 int
 wxTextEntryDialog::ShowModal()
+
+MODULE=Wx PACKAGE=Wx::PasswordEntryDialog
+
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+
+wxPasswordEntryDialog*
+wxPasswordEntryDialog::new( parent, message, caption = wxGetPasswordFromUserPromptStr, defaultValue = wxEmptyString, style = wxTextEntryDialogStyle, pos = wxDefaultPosition )
+    wxWindow* parent
+    wxString message
+    wxString caption
+    wxString defaultValue
+    long style
+    wxPoint pos
+
+#endif
 
 MODULE=Wx PACKAGE=Wx::NumberEntryDialog
 

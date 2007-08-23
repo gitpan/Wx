@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Frames.xs 2129 2007-08-11 21:29:29Z mbarbon $
+// RCS-ID:      $Id: Frames.xs 2185 2007-08-19 18:56:51Z mbarbon $
 // Copyright:   (c) 2000-2003, 2005-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -51,5 +51,7 @@ INCLUDE: XS/FontDialog.xs
 INCLUDE: XS/FindReplaceDialog.xs
 
 INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/AboutDialog.xsp |
+
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/PropertySheetDialog.xsp |
 
 MODULE=Wx_Wnd

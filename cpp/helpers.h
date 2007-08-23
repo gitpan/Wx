@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h 2111 2007-08-03 19:29:36Z mbarbon $
+// RCS-ID:      $Id: helpers.h 2192 2007-08-21 21:27:40Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -220,7 +220,6 @@ int FUNCPTR( wxPli_av_2_intarray )( pTHX_ SV* avref, int** array );
 int wxPli_av_2_userdatacdarray( pTHX_ SV* avref, wxPliUserDataCD*** array );
 int FUNCPTR( wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
 int FUNCPTR( wxPli_av_2_arrayint )( pTHX_ SV* avref, wxArrayInt* array );
-int wxPli_av_2_wxPoint2DDouble( pTHX_ SV* avref, wxPoint2DDouble** points);
 
 // pushes the elements of the array into the stack
 // the caller _MUST_ call PUTBACK; before the function
@@ -249,6 +248,7 @@ void wxPli_doublearray_push( pTHX_ const wxArrayDouble& doubles );
 AV* wxPli_stringarray_2_av( pTHX_ const wxArrayString& strings );
 AV* wxPli_uchararray_2_av( pTHX_ const unsigned char* array, int count );
 AV* FUNCPTR( wxPli_objlist_2_av )( pTHX_ const wxList& objs );
+void FUNCPTR( wxPli_objlist_push )( pTHX_ const wxList& objs );
 
 template<class A, class E>
 void wxPli_nonobjarray_push( pTHX_ const A& objs, const char* klass )
@@ -279,10 +279,40 @@ class WXDLLEXPORT wxGBPosition; class WXDLLEXPORT wxGBSpan;
 wxGBPosition wxPli_sv_2_wxgbposition( pTHX_ SV* scalar );
 wxGBSpan wxPli_sv_2_wxgbspan( pTHX_ SV* scalar );
 #endif
+class WXDLLEXPORT wxPosition;
+wxPosition wxPli_sv_2_wxposition( pTHX_ SV* scalar );
+
 wxKeyCode wxPli_sv_2_keycode( pTHX_ SV* scalar );
 
 int wxPli_av_2_pointlist( pTHX_ SV* array, wxList *points, wxPoint** tmp );
 int wxPli_av_2_pointarray( pTHX_ SV* array, wxPoint** points );
+int wxPli_av_2_point2ddoublearray( pTHX_ SV* array, wxPoint2DDouble** points );
+
+template<class E>
+class wxPliArrayGuard
+{
+private:
+    E* m_array;
+public:
+    wxPliArrayGuard( E* els = NULL ) : m_array( els ) {}
+
+    ~wxPliArrayGuard()
+    {
+        delete[] m_array;
+    }
+
+    E** lvalue() { return &m_array; }
+    E* rvalue() { return m_array; }
+    operator E*() { return m_array; }
+
+    E* disarm()
+    {
+        E* oldvalue = m_array;
+        m_array = NULL;
+
+        return oldvalue;
+    }
+};
 
 // thread helpers
 #if wxPERL_USE_THREADS
@@ -430,6 +460,7 @@ struct wxPliHelpers
     int (* m_wxPli_av_2_arrayint )( pTHX_ SV* avref, wxArrayInt* array );
     void (* m_wxPli_set_events )( const wxPliEventDescription* events );
     int (* m_wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
+    void (* m_wxPli_objlist_push )( pTHX_ const wxList& objs );
 };
 
 #if wxPERL_USE_THREADS
@@ -460,7 +491,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
  &wxPli_match_arguments_skipfirst, &wxPli_objlist_2_av, &wxPli_intarray_push, \
  &wxPli_clientdatacontainer_2_sv, \
  wxDEFINE_PLI_HELPER_THREADS() \
- &wxPli_av_2_arrayint, &wxPli_set_events, &wxPli_av_2_arraystring \
+ &wxPli_av_2_arrayint, &wxPli_set_events, &wxPli_av_2_arraystring, \
+ &wxPli_objlist_push \
  }
 
 #if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
@@ -501,6 +533,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
   wxPli_av_2_arrayint = name->m_wxPli_av_2_arrayint; \
   wxPli_set_events = name->m_wxPli_set_events; \
   wxPli_av_2_arraystring = name->m_wxPli_av_2_arraystring; \
+  wxPli_objlist_push = name->m_wxPli_objlist_push; \
   WXPLI_INIT_CLASSINFO();
 
 #else

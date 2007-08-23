@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm 2077 2007-07-08 21:08:29Z mbarbon $
+## RCS-ID:      $Id: Wx.pm 2178 2007-08-18 17:24:42Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $XS_VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.76';
+$VERSION = '0.77';
 $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -200,20 +200,25 @@ package Wx::Object;    # likewise
 #
 # overloading for Wx::TreeItemId
 #
+package Wx;
+
+sub _string { overload::StrVal( $_[0] ) }
+sub _number { require Scalar::Util; Scalar::Util::refaddr( $_[0] ) }
+
 package Wx::TreeItemId;
 
 use overload '<=>'      => \&tiid_spaceship,
              'bool'     => sub { $_[0]->IsOk },
-             '""'       => sub { $_[0] },
-             '0+'       => sub { $_[0] },
+             '""'       => \&Wx::_string,
+             '0+'       => \&Wx::_number,
              'fallback' => 1;
 
 package Wx::Font;
 
 use overload '<=>'      => \&font_spaceship,
-             'bool'     => sub { $_[0]->Ok },
-             '""'       => sub { $_[0] },
-             '0+'       => sub { $_[0] },
+             'bool'     => sub { $_[0]->IsOk },
+             '""'       => \&Wx::_string,
+             '0+'       => \&Wx::_number,
              'fallback' => 1;
 
 #

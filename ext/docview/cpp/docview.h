@@ -4,7 +4,7 @@
 // Author:      Simon Flack
 // Modified by:
 // Created:     28/08/2002
-// RCS-ID:      $Id: docview.h 2055 2007-06-18 22:05:48Z mbarbon $
+// RCS-ID:      $Id: docview.h 2172 2007-08-17 22:56:36Z mbarbon $
 // Copyright:   (c) 2002-2004, 2005-2007 Simon Flack
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -680,7 +680,7 @@ public:
 #if WXPERL_W_VERSION_GE( 2, 9, 0 )
     DEC_V_CBACK_WXSTRING__VOID( MakeNewDocumentName );
 #else
-    bool MakeDefaultName( wxString& );
+    DEC_V_CBACK_BOOL__mWXSTRING( MakeDefaultName );
 #endif
 
     wxString MakeFrameTitle( wxDocument* );

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2148 2007-08-15 17:10:50Z mbarbon $
+// RCS-ID:      $Id: Constant.xs 2200 2007-08-22 23:17:15Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -81,6 +81,9 @@
 #if WXPERL_W_VERSION_GE( 2, 5, 4 )
 #include <wx/mediactrl.h>
 #endif
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+#include <wx/propdlg.h>
+#endif
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
 #include <wx/power.h>
 #include <wx/toolbook.h>
@@ -102,6 +105,8 @@
 #if WXPERL_W_VERSION_GE( 2, 7, 2 )
 #include <wx/combo.h>
 #include <wx/odcombo.h>
+#include <wx/collpane.h>
+#include <wx/animate.h>
 #endif
 #if WXPERL_W_VERSION_GE( 2, 8, 3 )
 #include <wx/srchctrl.h>
@@ -224,7 +229,7 @@ static wxPliEventDescription evts[] =
     EVT( EVT_FONTPICKER_CHANGED, 3, wxEVT_COMMAND_FONTPICKER_CHANGED )
 #endif
     EVT( EVT_MENU_HIGHLIGHT_ALL, 2, wxEVT_MENU_HIGHLIGHT )
-#if defined(__WXMSW__)
+#if defined(__WXMSW__) && WXPERL_W_VERSION_GE( 2, 8, 0 )
     EVT( EVT_TREE_STATE_IMAGE_CLICK, 3, wxEVT_COMMAND_TREE_STATE_IMAGE_CLICK )
     EVT( EVT_TREE_ITEM_GETTOOLTIP, 3, wxEVT_COMMAND_TREE_ITEM_GETTOOLTIP )
 #endif
@@ -267,6 +272,9 @@ static wxPliEventDescription evts[] =
 #if WXPERL_W_VERSION_GE( 2, 8, 3 )
     EVT( EVT_SEARCHCTRL_CANCEL_BTN, 3, wxEVT_COMMAND_SEARCHCTRL_CANCEL_BTN )
     EVT( EVT_SEARCHCTRL_SEARCH_BTN, 3, wxEVT_COMMAND_SEARCHCTRL_SEARCH_BTN )
+#endif
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    EVT( EVT_COLLAPSIBLEPANE_CHANGED, 3, wxEVT_COMMAND_COLLPANE_CHANGED )
 #endif
     { 0, 0, 0 }
 };
@@ -374,16 +382,21 @@ static wxPlINH inherit[] =
     I( FileDialog,      Dialog )
 #endif
     I( TextEntryDialog, Dialog )
+    I( PasswordEntryDialog, TextEntryDialog )
     I( MessageDialog,   Dialog )
     I( GenericMessageDialog, MessageDialog )
     I( ProgressDialog,  Dialog )
     I( SingleChoiceDialog, Dialog )
     I( MultiChoiceDialog, Dialog )
     I( PropertySheetDialog, Dialog )
+    I( AnimationCtrl,   Control )
 
     I( Validator,       EvtHandler )
     I( PlValidator,     Validator )
 
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    I( Animation,       GDIObject )
+#endif
     I( Font,            GDIObject )
     I( Region,          GDIObject )
     I( Bitmap,          GDIObject )
@@ -445,7 +458,9 @@ static wxPlINH inherit[] =
     I( FontPickerCtrl,  PickerBase )
 
     I( ComboCtrlBase,   Control )
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
     I( PlComboPopup,    ComboPopup )
+#endif
 #if WXPERL_W_VERSION_GE( 2, 7, 1 )
     I( GenericComboCtrl,ComboCtrlBase )
     I( ComboCtrl,       GenericComboCtrl )
@@ -455,6 +470,9 @@ static wxPlINH inherit[] =
 #endif
     I( OwnerDrawnComboBox, ComboCtrl )
     I( PlOwnerDrawnComboBox, OwnerDrawnComboBox )
+    I( BitmapComboBox,  OwnerDrawnComboBox )
+    I( GenericCollapsiblePane, Control )
+    I( CollapsiblePane, GenericCollapsiblePane )
 
     I( TaskBarIcon,     EvtHandler )
     I( Process,         EvtHandler )
@@ -515,6 +533,15 @@ static wxPlINH inherit[] =
 
     I( ScrolledWindow,  GenericScrolledWindow )
     I( VScrolledWindow, Panel )
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    I( HScrolledWindow, Panel )
+    I( HVScrolledWindow,Panel )
+#endif
+    I( PlVScrolledWindow,  VScrolledWindow )
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    I( PlHScrolledWindow,  HScrolledWindow )
+    I( PlHVScrolledWindow, HVScrolledWindow )
+#endif
 
 #if defined(__WXGTK__)
     I( StatusBar,       StatusBarGeneric )
@@ -619,6 +646,7 @@ static wxPlINH inherit[] =
     I( FileDirPickerEvent, CommandEvent )
     I( FontPickerEvent, CommandEvent )
     I( SetCursorEvent,  Event )
+    I( CollapsiblePaneEvent, CommandEvent )
 
     { 0, 0 }
 };
@@ -690,6 +718,14 @@ static double constant( const char *name, int arg )
     r( wxAsIs );                        // layout constraints
 
     r( wxALWAYS_SHOW_SB );              // window
+
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    r( wxANIMATION_TYPE_ANI );          // animation
+    r( wxANIMATION_TYPE_ANY );          // animation
+    r( wxANIMATION_TYPE_GIF );          // animation
+    r( wxAC_DEFAULT_STYLE );            // animationctrl
+    r( wxAC_NO_AUTORESIZE );            // animationctrl
+#endif
     break;
   case 'B':
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
@@ -777,11 +813,13 @@ static double constant( const char *name, int arg )
 
     r( wxCB_SIMPLE );                   // combobox
     r( wxCB_DROPDOWN );                 // combobox
-    r( wxCB_READONLY );                 // combobox
-    r( wxCB_SORT );                     // combobox
+    r( wxCB_READONLY );                 // combobox comboctrl
+    r( wxCB_SORT );                     // combobox comboctrl
 #if WXPERL_W_VERSION_GE( 2, 7, 2 )
     r( wxCC_SPECIAL_DCLICK );           // comboctrl
     r( wxCC_STD_BUTTON );               // comboctrl
+    r( wxCP_DEFAULT_STYLE );            // collpasiblepane
+    r( wxCP_NO_TLW_RESIZE );            // collpasiblepane
 #endif
     r( wxCENTER );                      // dialog sizer
     r( wxCENTRE );                      // dialog sizer
@@ -818,6 +856,9 @@ static double constant( const char *name, int arg )
     r( wxCLEAR );                       // dc
     r( wxCOPY );                        // dc
 
+#if WXPERL_W_VERSION_GE( 2, 8, 2 )
+    r( wxCONFIG_USE_SUBDIR );           // config
+#endif
     r( wxCONFIG_USE_LOCAL_FILE );       // config
     r( wxCONFIG_USE_GLOBAL_FILE );      // config
     r( wxCONFIG_USE_RELATIVE_PATH );    // config
@@ -1435,6 +1476,11 @@ static double constant( const char *name, int arg )
     r( wxIMAGE_RESOLUTION_CM );         // image
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 8, 0 )
+    r( wxIMAGE_QUALITY_NORMAL );        // image
+    r( wxIMAGE_QUALITY_HIGH );          // image
+#endif
+
     r( wxIDLE_PROCESS_ALL );
     r( wxIDLE_PROCESS_SPECIFIED );
 
@@ -1614,6 +1660,10 @@ static double constant( const char *name, int arg )
     r( wxKILL_ACCESS_DENIED );          // process
     r( wxKILL_NO_PROCESS );             // process
     r( wxKILL_ERROR );                  // process
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    r( wxKILL_NOCHILDREN );             // process
+    r( wxKILL_CHILDREN );               // process
+#endif
     break;
   case 'L':
     r( wxLB_SINGLE );                   // listbox
@@ -1996,7 +2046,10 @@ static double constant( const char *name, int arg )
     r( wxPD_ELAPSED_TIME );             // progressdialog
     r( wxPD_ESTIMATED_TIME );           // progressdialog
     r( wxPD_REMAINING_TIME );           // progressdialog
-    //    r( wxPD_SMOOTH );                   // progressdialog
+#if WXPERL_W_VERSION_GE( 2, 6, 0 )
+    r( wxPD_SMOOTH );                   // progressdialog
+    r( wxPD_CAN_SKIP );                 // progressdialog
+#endif
 
 #if WXPERL_W_VERSION_GE( 2, 7, 0 )
     r( wxPOWER_SOCKET  );               // power
@@ -2013,6 +2066,17 @@ static double constant( const char *name, int arg )
     r( wxPROP_ENUM_STORE_LONG );
     r( wxPROP_DONT_STREAM );
 #endif
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    r( wxPROPSHEET_DEFAULT );           // propertysheet
+    r( wxPROPSHEET_NOTEBOOK );          // propertysheet
+    r( wxPROPSHEET_TOOLBOOK );          // propertysheet
+    r( wxPROPSHEET_CHOICEBOOK );        // propertysheet
+    r( wxPROPSHEET_LISTBOOK );          // propertysheet
+    r( wxPROPSHEET_BUTTONTOOLBOOK );    // propertysheet
+    r( wxPROPSHEET_TREEBOOK );          // propertysheet
+    r( wxPROPSHEET_SHRINKTOFIT );       // propertysheet
+#endif
+
     break;
   case 'R':
     r( wxRAISED_BORDER );               // window
@@ -2285,7 +2349,7 @@ static double constant( const char *name, int arg )
     r( wxTB_BOTTOM );                   // toolbar
 #endif
     r( wxTELETYPE );                    // font
-    r( wxTE_PROCESS_ENTER );            // textctrl
+    r( wxTE_PROCESS_ENTER );            // textctrl combobox comboctrl
     r( wxTE_PROCESS_TAB );              // textctrl
     r( wxTE_MULTILINE );                // textctrl
     r( wxTE_NOHIDESEL );                // textctrl
@@ -2534,6 +2598,9 @@ void SetConstantsOnce()
     wxPli_make_const( "wxDefaultPosition" );    // misc
     wxPli_make_const( "wxDefaultSize" );        // misc
 
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    wxPli_make_const( "wxNullAnimation" );      // animation
+#endif
     wxPli_make_const( "wxNullBitmap" );         // bitmap
     wxPli_make_const( "wxNullIcon" );           // icon
     wxPli_make_const( "wxNullColour" );         // color colour
@@ -2682,6 +2749,9 @@ void SetConstants()
         wxPli_set_const( "wxNull" #name, "Wx::" #name, \
                          new wx##name( wxNull##name ) )
 
+#if WXPERL_W_VERSION_GE( 2, 7, 2 )
+    DEFINE_NULL( Animation );
+#endif
     DEFINE_NULL( Bitmap );
     DEFINE_NULL( Icon );
     DEFINE_NULL( Colour );

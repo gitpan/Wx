@@ -7,7 +7,9 @@ use Wx::build::Options;
 use Wx::build::Utils qw(xs_dependencies lib_file);
 
 my $exp = lib_file( 'Wx/Wx_Exp.pm' );
-
+my @generated_xs = qw(XS/ItemContainer.xs XS/ItemContainerImmutable.xs
+                      XS/VarScrollHelperBase.xs XS/VarVScrollHelper.xs
+                      XS/VarHScrollHelper.xs XS/VarHVScrollHelper.xs);
 sub get_flags {
   my $this = shift;
   my %config;
@@ -56,8 +58,9 @@ sub configure_core {
                " $config{WX}{wx_overload}{header} exists overload Opt" .
                " copy_files files.lst cpp/combopopup.h cpp/odcombo.h" .
                " cpp/setup.h cpp/plwindow.h cpp/artprov.h cpp/popupwin.h" .
-               " fix_alien cpp/vlbox.h cpp/vscroll.h" .
-               " XS/ItemContainer.xs XS/ItemContainerImmutable.xs" };
+               " fix_alien cpp/vlbox.h cpp/vscroll.h cpp/v_cback_def.h" .
+               " " . join( " ", @generated_xs ) .
+               " cpp/vscrl.h" };
 
   return %config;
 }
@@ -210,13 +213,23 @@ parser :
 	yapp -v -s -m Wx::XSP::Grammar -o build/Wx/XSP/Grammar.pm build/Wx/XSP/XSP.yp
 
 typemap : typemap.tmpl script/make_typemap.pl
-	perl script/make_typemap.pl typemap.tmpl typemap
+	\$(PERL) script/make_typemap.pl typemap.tmpl typemap
 
-XS/ItemContainerImmutable.xs : XS/ItemContainerImmutable.xsp typemap.xsp
-	perl script/wx_xspp.pl -t typemap.xsp XS/ItemContainerImmutable.xsp > XS/ItemContainerImmutable.xs
+cpp/v_cback_def.h : script/make_v_cback.pl
+	\$(PERL) script/make_v_cback.pl > cpp/v_cback_def.h
 
-XS/ItemContainer.xs : XS/ItemContainer.xsp typemap.xsp
-	perl script/wx_xspp.pl -t typemap.xsp XS/ItemContainer.xsp > XS/ItemContainer.xs
+EOT
+
+  foreach my $file ( @generated_xs ) {
+      $text .= sprintf <<EOT, $file, $file, $file, $file;
+%s : %sp typemap.xsp
+	\$(PERL) script/wx_xspp.pl -t typemap.xsp %sp > %s
+
+EOT
+  }
+
+  $text .= sprintf <<EOT, join( ' ', @generated_xs );
+generated : cpp/v_cback_def.h typemap %s overload
 
 EOT
 
@@ -261,6 +274,7 @@ sub files_to_install {
                cpp/setup.h
                cpp/streams.h
                cpp/v_cback.h
+               cpp/v_cback_def.h
                cpp/wxapi.h
                typemap
               );

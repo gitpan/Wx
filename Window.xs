@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Window.xs 2139 2007-08-12 13:33:17Z mbarbon $
+// RCS-ID:      $Id: Window.xs 2182 2007-08-18 21:06:34Z mbarbon $
 // Copyright:   (c) 2000-2002, 2004-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -43,6 +43,16 @@ wxGetMousePosition()
     RETVAL = new wxPoint( x, y );
   OUTPUT:
     RETVAL
+
+void
+wxGetMousePositionXY()
+  PREINIT:
+    int x, y;
+  PPCODE:
+    ::wxGetMousePosition( &x, &y );
+    EXTEND( SP, 2 );
+    PUSHs( newSViv( x ) );
+    PUSHs( newSViv( y ) );
 
 wxWindow*
 wxGetTopLevelParent( window )
@@ -602,6 +612,13 @@ wxWindow::InheritAttributes()
 
 bool
 wxWindow::IsEnabled()
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+bool
+wxWindow::IsThisEnabled()
+
+#endif
 
 void
 wxWindow::IsExposed( ... )

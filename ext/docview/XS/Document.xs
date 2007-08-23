@@ -4,12 +4,13 @@
 ## Author:      Simon Flack
 ## Modified by:
 ## Created:     11/09/2002
-## RCS-ID:      $Id: Document.xs 2055 2007-06-18 22:05:48Z mbarbon $
+## RCS-ID:      $Id: Document.xs 2188 2007-08-20 19:21:29Z mbarbon $
 ## Copyright:   (c) 2001, 2004, 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
 
+#include <wx/cmdproc.h>
 
 MODULE=Wx PACKAGE=Wx::Document
 
@@ -103,6 +104,9 @@ wxDocument::OnCreateCommandProcessor()
 void
 wxDocument::SetCommandProcessor( processor )
     wxCommandProcessor* processor
+  CODE:
+    wxPli_object_set_deleteable( aTHX_ ST(1), false );
+    THIS->SetCommandProcessor( processor );
 
 bool
 wxDocument::OnSaveModified()

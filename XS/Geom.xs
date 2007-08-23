@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Geom.xs 2052 2007-05-28 18:56:12Z mbarbon $
+## RCS-ID:      $Id: Geom.xs 2192 2007-08-21 21:27:40Z mbarbon $
 ## Copyright:   (c) 2000-2003, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -721,3 +721,76 @@ wxRegion::Xor( ... )
         MATCH_REDISP( wxPliOvl_wrec, XorRect )
         MATCH_REDISP( wxPliOvl_wreg, XorRegion )
     END_OVERLOAD( Wx::Region::Xor )
+
+MODULE=Wx PACKAGE=Wx::Position
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+#include <wx/position.h>
+
+wxPosition*
+wxPosition::new( row = 0, column = 0 )
+    int row
+    int column
+
+static void
+wxPosition::CLONE()
+  CODE:
+    wxPli_thread_sv_clone( aTHX_ CLASS, (wxPliCloneSV)wxPli_detach_object );
+
+## // thread OK
+void
+wxPosition::DESTROY()
+  CODE:
+    wxPli_thread_sv_unregister( aTHX_ "Wx::Position", THIS, ST(0) );
+    delete THIS;
+
+int
+wxPosition::row( ... )
+  CODE:
+    if( items > 1 )
+      THIS->SetRow( SvIV( ST(1) ) );
+    RETVAL = THIS->GetRow();
+  OUTPUT:
+    RETVAL
+
+int
+wxPosition::col( ... )
+  CODE:
+    if( items > 1 )
+      THIS->SetCol( SvIV( ST(1) ) );
+    RETVAL = THIS->GetCol();
+  OUTPUT:
+    RETVAL
+
+int
+wxPosition::column( ... )
+  CODE:
+    if( items > 1 )
+      THIS->SetColumn( SvIV( ST(1) ) );
+    RETVAL = THIS->GetColumn();
+  OUTPUT:
+    RETVAL
+
+int
+wxPosition::GetRow()
+
+int
+wxPosition::GetCol()
+
+int
+wxPosition::GetColumn()
+
+void
+wxPosition::SetRow( height )
+    int height
+
+void
+wxPosition::SetCol( width )
+    int width
+
+void
+wxPosition::SetColumn( width )
+    int width
+
+#endif

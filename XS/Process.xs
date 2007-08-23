@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     11/02/2002
-## RCS-ID:      $Id: Process.xs 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2002-2004, 2006 Mattia Barbon
+## RCS-ID:      $Id: Process.xs 2186 2007-08-19 21:13:06Z mbarbon $
+## Copyright:   (c) 2002-2004, 2006-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -68,12 +68,21 @@ wxProcess::IsInputAvailable()
 bool
 wxProcess::IsInputOpened()
 
+#if WXPERL_W_VERSION_LT( 2, 5, 4 )
+#define wxKILL_NOCHILDREN 0
+#endif
+
 wxKillError
-Kill( pid, signal = wxSIGNONE )
+Kill( pid, signal = wxSIGNONE, flags = wxKILL_NOCHILDREN )
     int pid
     wxSignal signal
+    int flags
   CODE:
+#if WXPERL_W_VERSION_GE( 2, 5, 4 )
+    RETVAL = wxProcess::Kill( pid, signal, flags );
+#else
     RETVAL = wxProcess::Kill( pid, signal );
+#endif
   OUTPUT:
     RETVAL
 

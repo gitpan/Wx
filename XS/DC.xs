@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: DC.xs 2069 2007-07-08 15:33:40Z mbarbon $
+## RCS-ID:      $Id: DC.xs 2176 2007-08-18 15:21:16Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -172,11 +172,10 @@ wxDC::DrawLines( list, xoffset = 0, yoffset = 0 )
     wxCoord yoffset
   PREINIT:
     wxList points;
-    wxPoint* pts;
+    wxPliArrayGuard<wxPoint> pts;
   CODE:
-    wxPli_av_2_pointlist( aTHX_ list, &points, &pts );
+    wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );
     THIS->DrawLines( &points, xoffset, yoffset );
-    delete [] pts;
 
 void
 wxDC::DrawObject( object )
@@ -195,12 +194,10 @@ wxDC::DrawPolygon( list, xoffset, yoffset, fill_style = wxODDEVEN_RULE )
     int fill_style
   PREINIT:
     wxList points;
-    wxPoint* pts;
+    wxPliArrayGuard<wxPoint> pts;
   CODE:
-    wxPli_av_2_pointlist( aTHX_ list, &points, &pts );
+    wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );
     THIS->DrawPolygon( &points, xoffset, yoffset, fill_style );
-    delete [] pts;
-
 
 void
 wxDC::DrawRectangle( x, y, width, height )
@@ -229,11 +226,10 @@ wxDC::DrawSpline( list )
     SV* list
   PREINIT:
     wxList points;
-    wxPoint* pts;
+    wxPliArrayGuard<wxPoint> pts;
   CODE:
-    wxPli_av_2_pointlist( aTHX_ list, &points, &pts );
+    wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );
     THIS->DrawSpline( &points );
-    delete [] pts;
 
 void
 wxDC::DrawText( text, x, y )

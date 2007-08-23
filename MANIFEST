@@ -37,6 +37,7 @@ script/fix_alien_path.pl
 script/make_exp_list.pl
 script/make_ppm.pl
 script/make_typemap.pl
+script/make_v_cback.pl
 script/pipe.pl
 script/wx_overload.pl
 script/wx_xspp.pl
@@ -99,10 +100,13 @@ Wx.xs
 
 XS/AboutDialog.xsp
 XS/Accelerators.xs
+XS/Animation.xsp
+XS/AnimationCtrl.xsp
 XS/App.xs
 XS/ArtProvider.xsp
 XS/Bitmap.xs
 XS/BitmapButton.xs
+XS/BitmapComboBox.xsp
 XS/BookCtrl.xsp
 XS/Brush.xs
 XS/Button.xs
@@ -112,6 +116,7 @@ XS/CheckListBox.xs
 XS/Choice.xs
 XS/Choicebook.xsp
 XS/ClassInfo.xs
+XS/CollapsiblePane.xsp
 XS/Colour.xs
 XS/ColourDialog.xs
 XS/ColourPickerCtrl.xsp
@@ -169,6 +174,7 @@ XS/PopupWindow.xsp
 XS/Power.xsp
 XS/Process.xs
 XS/ProgressDialog.xs
+XS/PropertySheetDialog.xsp
 XS/RadioBox.xs
 XS/RadioButton.xs
 XS/SashWindow.xs
@@ -200,6 +206,10 @@ XS/TopLevelWindow.xsp
 XS/TreeCtrl.xs
 XS/Treebook.xsp
 XS/Utils.xs
+XS/VarScrollHelperBase.xsp
+XS/VarHScrollHelper.xsp
+XS/VarHVScrollHelper.xsp
+XS/VarVScrollHelper.xsp
 XS/VListBox.xsp
 XS/VScrolledWindow.xsp
 XS/Validators.xs
@@ -467,6 +477,7 @@ ext/xrc/typemap
 
 ext/docview/Makefile.PL
 ext/docview/DocView.xs
+ext/docview/XS/CommandProcessor.xsp
 ext/docview/XS/DocManager.xs
 ext/docview/XS/DocTemplate.xs
 ext/docview/XS/Document.xs
@@ -482,4 +493,6 @@ ext/docview/lib/Wx/DocView.pm
 ext/docview/typemap
 ext/docview/t/01_load.t
 ext/docview/t/02_inheritance.t
+ext/docview/t/03_threads.t
+ext/docview/t/04_cmdproc.t
 META.yml                                 Module meta-data (added by MakeMaker)

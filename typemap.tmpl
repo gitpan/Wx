@@ -46,6 +46,7 @@ wxTextPos               T_IV
 wxTextAttrAlignment     T_ENUM
 wxIdleMode              T_ENUM
 wxDouble                T_DOUBLE
+wxAnimationType         T_ENUM
 
 wxFindReplaceDialogStyles T_ENUM
 wxFindReplaceFlags      T_ENUM
@@ -106,6 +107,7 @@ wxMenuBar *             O_WXOBJECT
 wxMenu *                O_WXOBJECT
 wxMenuItem *            O_WXOBJECT
 
+wxAnimationCtrl *       O_WXEVTHANDLER
 wxStatusBar *           O_WXEVTHANDLER
 wxToolBar *             O_WXEVTHANDLER
 wxToolBarBase *         O_WXEVTHANDLER
@@ -118,6 +120,7 @@ wxStaticText *          O_WXEVTHANDLER
 wxStaticLine *          O_WXEVTHANDLER
 wxTextCtrl *            O_WXOBJECT
 wxTextCtrlBase *        O_WXOBJECT
+wxPropertySheetDialog * O_WXEVTHANDLER
 wxPlValidator *         O_WXOBJECT
 wxValidator *           O_WXOBJECT
 wxCheckBox *            O_WXEVTHANDLER
@@ -138,6 +141,7 @@ wxRadioBox *            O_WXEVTHANDLER
 wxScrollBar *           O_WXEVTHANDLER
 wxNotebook *            O_WXEVTHANDLER
 wxBookCtrl *            O_WXEVTHANDLER
+wxBookCtrlBase *        O_WXEVTHANDLER
 wxCheckListBox *        O_WXEVTHANDLER
 wxGauge *               O_WXEVTHANDLER
 wxBitmapButton *        O_WXEVTHANDLER
@@ -150,6 +154,11 @@ wxSpinCtrl *            O_WXEVTHANDLER
 wxSlider *              O_WXEVTHANDLER
 wxScrolledWindow *      O_WXOBJECT
 wxVScrolledWindow *     O_WXEVTHANDLER
+wxHScrolledWindow *     O_WXEVTHANDLER
+wxHVScrolledWindow *    O_WXEVTHANDLER
+wxPlVScrolledWindow *   O_WXEVTHANDLER
+wxPlHScrolledWindow *   O_WXEVTHANDLER
+wxPlHVScrolledWindow *  O_WXEVTHANDLER
 wxVListBox *            O_WXEVTHANDLER
 wxPlVListBox *          O_WXEVTHANDLER
 wxSplitterWindow *      O_WXEVTHANDLER
@@ -167,6 +176,8 @@ wxColourPickerCtrl *    O_WXEVTHANDLER
 wxFilePickerCtrl *      O_WXEVTHANDLER
 wxDirPickerCtrl *       O_WXEVTHANDLER
 wxFontPickerCtrl *      O_WXEVTHANDLER
+wxCollapsiblePane *     O_WXEVTHANDLER
+wxBitmapComboBox *      O_WXEVTHANDLER
 
 wxWizard *              O_WXOBJECT
 wxWizardPage *          O_WXOBJECT
@@ -180,6 +191,7 @@ wxMultiChoiceDialog *   O_WXOBJECT
 wxSingleChoiceDialog *  O_WXOBJECT
 wxMultipleChoiceDialog* O_WXOBJECT
 wxTextEntryDialog *     O_WXOBJECT
+wxPasswordEntryDialog * O_WXOBJECT
 wxFontDialog *          O_WXOBJECT
 wxPageSetupDialog *     O_WXOBJECT
 wxPrintDialog *         O_WXOBJECT
@@ -245,9 +257,11 @@ wxAboutDialogInfo *     O_NON_WXOBJECT
 
 wxPoint                 O_POINT
 wxSize                  O_SIZE
+wxPosition              O_POSITION
 wxColour                O_NON_WXOBJECT_VAL
 wxPoint &               O_POINT
 wxSize &                O_SIZE
+wxPosition &            O_POSITION
 wxColour &              O_NON_WXOBJECT_VAL
 
 wxProcess *             O_WXOBJECT
@@ -259,6 +273,7 @@ wxDrawObject *          O_NON_WXOBJECT
 wxSize *                O_NON_WXOBJECT_THR
 wxPoint *               O_NON_WXOBJECT_THR
 wxRect *                O_NON_WXOBJECT_THR
+wxPosition *            O_NON_WXOBJECT_THR
 wxColour *              O_NON_WXOBJECT_THR
 wxCaret *               O_NON_WXOBJECT
 wxCaretSuspend *        O_NON_WXOBJECT_THR
@@ -276,6 +291,7 @@ wxPliTreeItemData *     O_NON_WXOBJECT
 wxTreeItemData *        O_NON_WXOBJECT
 wxTreeItemId *          O_NON_WXOBJECT_THR
 
+wxAnimation *           O_WXOBJECT_THR
 wxFontMapper *          O_NON_WXOBJECT
 wxFontEnumerator *      O_NON_WXOBJECT_THR
 wxNativeFontInfo *      O_NON_WXOBJECT_THR
@@ -388,6 +404,7 @@ wxFileDirPickerEvent *  O_WXOBJECT_THR
 wxFontPickerEvent *     O_WXOBJECT_THR
 wxWindowCreateEvent *   O_WXOBJECT_THR
 wxWindowDestroyEvent *  O_WXOBJECT_THR
+wxCollapsiblePaneEvent * O_WXOBJECT_THR
 
 wxPlEvent *             O_WXOBJECT_THR
 wxPlCommandEvent *      O_WXOBJECT_THR
@@ -440,6 +457,9 @@ O_GBSPAN
 O_POINT
     wxPli_non_object_2_sv( aTHX_ $arg, new $type($var), PERL_CLASS );
 
+O_POSITION
+    wxPli_non_object_2_sv( aTHX_ $arg, new $type($var), PERL_CLASS );
+
 T_KEYCODE
     sv_setiv( $arg, $var );
 
@@ -479,6 +499,9 @@ O_POINT
 
 O_SIZE
     $var = wxPli_sv_2_wxsize( aTHX_ $arg );
+
+O_POSITION
+    $var = wxPli_sv_2_wxposition( aTHX_ $arg );
 
 O_GBPOSITION
     $var = wxPli_sv_2_wxgbposition( aTHX_ $arg );

@@ -4,7 +4,7 @@
 ## Author:      Klaas Hartmann
 ## Modified by:
 ## Created:     29/06/2007
-## RCS-ID:      $Id: GraphicsContext.xs 2110 2007-08-03 19:20:51Z mbarbon $
+## RCS-ID:      $Id: GraphicsContext.xs 2176 2007-08-18 15:21:16Z mbarbon $
 ## Copyright:   (c) 2007 Klaas Hartmann
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -148,9 +148,8 @@ wxGraphicsContext::DrawLines ( points, fillStyle = wxODDEVEN_RULE )
     SV* points
     int fillStyle
   CODE:
-    wxPoint2DDouble* newPoints;
-    int n;
-    n = wxPli_av_2_wxPoint2DDouble(aTHX_ points, &newPoints);
+    wxPliArrayGuard<wxPoint2DDouble> newPoints;
+    int n = wxPli_av_2_point2ddoublearray(aTHX_ points, newPoints.lvalue());
     THIS->DrawLines(n,newPoints);
 
 void 
@@ -316,9 +315,8 @@ void
 wxGraphicsContext::StrokeLinesOne ( points )
     SV* points
   CODE:
-    wxPoint2DDouble* points2d;
-    int n;
-    n = wxPli_av_2_wxPoint2DDouble(aTHX_ points, &points2d);
+    wxPliArrayGuard<wxPoint2DDouble> points2d;
+    int n = wxPli_av_2_point2ddoublearray(aTHX_ points, points2d.lvalue());
     THIS->StrokeLines(n,points2d);
 
 
@@ -327,11 +325,9 @@ wxGraphicsContext::StrokeLinesTwo ( beginPoints, endPoints )
     SV* beginPoints
     SV* endPoints
   CODE:
-    wxPoint2DDouble* endPoints2d;
-    wxPoint2DDouble* beginPoints2d;
-    int n;
-    n = wxPli_av_2_wxPoint2DDouble(aTHX_ beginPoints, &beginPoints2d);
-    n = MIN(n,wxPli_av_2_wxPoint2DDouble(aTHX_ endPoints, &endPoints2d));
-    THIS->StrokeLines(n, beginPoints2d, endPoints2d);
+    wxPliArrayGuard<wxPoint2DDouble> beginPoints2d, endPoints2d;
+    int n1 = wxPli_av_2_point2ddoublearray(aTHX_ beginPoints, beginPoints2d.lvalue());
+    int n2 = wxPli_av_2_point2ddoublearray(aTHX_ endPoints, endPoints2d.lvalue());
+    THIS->StrokeLines(wxMin(n1, n2), beginPoints2d, endPoints2d);
 
 #endif

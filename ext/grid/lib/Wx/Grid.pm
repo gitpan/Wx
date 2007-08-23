@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/12/2001
-## RCS-ID:      $Id: Grid.pm 2057 2007-06-18 23:03:00Z mbarbon $
-## Copyright:   (c) 2001-2002, 2004-2006 Mattia Barbon
+## RCS-ID:      $Id: Grid.pm 2170 2007-08-17 22:53:11Z mbarbon $
+## Copyright:   (c) 2001-2002, 2004-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -21,6 +21,8 @@ $VERSION = '0.01';
 
 Wx::load_dll( 'adv' );
 Wx::wx_boot( 'Wx::Grid', $VERSION );
+
+SetEvents();
 
 #
 # properly setup inheritance tree

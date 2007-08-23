@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Event.pm 2128 2007-08-11 21:27:39Z mbarbon $
+## RCS-ID:      $Id: Event.pm 2170 2007-08-17 22:53:11Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -113,27 +113,6 @@ sub EVT_CHAR($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_CHAR, $_[1] ) }
 sub EVT_CHAR_HOOK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_CHAR_HOOK, $_[1] ) }
 sub EVT_KEY_DOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_KEY_DOWN, $_[1] ) }
 sub EVT_KEY_UP($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_KEY_UP, $_[1] ) }
-
-#
-# Grid*Event
-#
-
-sub EVT_GRID_CELL_LEFT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_LEFT_CLICK, $_[1] ) }
-sub EVT_GRID_CELL_RIGHT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_RIGHT_CLICK, $_[1] ) }
-sub EVT_GRID_CELL_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_LEFT_DCLICK, $_[1] ) }
-sub EVT_GRID_CELL_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_RIGHT_DCLICK, $_[1] ) }
-sub EVT_GRID_LABEL_LEFT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_LEFT_CLICK, $_[1] ) }
-sub EVT_GRID_LABEL_RIGHT_CLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_RIGHT_CLICK, $_[1] ) }
-sub EVT_GRID_LABEL_LEFT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_LEFT_DCLICK, $_[1] ) }
-sub EVT_GRID_LABEL_RIGHT_DCLICK($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_LABEL_RIGHT_DCLICK, $_[1] ) }
-sub EVT_GRID_ROW_SIZE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_ROW_SIZE, $_[1] ) }
-sub EVT_GRID_COL_SIZE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_COL_SIZE, $_[1] ) }
-sub EVT_GRID_RANGE_SELECT($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_RANGE_SELECT, $_[1] ) }
-sub EVT_GRID_CELL_CHANGE($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_CELL_CHANGE, $_[1] ) }
-sub EVT_GRID_SELECT_CELL($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_SELECT_CELL, $_[1] ) }
-sub EVT_GRID_EDITOR_SHOWN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_SHOWN, $_[1] ) }
-sub EVT_GRID_EDITOR_HIDDEN($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_HIDDEN, $_[1] ) }
-sub EVT_GRID_EDITOR_CREATED($$) { $_[0]->Connect( -1, -1, &Wx::wxEVT_GRID_EDITOR_CREATED, $_[1] ) }
 
 #
 # HelpEvent
