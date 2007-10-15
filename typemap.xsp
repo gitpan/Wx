@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/03/2003
-## RCS-ID:      $Id: typemap.xsp 2192 2007-08-21 21:27:40Z mbarbon $
+## RCS-ID:      $Id: typemap.xsp 2233 2007-09-30 20:32:31Z mbarbon $
 ## Copyright:   (c) 2003-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -19,6 +19,9 @@
 %typemap{long}{simple};
 %typemap{float}{simple};
 %typemap{double}{simple};
+%typemap{wxChar}{simple};
+%typemap{SV*}{simple};
+%typemap{wxDouble}{simple};
 
 %typemap{size_t}{simple};
 %typemap{time_t}{simple};
@@ -69,7 +72,12 @@
 %typemap{wxDC*}{simple};
 %typemap{wxDC&}{reference};
 %typemap{const wxDC&}{reference};
+%typemap{const wxWindowDC&}{reference};
 %typemap{const wxValidator&}{reference};
+
+%typemap{const wxPen&}{reference};
+%typemap{const wxBrush&}{reference};
+%typemap{const wxFont&}{reference};
 
 %typemap{wxDateTime*}{simple};
 %typemap{wxDateTime&}{reference};
@@ -82,6 +90,7 @@
 %typemap{const wxTimeSpan&}{reference};
 
 %typemap{wxObject*}{simple};
+%typemap{wxEvtHandler*}{simple};
 %typemap{wxSplitterWindow*}{simple};
 %typemap{wxSplitterEvent*}{simple};
 %typemap{wxWindow*}{simple};
@@ -110,3 +119,11 @@
 %typemap{wxImage&}{reference};
 
 %typemap{wxPliInputStream}{simple};
+%typemap{wxPliOutputStream}{simple};
+
+%typemap{wxGraphicsContext*}{simple};
+%typemap{const wxGraphicsPath&}{reference};
+%typemap{const wxGraphicsMatrix&}{reference};
+%typemap{const wxGraphicsPen&}{reference};
+%typemap{const wxGraphicsBrush&}{reference};
+%typemap{const wxGraphicsFont&}{reference};

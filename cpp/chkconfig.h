@@ -5,7 +5,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     05/11/2001
-// RCS-ID:      $Id: chkconfig.h 2057 2007-06-18 23:03:00Z mbarbon $
+// RCS-ID:      $Id: chkconfig.h 2243 2007-10-14 21:35:20Z mbarbon $
 // Copyright:   (c) 2001-2004, 2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -38,7 +38,7 @@
 // MSGDLG, PROGRESSDLG, STARTUP_TIPS, TEXTDLG, NUMBERDLG,
 // SPLASH, WIZARDDLG, HTML, CLIPBOARD, DATAOBJ, HELP,
 // WXHTML_HELP, RESOURCES, CONSTRAINTS, MOUSEWHEEL, IMAGE,
-// LIBPNG, LIBJPEG, LIBTIFF, GIF, PNM, PCX, XPM, PALETTE
+// LIBPNG, LIBJPEG, GIF, PNM, PCX, XPM, PALETTE
 
 #ifdef wxPERL_USE_DRAG_AND_DROP
 #   if wxPERL_USE_DRAG_AND_DROP && !wxUSE_DRAG_AND_DROP
@@ -65,6 +65,14 @@
 #   endif
 #else
 #   define wxPERL_USE_IFF wxUSE_IFF
+#endif
+
+#ifdef wxPERL_USE_LIBTIFF
+#   if wxPERL_USE_LIBTIFF && !wxUSE_LIBTIFF
+#       error "Recompile wxWidgets with wxUSE_LIBTIFF"
+#   endif
+#else
+#   define wxPERL_USE_LIBTIFF wxUSE_LIBTIFF
 #endif
 
 #ifdef wxPERL_USE_MDI_ARCHITECTURE

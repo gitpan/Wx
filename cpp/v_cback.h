@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: v_cback.h 2187 2007-08-19 21:16:55Z mbarbon $
+// RCS-ID:      $Id: v_cback.h 2238 2007-10-07 19:14:55Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -276,24 +276,6 @@ inline wxPliVirtualCallback::wxPliVirtualCallback( const char* package )
 
 #define DEF_V_CBACK_BOOL__INT_INT_WXSTRING_pure( CLASS, BASE, METHOD ) \
     DEF_V_CBACK_BOOL__INT_INT_WXSTRING_( CLASS, return false, METHOD, wxPli_NOCONST )
-
-// ANY METH(const wxString&)
-#define DEC_V_CBACK_ANY__WXSTRING_( RET, METHOD, CONST )                      \
-    RET METHOD(const wxString&) CONST
-
-#define DEF_V_CBACK_ANY__WXSTRING_( RET, CVT, CLASS, CALLBASE, METHOD, CONST )\
-    RET CLASS::METHOD(const wxString& p1) CONST                               \
-    {                                                                         \
-        dTHX;                                                                 \
-        if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, #METHOD ) ) \
-        {                                                                     \
-            wxAutoSV ret( aTHX_ wxPliCCback( aTHX_ &m_callback, G_SCALAR,     \
-                                             "P", &p1 ) );                    \
-            return CVT;                                                       \
-        }                                                                     \
-        else                                                                  \
-            CALLBASE;                                                         \
-    }
 
 // void METH(const wxString&)
 #define DEC_V_CBACK_VOID__WXSTRING( METHOD )                                  \

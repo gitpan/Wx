@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     05/11/2006
-// RCS-ID:      $Id: RichText.xs 2057 2007-06-18 23:03:00Z mbarbon $
-// Copyright:   (c) 2006 Mattia Barbon
+// RCS-ID:      $Id: RichText.xs 2245 2007-10-14 21:37:12Z mbarbon $
+// Copyright:   (c) 2006-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -17,6 +17,7 @@
 #include "cpp/overload.h"
 
 #define wxNullColourPtr (wxColour*)&wxNullColour
+#define wxNullFontPtr (wxFont*)&wxNullFont
 
 #undef THIS
 
@@ -70,6 +71,12 @@ INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/Ric
 INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextStyleCtrl.xsp |
 
 INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextFormattingDialog.xsp |
+
+INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextFileHandler.xsp |
+
+INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/RichTextBuffer.xsp |
+
+INCLUDE: perl ../../script/wx_xspp.pl -t typemap.xsp -t ../../typemap.xsp XS/SymbolPickerDialog.xsp |
 
 MODULE=Wx__RichText PACKAGE=Wx::RichText
 

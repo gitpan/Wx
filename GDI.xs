@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: GDI.xs 2179 2007-08-18 20:26:47Z mbarbon $
+// RCS-ID:      $Id: GDI.xs 2233 2007-09-30 20:32:31Z mbarbon $
 // Copyright:   (c) 2000-2003, 2005-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -38,6 +38,8 @@ INCLUDE: XS/Palette.xs
 INCLUDE: XS/GraphicsContext.xs
 INCLUDE: XS/GraphicsPath.xs
 INCLUDE: XS/GraphicsMatrix.xs
+INCLUDE: XS/GraphicsObject.xs
+INCLUDE: perl script/wx_xspp.pl -t typemap.xsp XS/GraphicsRenderer.xsp |
 
 MODULE=Wx PACKAGE=Wx PREFIX=wx
 

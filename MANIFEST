@@ -129,9 +129,12 @@ XS/ControlWithItems.xsp
 XS/Cursor.xs
 XS/DC.xs
 XS/Dialog.xs
+XS/DirCtrl.xsp
 XS/DirDialog.xs
+XS/Display.xsp
 XS/EditableListBox.xsp
 XS/EvtHandler.xs
+XS/FileCtrl.xsp
 XS/FileDialog.xs
 XS/FilePickerCtrl.xsp
 XS/FindReplaceDialog.xs
@@ -145,7 +148,9 @@ XS/Gauge.xs
 XS/Geom.xs
 XS/GraphicsContext.xs
 XS/GraphicsMatrix.xs
+XS/GraphicsObject.xs
 XS/GraphicsPath.xs
+XS/GraphicsRenderer.xsp
 XS/GridBagSizer.xsp
 XS/HyperlinkCtrl.xsp
 XS/Icon.xs
@@ -188,6 +193,7 @@ XS/Sound.xsp
 XS/SpinButton.xs
 XS/SpinCtrl.xs
 XS/SplitterWindow.xs
+XS/StandardPaths.xsp
 XS/StaticBitmap.xs
 XS/StaticBox.xs
 XS/StaticLine.xs
@@ -452,10 +458,13 @@ ext/pperl/textval/t/01_load.t
 ext/richtext/Makefile.PL
 ext/richtext/RichText.xs
 ext/richtext/XS/RichTextAttr.xsp
+ext/richtext/XS/RichTextBuffer.xsp
 ext/richtext/XS/RichTextCtrl.xsp
+ext/richtext/XS/RichTextFileHandler.xsp
 ext/richtext/XS/RichTextFormattingDialog.xsp
 ext/richtext/XS/RichTextStyle.xsp
 ext/richtext/XS/RichTextStyleCtrl.xsp
+ext/richtext/XS/SymbolPickerDialog.xsp
 ext/richtext/lib/Wx/RichText.pm
 ext/richtext/t/01_load.t
 ext/richtext/t/02_inheritance.t

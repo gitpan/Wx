@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: TextCtrl.xs 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: TextCtrl.xs 2244 2007-10-14 21:36:20Z mbarbon $
 ## Copyright:   (c) 2000-2003, 2005-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -207,9 +207,14 @@ wxTextCtrlBase::HitTest( pt )
 
 %}
 
-%{
-MODULE=Wx PACKAGE=Wx::TextCtrl
+%name{Wx::TextCtrl} class wxTextCtrl
+{
+#if defined( __WXMAC__ ) && WXPERL_W_VERSION_GE( 2, 8, 0 )
+    void MacCheckSpelling( bool check );
+#endif
+};
 
+%{
 void
 new( ... )
   PPCODE:

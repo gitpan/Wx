@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h 2192 2007-08-21 21:27:40Z mbarbon $
+// RCS-ID:      $Id: helpers.h 2238 2007-10-07 19:14:55Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -147,6 +147,14 @@ inline SV* wxPli_wxString_2_sv( pTHX_ const wxString& str, SV* out )
 
 #endif
 
+inline wxString wxPli_sv_2_wxString( pTHX_ SV* sv )
+{
+    wxString ret;
+    WXSTRING_INPUT( ret, wxString , sv );
+
+    return ret;
+}
+
 // some utility functions
 
 inline AV* wxPli_avref_2_av( SV* sv )
@@ -240,7 +248,7 @@ void wxPli_non_objarray_push( pTHX_ const A& things, const char* package )
     PUTBACK;
 }
 
-void wxPli_stringarray_push( pTHX_ const wxArrayString& strings );
+void FUNCPTR( wxPli_stringarray_push )( pTHX_ const wxArrayString& strings );
 void FUNCPTR( wxPli_intarray_push )( pTHX_ const wxArrayInt& ints );
 #if WXPERL_W_VERSION_GE( 2, 7, 2 )
 void wxPli_doublearray_push( pTHX_ const wxArrayDouble& doubles );
@@ -339,6 +347,7 @@ void wxPli_sv_2_ostream( pTHX_ SV* scalar, wxPliOutputStream& stream );
 void FUNCPTR( wxPli_stream_2_sv )( pTHX_ SV* scalar, wxStreamBase* stream,
                                    const char* package );
 wxPliInputStream* FUNCPTR( wxPliInputStream_ctor )( SV* sv );
+wxPliOutputStream* FUNCPTR( wxPliOutputStream_ctor )( SV* sv );
 
 void FUNCPTR( wxPli_set_events )( const wxPliEventDescription* events );
 
@@ -461,6 +470,8 @@ struct wxPliHelpers
     void (* m_wxPli_set_events )( const wxPliEventDescription* events );
     int (* m_wxPli_av_2_arraystring )( pTHX_ SV* avref, wxArrayString* array );
     void (* m_wxPli_objlist_push )( pTHX_ const wxList& objs );
+    wxPliOutputStream* ( * m_wxPliOutputStream_ctor )( SV* );
+    void (* m_wxPli_stringarray_push )( pTHX_ const wxArrayString& );
 };
 
 #if wxPERL_USE_THREADS
@@ -492,7 +503,7 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
  &wxPli_clientdatacontainer_2_sv, \
  wxDEFINE_PLI_HELPER_THREADS() \
  &wxPli_av_2_arrayint, &wxPli_set_events, &wxPli_av_2_arraystring, \
- &wxPli_objlist_push \
+ &wxPli_objlist_push, &wxPliOutputStream_ctor, &wxPli_stringarray_push \
  }
 
 #if defined( WXPL_EXT ) && !defined( WXPL_STATIC ) && !defined(__WXMAC__)
@@ -534,6 +545,8 @@ wxPliHelpers name = { &wxPli_sv_2_object, \
   wxPli_set_events = name->m_wxPli_set_events; \
   wxPli_av_2_arraystring = name->m_wxPli_av_2_arraystring; \
   wxPli_objlist_push = name->m_wxPli_objlist_push; \
+  wxPliOutputStream_ctor = name->m_wxPliOutputStream_ctor; \
+  wxPli_av_2_stringarray = name->m_wxPli_av_2_stringarray; \
   WXPLI_INIT_CLASSINFO();
 
 #else

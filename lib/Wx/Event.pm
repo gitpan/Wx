@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Event.pm 2170 2007-08-17 22:53:11Z mbarbon $
+## RCS-ID:      $Id: Event.pm 2213 2007-08-25 23:15:15Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -398,12 +398,6 @@ sub EVT_TREE_ITEM_MENU($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_COMMAND_TREE
 
 sub EVT_UPDATE_UI($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_UPDATE_UI, $_[2] ) }
 sub EVT_UPDATE_UI_RANGE($$$$) { $_[0]->Connect( $_[1], $_[2], &Wx::wxEVT_UPDATE_UI, $_[3] ) }
-
-#
-# HyperlinkEvent
-#
-
-sub EVT_HYPERLINK($$$) { $_[0]->Connect( $_[1], -1, &Wx::wxEVT_HYPERLINK, $_[2] ) }
 
 #
 # Socket

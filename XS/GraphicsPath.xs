@@ -1,10 +1,10 @@
 #############################################################################
 ## Name:        XS/GraphicsPath.xs
-## Purpose:     XS for Wx::GraphicsObject
+## Purpose:     XS for Wx::GraphicsPath
 ## Author:      Klaas Hartmann
 ## Modified by:
 ## Created:     29/06/2007
-## RCS-ID:      $Id: GraphicsPath.xs 2129 2007-08-11 21:29:29Z mbarbon $
+## RCS-ID:      $Id: GraphicsPath.xs 2233 2007-09-30 20:32:31Z mbarbon $
 ## Copyright:   (c) 2007 Klaas Hartmann
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself

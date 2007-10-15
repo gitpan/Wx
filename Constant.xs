@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2200 2007-08-22 23:17:15Z mbarbon $
+// RCS-ID:      $Id: Constant.xs 2240 2007-10-07 19:18:51Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -66,6 +66,7 @@
 #include <wx/fdrepdlg.h>
 #include <wx/list.h>
 #include <wx/stattext.h>
+#include <wx/dirctrl.h>
 
 #include "cpp/wxapi.h"
 #include "cpp/setup.h"
@@ -113,6 +114,7 @@
 #endif
 #if WXPERL_W_VERSION_GE( 2, 9, 0 )
 #include <wx/editlbox.h>
+#include <wx/filectrl.h>
 #endif
 
 #if WXPERL_W_VERSION_GE( 2, 7, 0 ) && !WXWIN_COMPATIBILITY_2_6
@@ -275,6 +277,12 @@ static wxPliEventDescription evts[] =
 #endif
 #if WXPERL_W_VERSION_GE( 2, 7, 2 )
     EVT( EVT_COLLAPSIBLEPANE_CHANGED, 3, wxEVT_COMMAND_COLLPANE_CHANGED )
+    EVT( EVT_HYPERLINK, 3, wxEVT_COMMAND_HYPERLINK )
+#endif
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    SEVT( EVT_FILECTRL_FILEACTIVATED, 3 )
+    SEVT( EVT_FILECTRL_SELECTIONCHANGED, 3 )
+    SEVT( EVT_FILECTRL_FOLDERCHANGED, 3 )
 #endif
     { 0, 0, 0 }
 };
@@ -338,6 +346,10 @@ static wxPlINH inherit[] =
     I( Gauge95,         Gauge )
     I( Slider,          Control )
     I( SpinCtrl,        Control )
+    I( GenericDirCtrl,  Control )
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    I( FileCtrl,        Control )
+#endif
     I( SpinButton,      Control )
     I( SearchCtrl,      TextCtrl )
     I( RadioBox,        Control )
@@ -423,9 +435,13 @@ static wxPlINH inherit[] =
     I( ANIHandler,      CURHandler )
     I( TGAHandler,      ImageHandler )
 
+    I( GraphicsRenderer, Object )
     I( GraphicsObject,  Object )
     I( GraphicsPath,    GraphicsObject )
     I( GraphicsMatrix,  GraphicsObject )
+    I( GraphicsPen,     GraphicsObject )
+    I( GraphicsBrush,   GraphicsObject )
+    I( GraphicsFont,    GraphicsObject )
 
     I( LogTextCtrl,     Log )
     I( LogWindow,       Log )
@@ -615,6 +631,7 @@ static wxPlINH inherit[] =
     I( NotebookEvent,   NotifyEvent )
 #endif
     I( NotifyEvent,     CommandEvent )
+    I( FileCtrlEvent,   CommandEvent )
     I( PaintEvent,      Event )
     I( ProcessEvent,    Event )
     I( QueryLayoutInfoEvent, Event )
@@ -940,6 +957,15 @@ static double constant( const char *name, int arg )
     r( wxDIRP_CHANGE_DIR );
 #endif
     r( wxDOWN );
+
+    r( wxDIRCTRL_DIR_ONLY );            // dirctrl
+    r( wxDIRCTRL_SELECT_FIRST );        // dirctrl
+#if WXPERL_W_VERSION_LT( 2, 9, 0 ) || WXWIN_COMPATIBILITY_2_8
+    r( wxDIRCTRL_SHOW_FILTERS );        // dirctrl
+#endif
+    r( wxDIRCTRL_3D_INTERNAL );         // dirctrl
+    r( wxDIRCTRL_EDIT_LABELS );         // dirctrl
+
     break;
   case 'E':
     r( wxEQUIV );                       // dc
@@ -1302,6 +1328,12 @@ static double constant( const char *name, int arg )
     r( wxFNTP_USEFONT_FOR_LABEL );
 #endif
     r( wxFORWARD );                     // sizer
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    r( wxFC_OPEN );                     // filectrl
+    r( wxFC_SAVE );                     // filectrl
+    r( wxFC_MULTIPLE );                 // filectrl
+    r( wxFC_NOSHOWHIDDEN );             // filectrl
+#endif
     break;
   case 'G':
     r( wxGA_HORIZONTAL );               // gauge

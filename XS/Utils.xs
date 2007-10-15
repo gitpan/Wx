@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     09/02/2001
-## RCS-ID:      $Id: Utils.xs 2057 2007-06-18 23:03:00Z mbarbon $
+## RCS-ID:      $Id: Utils.xs 2239 2007-10-07 19:16:59Z mbarbon $
 ## Copyright:   (c) 2001-2003, 2005-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -308,6 +308,13 @@ wxTipProvider::Destroy()
 
 size_t
 wxTipProvider::GetCurrentTip()
+
+wxString
+wxTipProvider::GetTip()
+
+wxString
+wxTipProvider::PreprocessTip( tip )
+    wxString tip
 
 void
 wxTipProvider::SetCurrentTip( number )
