@@ -5,8 +5,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     05/11/2001
-// RCS-ID:      $Id: chkconfig.h 2243 2007-10-14 21:35:20Z mbarbon $
-// Copyright:   (c) 2001-2004, 2006 Mattia Barbon
+// RCS-ID:      $Id: chkconfig.h 2252 2007-10-17 22:55:25Z mbarbon $
+// Copyright:   (c) 2001-2004, 2006-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////

@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     13/08/2007
-## RCS-ID:      $Id: OwnerDrawnComboBox.xsp 2153 2007-08-15 17:37:39Z mbarbon $
+## RCS-ID:      $Id: OwnerDrawnComboBox.xsp 2251 2007-10-17 22:52:17Z mbarbon $
 ## Copyright:   (c) 2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -35,7 +35,7 @@ INCLUDE: perl -pe "s/ItemContainer/OwnerDrawnComboBox/g" XS/ItemContainer.xs |
 
 // void METH(wxDC&, const wxRect&, int, int)
 #define DEC_V_CBACK_VOID__WXDC_WXRECT_INT_INT_const( METHOD ) \
-    void METHOD( wxDC& p1, const wxRect& p2, int p3, int p3 ) const
+    void METHOD( wxDC& p1, const wxRect& p2, int p3, int p4 ) const
 
 #define DEF_V_CBACK_VOID__WXDC_WXRECT_INT_INT_const( CLASS, BASE, METHOD )\
     void CLASS::METHOD( wxDC& p1, const wxRect& p2, int p3, int p4 ) const   \

@@ -1,6 +1,6 @@
 # http://module-build.sourceforge.net/META-spec.html
 name:         Wx
-version:      0.78
+version:      0.79
 version_from: Wx.pm
 installdirs:  site
 author:       Mattia Barbon <mbarbon@cpan.org>
@@ -23,6 +23,8 @@ no_index:
     - Parse::Yapp::Driver
 
 # extras.
+configure_requires:
+  Alien::wxWidgets: 0.25
 dynamic_config: 1
 
 distribution_type: module

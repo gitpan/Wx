@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     21/09/2002
-// RCS-ID:      $Id: wxapi.h 2057 2007-06-18 23:03:00Z mbarbon $
-// Copyright:   (c) 2002-2003, 2005-2006 Mattia Barbon
+// RCS-ID:      $Id: wxapi.h 2252 2007-10-17 22:55:25Z mbarbon $
+// Copyright:   (c) 2002-2003, 2005-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -37,11 +37,19 @@
 #undef __WINDOWS__
 #endif
 
+#if defined(__VISUALC__) || defined(__DIGITALMARS__)
+#define mode_t mode_avoid_redefinition_t
+#endif
+
 WXPL_EXTERN_C_START
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
 WXPL_EXTERN_C_END
+
+#if defined(__VISUALC__) || defined(__DIGITALMARS__)
+#undef mode_t
+#endif
 
 #if WXPERL_P_VERSION_GE( 5, 9, 0 ) || WXPERL_P_VERSION_GE( 5, 8, 1 )
 
