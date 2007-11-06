@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: DC.xs 2176 2007-08-18 15:21:16Z mbarbon $
+## RCS-ID:      $Id: DC.xs 2257 2007-11-05 19:24:03Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -171,7 +171,11 @@ wxDC::DrawLines( list, xoffset = 0, yoffset = 0 )
     wxCoord xoffset
     wxCoord yoffset
   PREINIT:
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    wxPointList points;
+#else
     wxList points;
+#endif
     wxPliArrayGuard<wxPoint> pts;
   CODE:
     wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );
@@ -193,7 +197,11 @@ wxDC::DrawPolygon( list, xoffset, yoffset, fill_style = wxODDEVEN_RULE )
     wxCoord yoffset
     int fill_style
   PREINIT:
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    wxPointList points;
+#else
     wxList points;
+#endif
     wxPliArrayGuard<wxPoint> pts;
   CODE:
     wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );
@@ -225,7 +233,11 @@ void
 wxDC::DrawSpline( list )
     SV* list
   PREINIT:
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+    wxPointList points;
+#else
     wxList points;
+#endif
     wxPliArrayGuard<wxPoint> pts;
   CODE:
     wxPli_av_2_pointlist( aTHX_ list, &points, pts.lvalue() );

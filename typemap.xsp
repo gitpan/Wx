@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/03/2003
-## RCS-ID:      $Id: typemap.xsp 2233 2007-09-30 20:32:31Z mbarbon $
+## RCS-ID:      $Id: typemap.xsp 2262 2007-11-05 23:14:40Z mbarbon $
 ## Copyright:   (c) 2003-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -127,3 +127,7 @@
 %typemap{const wxGraphicsPen&}{reference};
 %typemap{const wxGraphicsBrush&}{reference};
 %typemap{const wxGraphicsFont&}{reference};
+
+%typemap{wxVariant*}{simple};
+%typemap{wxVariant&}{reference};
+%typemap{const wxVariant&}{reference};

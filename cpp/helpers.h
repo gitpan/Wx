@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.h 2238 2007-10-07 19:14:55Z mbarbon $
+// RCS-ID:      $Id: helpers.h 2263 2007-11-05 23:18:34Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -16,6 +16,7 @@
 #include <wx/object.h>
 #include <wx/list.h>
 #include <wx/gdicmn.h>
+#include <wx/variant.h>
 
 #include <wx/dynarray.h>
 #include <wx/arrstr.h>
@@ -178,6 +179,7 @@ const char* FUNCPTR( wxPli_cpp_class_2_perl )( const wxChar* className,
 // you pass two integers as additional parameters
 // b - a boolean value
 // i - an 'int' value
+// I - an 'unsigned int' value
 // l - a 'long' value
 // L - an 'unsigned long' value
 // d - a 'double' value
@@ -289,10 +291,15 @@ wxGBSpan wxPli_sv_2_wxgbspan( pTHX_ SV* scalar );
 #endif
 class WXDLLEXPORT wxPosition;
 wxPosition wxPli_sv_2_wxposition( pTHX_ SV* scalar );
+wxVariant wxPli_sv_2_wxvariant( pTHX_ SV* scalar );
 
 wxKeyCode wxPli_sv_2_keycode( pTHX_ SV* scalar );
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+int wxPli_av_2_pointlist( pTHX_ SV* array, wxPointList *points, wxPoint** tmp );
+#else
 int wxPli_av_2_pointlist( pTHX_ SV* array, wxList *points, wxPoint** tmp );
+#endif
 int wxPli_av_2_pointarray( pTHX_ SV* array, wxPoint** points );
 int wxPli_av_2_point2ddoublearray( pTHX_ SV* array, wxPoint2DDouble** points );
 

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp 2192 2007-08-21 21:27:40Z mbarbon $
+// RCS-ID:      $Id: helpers.cpp 2263 2007-11-05 23:18:34Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -209,6 +209,7 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
 
     bool bval;
     IV ival;
+    UV uval;
     long lval;
     unsigned long ulval;
     char* stval;
@@ -231,6 +232,10 @@ void wxPli_push_args( pTHX_ SV*** psp, const char* argtypes, va_list& args )
         case 'i':
             ival = va_arg( args, int );
             XPUSHs( sv_2mortal( newSViv( ival ) ) );
+            break;
+        case 'I':
+            uval = va_arg( args, unsigned int );
+            XPUSHs( sv_2mortal( newSVuv( uval ) ) );
             break;
         case 'l':
             lval = va_arg( args, long );
@@ -1274,6 +1279,22 @@ wxKeyCode wxPli_sv_2_keycode( pTHX_ SV* sv )
     return wxKeyCode( 0 ); // just to silence a possible warning
 }
 
+wxVariant wxPli_sv_2_wxvariant( pTHX_ SV* sv )
+{
+    if( !SvOK( sv ) ) {
+        return wxVariant();
+    } else if( SvROK( sv ) ) {
+        // TODO
+        return wxVariant();
+    } else if( SvNOK( sv ) ) {
+        return wxVariant( SvNV( sv ) );
+    } else if( SvIOK( sv ) ) {
+        return wxVariant( SvIV( sv ) );
+    }
+
+    return wxVariant();
+}
+
 class convert_wxpoint
 {
 public:
@@ -1323,7 +1344,11 @@ int wxPli_av_2_point2ddoublearray( pTHX_ SV* avref, wxPoint2DDouble** array )
                                   array_thingy<wxPoint2DDouble>() );
 }
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+int wxPli_av_2_pointlist( pTHX_ SV* arr, wxPointList *points, wxPoint** tmp )
+#else
 int wxPli_av_2_pointlist( pTHX_ SV* arr, wxList *points, wxPoint** tmp )
+#endif
 {
     *tmp = 0;
 
@@ -1351,7 +1376,11 @@ int wxPli_av_2_pointlist( pTHX_ SV* arr, wxList *points, wxPoint** tmp )
         
             if( sv_derived_from( scalar, CHAR_P "Wx::Point" ) ) 
             {
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+                points->Append( INT2PTR( wxPoint*, SvIV( ref ) ) );
+#else
                 points->Append( INT2PTR( wxObject*, SvIV( ref ) ) );
+#endif
                 continue;
             }
             else if( SvTYPE( ref ) == SVt_PVAV )
@@ -1370,7 +1399,11 @@ int wxPli_av_2_pointlist( pTHX_ SV* arr, wxList *points, wxPoint** tmp )
                     int y = SvIV( *av_fetch( av, 1, 0 ) );
 
                     (*tmp)[used] = wxPoint( x, y );
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+                    points->Append( reinterpret_cast<wxPoint*>( *tmp + used ) );
+#else
                     points->Append( reinterpret_cast<wxObject*>( *tmp + used ) );
+#endif
                     ++used;
                     continue;
                 }

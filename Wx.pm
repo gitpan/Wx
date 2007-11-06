@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm 2248 2007-10-17 21:24:28Z mbarbon $
+## RCS-ID:      $Id: Wx.pm 2267 2007-11-06 22:09:56Z mbarbon $
 ## Copyright:   (c) 2000-2007 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $XS_VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.79';
+$VERSION = '0.80';
 $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -129,7 +129,7 @@ sub _unload_dll { }
 
 sub _load_dll {
   local $ENV{PATH} = $wx_path . ';' . $ENV{PATH} if $wx_path;
-  return unless exists $Wx::dlls->{$_[0]};
+  return unless exists $Wx::dlls->{$_[0]} && $Wx::dlls->{$_[0]};
   my $dll = $Wx::dlls->{$_[0]};
   $dll = $wx_path . '/' . $dll if $wx_path;
   Wx::_load_file( $dll );

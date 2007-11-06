@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2240 2007-10-07 19:18:51Z mbarbon $
+// RCS-ID:      $Id: Constant.xs 2266 2007-11-06 22:08:26Z mbarbon $
 // Copyright:   (c) 2000-2007 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -435,6 +435,7 @@ static wxPlINH inherit[] =
     I( ANIHandler,      CURHandler )
     I( TGAHandler,      ImageHandler )
 
+    I( GraphicsContext, Object )
     I( GraphicsRenderer, Object )
     I( GraphicsObject,  Object )
     I( GraphicsPath,    GraphicsObject )
@@ -442,6 +443,9 @@ static wxPlINH inherit[] =
     I( GraphicsPen,     GraphicsObject )
     I( GraphicsBrush,   GraphicsObject )
     I( GraphicsFont,    GraphicsObject )
+#ifdef __WXMSW__
+    I( GDIPlusContext,  GraphicsContext )
+#endif
 
     I( LogTextCtrl,     Log )
     I( LogWindow,       Log )
@@ -2945,6 +2949,9 @@ _get_packages()
 #endif
 #if wxPERL_USE_DATETIME
     "use Wx::DateTime;"
+#endif
+#if wxPERL_USE_DATAVIEW && wxUSE_DATAVIEW && WXPERL_W_VERSION_GE( 2, 9, 0 )
+    "use Wx::DataView;"
 #endif
 #if wxPERL_USE_MEDIA && wxUSE_MEDIACTRL && WXPERL_W_VERSION_GE( 2, 6, 0 )
     "use Wx::Media;"
