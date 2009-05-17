@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: DC.xs 2527 2009-02-07 17:44:57Z mbarbon $
+## RCS-ID:      $Id: DC.xs 2561 2009-05-17 08:49:49Z mbarbon $
 ## Copyright:   (c) 2000-2007, 2009 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -861,7 +861,7 @@ new( ... )
     BEGIN_OVERLOAD()
         MATCH_REDISP( wxPliOvl_wdc_wrgn, newRegion )
         MATCH_REDISP( wxPliOvl_wdc_wrec, newRect )
-        MATCH_REDISP( wxPliOvl_wdc_n_n_n_, newXYWH )
+        MATCH_REDISP( wxPliOvl_wdc_n_n_n_n, newXYWH )
     END_OVERLOAD( Wx::DCClipper::new )
 %}
 
@@ -869,8 +869,17 @@ new( ... )
     %name{newRect} wxDCClipper( wxDC& dc, const wxRect& rect );
     %name{newXYWH} wxDCClipper( wxDC& dc, int x, int y, int w, int h );
 
-    ## // thread KO
-    ~wxDCClipper();
+%{
+static void
+wxDCClipper::CLONE()
+  CODE:
+    wxPli_thread_sv_clone( aTHX_ CLASS, (wxPliCloneSV)wxPli_detach_object );
+%}
+    ## // thread OK
+    ~wxDCClipper()
+        %code{% wxPli_thread_sv_unregister( aTHX_ "Wx::DCClipper", THIS, ST(0) );
+                delete THIS;
+                %};
 };
 
 #endif
