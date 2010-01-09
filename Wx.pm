@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm 2715 2009-12-25 17:23:03Z mbarbon $
+## RCS-ID:      $Id: Wx.pm 2731 2009-12-29 21:19:56Z mbarbon $
 ## Copyright:   (c) 2000-2009 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $XS_VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.95';
+$VERSION = '0.96';
 $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -243,6 +243,7 @@ sub GetMultipleChoices {
     return @s;
   }
 
+  $dialog->Destroy;
   return;
 }
 
