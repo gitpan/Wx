@@ -4,8 +4,8 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2715 2009-12-25 17:23:03Z mbarbon $
-// Copyright:   (c) 2000-2009 Mattia Barbon
+// RCS-ID:      $Id: Constant.xs 2787 2010-02-07 09:39:47Z mbarbon $
+// Copyright:   (c) 2000-2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
 /////////////////////////////////////////////////////////////////////////////
@@ -490,7 +490,10 @@ static wxPlINH inherit[] =
 #ifdef __WXMSW__
     I( GDIPlusContext,  GraphicsContext )
 #endif
-
+#ifdef __WXMAC__
+    I( MacCoreGraphicsContext,  GraphicsContext )
+    I( MacCoreGraphicsRenderer, GraphicsRenderer )
+#endif
     I( LogTextCtrl,     Log )
     I( LogWindow,       Log )
     I( LogGui,          Log )
