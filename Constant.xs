@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 2787 2010-02-07 09:39:47Z mbarbon $
+// RCS-ID:      $Id: Constant.xs 2788 2010-02-09 03:06:59Z mdootson $
 // Copyright:   (c) 2000-2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -464,7 +464,8 @@ static wxPlINH inherit[] =
     I( BufferedPaintDC, BufferedDC )
     I( SVGFileDC,       DC )
     I( MirrorDC,        DC )
-
+    I( GCDC,            DC )
+    
     I( BMPHandler,      ImageHandler )
     I( PNGHandler,      ImageHandler )
     I( JPEGHandler,     ImageHandler )
