@@ -5,7 +5,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Makefile.PL 2757 2010-01-17 10:26:27Z mbarbon $
+## RCS-ID:      $Id: Makefile.PL 2844 2010-03-14 11:56:17Z mbarbon $
 ## Copyright:   (c) 2000-2010 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -41,7 +41,7 @@ my $build_requires =
     'Alien::wxWidgets'       => 0.25,
     'if'                     => 0.03,
     'ExtUtils::XSpp'         => 0.09,
-    'ExtUtils::ParseXS'      => 2.2202,
+    'ExtUtils::ParseXS'      => 2.2203,
     };
 
 eval {
