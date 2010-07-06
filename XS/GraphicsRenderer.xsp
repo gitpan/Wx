@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     30/09/2007
-## RCS-ID:      $Id: GraphicsRenderer.xsp 2855 2010-03-25 07:06:13Z mdootson $
-## Copyright:   (c) 2007 Klaas Hartmann
+## RCS-ID:      $Id: GraphicsRenderer.xsp 2938 2010-07-04 12:56:48Z mbarbon $
+## Copyright:   (c) 2007, 2010 Klaas Hartmann
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################

@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     01/10/2000
-// RCS-ID:      $Id: Wx.xs 2778 2010-02-06 08:45:45Z mbarbon $
+// RCS-ID:      $Id: Wx.xs 2939 2010-07-06 05:45:15Z mbarbon $
 // Copyright:   (c) 2000-2002, 2004-2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -37,6 +37,10 @@
 
 #if defined(__WXMSW__)
 #include <wx/msw/private.h>
+#endif
+
+#if defined(__WXMAC__)
+#include <ApplicationServices/ApplicationServices.h>
 #endif
 
 #if WXPERL_W_VERSION_GE( 2, 5, 1 )
@@ -245,6 +249,11 @@ BOOT:
 bool 
 Load()
   CODE:
+#if defined(__WXMAC__)
+    ProcessSerialNumber kCurrentPSN = { 0, kCurrentProcess };
+    TransformProcessType( &kCurrentPSN, kProcessTransformToForegroundApplication );
+    SetFrontProcess( &kCurrentPSN );
+#endif
     wxPerlAppCreated = wxTheApp != NULL;
     if( wxPerlInitialized ) { XSRETURN( true ); }
     wxPerlInitialized = true;
@@ -432,7 +441,7 @@ INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/Sound.xs
 
 INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/Power.xsp
 
-INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/ClassInfo.xs
+INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/ClassInfo.xsp
 
 INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/Display.xsp
 
