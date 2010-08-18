@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm 2940 2010-07-06 19:41:40Z mbarbon $
+## RCS-ID:      $Id: Wx.pm 2954 2010-08-15 14:33:55Z mbarbon $
 ## Copyright:   (c) 2000-2010 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $XS_VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.9702_01';
+$VERSION = '0.98';
 $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -142,7 +142,7 @@ use strict 'refs';
 
 *Wx::Window::GetClientSizeWH = \&Wx::Window::GetClientSizeXY;
 
-if( Load() ) {
+if( Load( 1 ) ) {
     SetConstants();
     SetConstantsOnce();
     SetOvlConstants();

@@ -5,7 +5,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     07/08/2002
-// RCS-ID:      $Id: overload.cpp 2934 2010-07-04 08:44:12Z mbarbon $
+// RCS-ID:      $Id: overload.cpp 2953 2010-08-15 14:29:24Z mbarbon $
 // Copyright:   (c) 2002-2004, 2006-2007, 2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -207,7 +207,7 @@ void wxPli_overload_error( pTHX_ const char* function,
 
     PUSHMARK(MARK); // probably not necessary
 
-    require_pv( "Carp" );
+    require_pv( "Carp.pm" );
     const char* argv[2]; argv[0] = SvPV_nolen( message ); argv[1] = NULL;
     call_argv( "Carp::croak", G_VOID|G_DISCARD, (char**) argv ); \
 }
