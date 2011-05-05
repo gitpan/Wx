@@ -1,30 +1,43 @@
---- #YAML:1.0
-name:               Wx
-version:            0.98_01
-abstract:           interface to the wxWidgets cross-platform GUI toolkit
-author:
-    - Mattia Barbon <mbarbon@cpan.org>
-license:            perl
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+# http://module-build.sourceforge.net/META-spec.html
+name:         Wx
+version:      0.99
+version_from: Wx.pm
+installdirs:  site
+author:       Mattia Barbon <mbarbon@cpan.org>
+abstract:     interface to the wxWidgets cross-platform GUI toolkit
+license:      perl
+#requires:
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Alien::wxWidgets:     0.25
-    Data::Dumper:         0
-    ExtUtils::MakeMaker:  6.17
-    ExtUtils::ParseXS:    2.2203
-    ExtUtils::XSpp:       0.1601
-    File::Spec::Functions:  0.82
-    if:                   0.03
-    Test::Harness:        2.26
-    Test::More:           0.45
+  Alien::wxWidgets:        0.25
+  Data::Dumper:               0
+  ExtUtils::MakeMaker:     6.17
+  ExtUtils::ParseXS:     2.2203
+  ExtUtils::XSpp:        0.1601
+  File::Spec::Functions:   0.82
+  if:                      0.03
+  Test::Harness:           2.26
+  Test::More:              0.45
 no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+  directory:
+    - samples
+    - script
+  package:
+    - MY
+    - Parse::Yapp::Driver
+
+# extras.
+configure_requires:
+  Alien::wxWidgets: 0.25
+dynamic_config: 1
+resources:
+  MailingList: http://lists.perl.org/list/wxperl-users.html
+  bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Wx
+  homepage: http://wxperl.eu/
+  license: http://dev.perl.org/licenses/
+  repository: https://wxperl.svn.sourceforge.net/svnroot/wxperl/wxPerl
+
+distribution_type: module
+generated_by: ExtUtils::MY_Metafile version 0.09, EUMM-6.56.
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  version: 1.3
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
