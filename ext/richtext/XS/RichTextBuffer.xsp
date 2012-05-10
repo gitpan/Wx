@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     03/09/2007
-## RCS-ID:      $Id: RichTextBuffer.xsp 2992 2010-11-14 12:50:53Z mdootson $
+## RCS-ID:      $Id: RichTextBuffer.xsp 3281 2012-05-06 07:25:12Z mdootson $
 ## Copyright:   (c) 2007, 2010 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -19,8 +19,13 @@
 ## DECLARE_OVERLOAD( wrtr, Wx::RichTextRange )
 ## DECLARE_OVERLOAD( wtae, Wx::TextAttrEx )
 
+%loadplugin{build::Wx::XSP::Overload};
+
 %name{Wx::RichTextBuffer} class wxRichTextBuffer
 {
+    
+    virtual void ResetAndClearCommands();
+    
     bool AddEventHandler( wxEvtHandler* handler );
     void AddHandler( wxRichTextFileHandler* handler );
 

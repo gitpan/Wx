@@ -38,6 +38,7 @@ undef $rtp2;
 undef $rtpo2;
 undef $rthfd2;
 
+
 my $t = threads->create
   ( sub {
         ok( 1, 'In thread' );
