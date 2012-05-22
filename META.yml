@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Wx
-version:            0.9907
+version:            0.9908
 abstract:           interface to the wxWidgets cross-platform GUI toolkit
 author:
     - Mattia Barbon <mbarbon@cpan.org>
