@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 3313 2012-07-13 02:14:15Z mdootson $
+// RCS-ID:      $Id: Constant.xs 3337 2012-08-29 04:02:00Z mdootson $
 // Copyright:   (c) 2000-2011 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself

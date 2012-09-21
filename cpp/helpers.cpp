@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: helpers.cpp 3190 2012-03-16 05:04:03Z mdootson $
+// RCS-ID:      $Id: helpers.cpp 3364 2012-09-21 09:11:28Z mdootson $
 // Copyright:   (c) 2000-2011 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -56,6 +56,10 @@ struct my_magic
     bool       deleteable;
 };
 
+#if WXPERL_P_VERSION_GE( 5, 14, 0 )
+STATIC MGVTBL my_vtbl = { 0, 0, 0, 0, 0, 0, 0, 0 };
+#endif
+
 my_magic* wxPli_get_magic( pTHX_ SV* rv )
 {
     // check for reference
@@ -68,14 +72,19 @@ my_magic* wxPli_get_magic( pTHX_ SV* rv )
     if( !ref || SvTYPE( ref ) < SVt_PVMG )
         return NULL;
 
-    // search for '~' magic, and check the value
+    // search for '~' / PERL_MAGIC_ext magic, and check the value
+#if WXPERL_P_VERSION_GE( 5, 14, 0 )
+    MAGIC* magic = mg_findext( ref, PERL_MAGIC_ext, &my_vtbl );
+#else
     MAGIC* magic = mg_find( ref, '~' );
-
+#endif
     if( !magic )
         return NULL;
 
     return (my_magic*)magic->mg_ptr;
 }
+
+
 
 my_magic* wxPli_get_or_create_magic( pTHX_ SV* rv )
 {
@@ -91,11 +100,18 @@ my_magic* wxPli_get_or_create_magic( pTHX_ SV* rv )
     // search for '~' magic, and check the value
     MAGIC* magic;
 
-    while( !( magic = mg_find( ref, '~' ) ) )
+#if WXPERL_P_VERSION_GE( 5, 14, 0 )
+    while( !( magic = mg_findext( ref, PERL_MAGIC_ext, &my_vtbl ) ) )
+#else
+    while( !( magic = mg_find( ref, '~' ) ) ) 
+#endif
     {
         my_magic tmp;
-
-        sv_magic( ref, 0, '~', (char*)&tmp, sizeof( tmp ) );
+#if WXPERL_P_VERSION_GE( 5, 14, 0 )
+        sv_magicext( ref, NULL, PERL_MAGIC_ext, &my_vtbl, (char*)&tmp, sizeof( tmp ) );
+#else
+        sv_magic( ref, NULL, '~', (char*)&tmp, sizeof( tmp ) );
+#endif
     }
 
     return (my_magic*)magic->mg_ptr;

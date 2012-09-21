@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: app.h 2057 2007-06-18 23:03:00Z mbarbon $
+// RCS-ID:      $Id: app.h 3362 2012-09-21 08:42:25Z mdootson $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -41,6 +41,22 @@ public:
     {
         ((wxPliApp*) app)->DeletePendingObjects();
     }
+
+#if ( WXPERL_W_VERSION_GE( 2, 9, 1 ) && wxDEBUG_LEVEL > 0 ) || ( WXPERL_W_VERSION_LE( 2, 9, 0) && defined(__WXDEBUG__) )    
+
+    void OnAssertFailure(const wxChar *file, int line, const wxChar *func, const wxChar *cond, const wxChar *msg)
+    {
+        dTHX;
+
+        if( wxPliVirtualCallback_FindCallback( aTHX_ &m_callback, "OnAssertFailure" ) )
+        {
+            wxPliVirtualCallback_CallCallback( aTHX_ &m_callback,
+                                               G_DISCARD|G_SCALAR,
+                                               "wiwww", file, line, func, cond, msg );
+        } else
+            wxApp::OnAssertFailure( file, line, func, cond, msg );
+    }
+#endif
 
     DEC_V_CBACK_INT__VOID( OnExit );
     DEC_V_CBACK_BOOL__BOOL( Yield );

@@ -1,5 +1,22 @@
 Revision history for Perl extension Wx.
 
+0.9912 Fri Sep 21 2012
+    - wrapped wxListCtrl::SetItemPtrData.
+    - updated to use sv_magicext / mg_findext so
+      external modules do not stomp on our magic.
+    - updated wxListView so that LC_VIRTUAL style works.
+    - set wxListCtrl full constructor to create evthandler.
+    - updated Wx::Ribbon controls for 2.9.4 interface +
+      tool/button 'Add' and 'Insert' methods now return objects
+      as described in the docs instead of int id's.
+    - added SetClientData to PGProperty and PropertyGridInterface
+    - Wx::ToolBar->SetClientData now deletes any prior set Wx::Object
+    - wxDataViewListCtrl and wxDataViewListStore - fix ClientData for >= 2.9.4
+    - /usr/local/lib needs removing from LD:DL:FLAGS on all *nix types
+    - nostdinc now removed from any flags on MacOSX
+    - Fixed handling of asserts and debug level > 0 on wxWidgets >= 2.9.3
+    - Added wxApp::OnAssertFailure
+
 0.9911 Fri Aug 24 2012
     - wxDataView - updated for 2.9.4
     - wxTreeEvent::GetKeyEvent() added

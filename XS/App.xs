@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: App.xs 3010 2011-02-20 16:27:27Z mbarbon $
+## RCS-ID:      $Id: App.xs 3361 2012-09-21 08:22:05Z mdootson $
 ## Copyright:   (c) 2000-2007, 2010-2011 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -276,3 +276,17 @@ SetInstance( app )
 
 bool
 wxApp::IsMainLoopRunning()
+
+#if ( WXPERL_W_VERSION_GE( 2, 9, 1 ) && wxDEBUG_LEVEL > 0 ) || ( WXPERL_W_VERSION_LE( 2, 9, 0) && defined(__WXDEBUG__) )
+
+void
+wxApp::OnAssertFailure(file, line, func, cond, msg)
+    wxChar* file
+    int line
+    wxChar* func
+    wxChar* cond
+    wxChar* msg
+  CODE:
+    THIS->wxApp::OnAssertFailure( file, line, func, cond, msg );
+
+#endif
