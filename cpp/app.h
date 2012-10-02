@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: app.h 3362 2012-09-21 08:42:25Z mdootson $
+// RCS-ID:      $Id: app.h 3378 2012-09-26 14:24:00Z mdootson $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -60,6 +60,74 @@ public:
 
     DEC_V_CBACK_INT__VOID( OnExit );
     DEC_V_CBACK_BOOL__BOOL( Yield );
+    
+#if ( WXPERL_W_VERSION_GE( 2, 9, 4 ) && defined(__WXOSX_COCOA__) )
+    
+    virtual void MacOpenFiles(const wxArrayString &fileNames )
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacOpenFile" ) )
+        {
+            AV* files;
+            files = wxPli_stringarray_2_av( aTHX_ fileNames );
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR,
+                        "S", sv_2mortal( newRV_noinc( (SV*)files ) ) );
+        } else
+            wxApp::MacOpenFiles( fileNames );
+    }
+    
+    virtual void MacOpenFile(const wxString &fileName)
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacOpenFile" ) )
+        {
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR, "P", &fileName );
+        } else
+            wxApp::MacOpenFile( fileName );
+    }
+
+    virtual void MacOpenURL(const wxString &url)
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacOpenURL" ) )
+        {
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR, "P", &url );
+        } else
+            wxApp::MacOpenURL( url );
+    }
+    
+    virtual void MacPrintFile(const wxString &fileName)
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacPrintFile" ) )
+        {
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR, "P", &fileName );
+        } else
+            wxApp::MacPrintFile( fileName );
+    }    
+    
+    virtual void MacNewFile()
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacNewFile" ) )
+        {
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR, NULL );
+        } else
+            wxApp::MacNewFile();
+    }
+    
+    virtual void MacReopenApp()
+    {
+        dTHX;
+        if( wxPliFCback( aTHX_ &m_callback, "MacReopenApp" ) )
+        {
+            wxPliCCback( aTHX, &m_callback, G_DISCARD|G_SCALAR, NULL );
+        } else
+            wxApp::MacReopenApp();
+    }      
+
+#endif
+    
 };
 
 inline wxPliApp::wxPliApp( const char* package )

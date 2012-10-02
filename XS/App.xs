@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: App.xs 3361 2012-09-21 08:22:05Z mdootson $
+## RCS-ID:      $Id: App.xs 3376 2012-09-26 13:38:47Z mdootson $
 ## Copyright:   (c) 2000-2007, 2010-2011 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -288,5 +288,69 @@ wxApp::OnAssertFailure(file, line, func, cond, msg)
     wxChar* msg
   CODE:
     THIS->wxApp::OnAssertFailure( file, line, func, cond, msg );
+
+#endif
+
+#if ( WXPERL_W_VERSION_GE( 2, 9, 4 ) )
+
+bool
+wxApp::HasPendingEvents()
+
+bool
+wxApp::IsScheduledForDestruction( obj )
+    wxObject* obj
+
+void
+wxApp::ResumeProcessingOfPendingEvents()
+
+void
+wxApp::SuspendProcessingOfPendingEvents()
+
+void
+wxApp::ScheduleForDestruction( obj )
+    wxObject* obj
+
+bool
+wxApp::SafeYield( win, onlyIfNeeded )
+    wxWindow* win
+    bool onlyIfNeeded
+
+bool
+wxApp::SafeYieldFor( win, eventsToProcess );
+    wxWindow* win
+    long eventsToProcess
+
+bool
+wxApp::SetNativeTheme( theme )
+    wxString theme
+    
+#if defined(__WXOSX_COCOA__)
+
+void
+wxApp::MacOpenFiles( fileNames ) ;
+    wxArrayString fileNames
+
+void
+wxApp::MacOpenFile( fileName )
+    wxString fileName
+
+void
+wxApp::MacOpenURL( url )
+    wxString url
+
+void
+wxApp::MacPrintFile( fileName )
+    wxString fileName
+
+void
+wxApp::MacNewFile()
+
+void
+wxApp::MacReopenApp()
+
+void
+wxApp::MacHideApp()
+
+#endif
 
 #endif
