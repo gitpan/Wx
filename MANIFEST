@@ -591,4 +591,5 @@ XS/VScrolledWindow.xsp
 XS/Wave.xs
 XS/Window.xsp
 XS/Wizard.xs
-META.yml                                 Module meta-data (added by MakeMaker)
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
