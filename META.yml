@@ -35,4 +35,4 @@ resources:
   license: http://dev.perl.org/licenses/
   repository: https://wxperl.svn.sourceforge.net/svnroot/wxperl/wxPerl
   x_MailingList: http://lists.perl.org/list/wxperl-users.html
-version: 0.9915
+version: 0.9916

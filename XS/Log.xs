@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: Log.xs 3402 2012-10-01 11:18:15Z mdootson $
-## Copyright:   (c) 2000-2003, 2005-2007, 2009 Mattia Barbon
+## RCS-ID:      $Id: Log.xs 3426 2013-01-19 06:29:12Z mdootson $
+## Copyright:   (c) 2000-2003, 2005-2007, 2009, 2012-2013 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -462,8 +462,12 @@ wxLogChain::new( logger )
 wxLog*
 wxLogChain::GetOldLog()
 
+#if WXPERL_W_VERSION_GE( 2, 8, 5 )
+
 void
 wxLogChain::DetachOldLog()
+
+#endif
 
 bool
 wxLogChain::IsPassingMessages()
