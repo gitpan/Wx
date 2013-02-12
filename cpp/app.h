@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: app.h 3420 2012-11-25 04:51:59Z mdootson $
+// RCS-ID:      $Id: app.h 3430 2013-02-05 10:18:36Z mdootson $
 // Copyright:   (c) 2000-2006 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -14,6 +14,17 @@
 #undef Yield
 #endif
 
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+#include <wx/apptrait.h>
+
+class wxPerlAppTraits : public wxGUIAppTraits
+{
+public:
+    virtual void SetLocale() { }  
+};
+
+#endif
+
 class wxPliApp:public wxApp
 {
     WXPLI_DECLARE_DYNAMIC_CLASS( wxPliApp );
@@ -21,6 +32,13 @@ class wxPliApp:public wxApp
 public:
     wxPliApp( const char* package = "Wx::App" );
     ~wxPliApp();
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+
+    wxAppTraits* CreateTraits()
+    {
+        return (wxAppTraits*)new wxPerlAppTraits();
+    }
+#endif
 
     bool OnInit();
     int MainLoop();

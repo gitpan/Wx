@@ -4,8 +4,8 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     01/10/2000
-## RCS-ID:      $Id: Wx.pm 3423 2012-12-30 07:39:06Z mdootson $
-## Copyright:   (c) 2000-2011 Mattia Barbon
+## RCS-ID:      $Id: Wx.pm 3431 2013-02-11 14:05:52Z mdootson $
+## Copyright:   (c) 2000-2013 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
 #############################################################################
@@ -21,7 +21,7 @@ use vars qw(@ISA $VERSION $XS_VERSION $AUTOLOAD @EXPORT_OK %EXPORT_TAGS
 $_msw = 1; $_gtk = 2; $_motif = 3; $_mac = 4; $_x11 = 5;
 
 @ISA = qw(Exporter);
-$VERSION = '0.9916';
+$VERSION = '0.9917';
 $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -405,6 +405,44 @@ front process regardless of environment settings by calling the xs
 method directly. (Note the underscore in the method name).
 
  Wx::_MacSetFrontProcess();
+
+=head1 Locale Behaviour
+
+Beginning with 2.9.0 wxWidgets sets the application locale to the current
+system locale. Formally in wxWidgets 2.8.x, the locale by default was 'C'.
+
+A problem arises because in addition to loading gettext translation
+files, this affects other C calls like printf, sprintf,...
+
+Perl makes calls to these functions when formatting numbers.
+Number formatting always uses underlying C library functions.
+The statements 'use locale', or 'no locale' make no difference here.
+
+So, if your locale is 'de' then when Wx starts, the C library locale gets
+set accordingly.
+
+  use Wx;
+  print 8.3
+
+will output 8,3 to the terminal. Formatting uses ',' as the fractional
+separator.
+
+This, whilst possibly correct, isn't what most users will be expecting.
+
+If you want to set the locale to the system default you can do so explicitly.
+  
+  $app->{locale} = Wx::Locale->new( &Wx::wxLANGUAGE_DEFAULT );
+
+You can then also reset just the locale for number formatting to 'C' if
+that is what you require
+
+  use POSIX qw( setlocale LC_NUMERIC );
+
+  setlocale( LC_NUMERIC, C );
+
+This code applies equally regardless of which wxWidgets version is being
+used.
+
 
 =head1 Windows XP look
 
