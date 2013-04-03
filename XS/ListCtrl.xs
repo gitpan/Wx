@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     04/02/2001
-## RCS-ID:      $Id: ListCtrl.xs 3340 2012-09-12 03:21:07Z mdootson $
+## RCS-ID:      $Id: ListCtrl.xs 3447 2013-03-29 22:18:44Z mdootson $
 ## Copyright:   (c) 2001-2007, 2010 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -578,6 +578,14 @@ wxString
 wxListCtrl::GetItemText( item )
     long item
 
+wxFont*
+wxListCtrl::GetItemFont( item )
+    long item
+  CODE:
+    RETVAL = new wxFont( THIS->GetItemFont( item ) );
+  OUTPUT:
+    RETVAL
+
 wxColour*
 wxListCtrl::GetItemTextColour( item )
     long item
@@ -821,6 +829,13 @@ void
 wxListCtrl::SetItemText( item, text )
     long item
     wxString text
+
+void
+wxListCtrl::SetItemFont( item, font )
+    long item
+    wxFont* font
+  CODE:
+    THIS->SetItemFont( item, *font );
 
 void
 wxListCtrl::SetSingleStyle( style, add = true )

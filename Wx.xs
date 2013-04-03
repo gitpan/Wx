@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     01/10/2000
-// RCS-ID:      $Id: Wx.xs 3374 2012-09-26 11:37:03Z mdootson $
+// RCS-ID:      $Id: Wx.xs 3449 2013-03-30 01:08:34Z mdootson $
 // Copyright:   (c) 2000-2002, 2004-2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -533,8 +533,10 @@ INCLUDE: XS/TaskBarIcon.xs
 INCLUDE: XS/Config.xs
 INCLUDE: XS/Process.xs
 INCLUDE: XS/FontMapper.xs
-INCLUDE: XS/FontEnumerator.xs
 INCLUDE: XS/Wave.xs
+
+INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/FontEnumerator.xsp
+
 INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/ArtProvider.xsp
 
 INCLUDE_COMMAND: $^X -MExtUtils::XSpp::Cmd -e xspp -- -t typemap.xsp XS/MimeTypes.xsp

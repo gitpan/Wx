@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     29/10/2000
-// RCS-ID:      $Id: Constant.xs 3337 2012-08-29 04:02:00Z mdootson $
+// RCS-ID:      $Id: Constant.xs 3449 2013-03-30 01:08:34Z mdootson $
 // Copyright:   (c) 2000-2011 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -481,6 +481,7 @@ static wxPlINH inherit[] =
 #ifdef __WXMSW__   
     I( EnhMetaFileDC,   DC )
 #endif
+    I( PlFontEnumerator, FontEnumerator )
     
     I( BMPHandler,      ImageHandler )
     I( PNGHandler,      ImageHandler )
