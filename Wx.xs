@@ -4,7 +4,7 @@
 // Author:      Mattia Barbon
 // Modified by:
 // Created:     01/10/2000
-// RCS-ID:      $Id: Wx.xs 3449 2013-03-30 01:08:34Z mdootson $
+// RCS-ID:      $Id: Wx.xs 3470 2013-04-13 08:38:19Z mdootson $
 // Copyright:   (c) 2000-2002, 2004-2010 Mattia Barbon
 // Licence:     This program is free software; you can redistribute it and/or
 //              modify it under the same terms as Perl itself
@@ -504,6 +504,15 @@ _wx_optmod_webview()
 #endif
   OUTPUT: RETVAL
 
+bool
+_wx_optmod_ipc()
+  CODE:
+#if wxPERL_USE_IPC && wxUSE_IPC
+    RETVAL = TRUE;
+#else
+    RETVAL = FALSE;
+#endif
+  OUTPUT: RETVAL
 
 I32
 looks_like_number( sval )

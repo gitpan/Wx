@@ -4,7 +4,7 @@
 ## Author:      Mattia Barbon
 ## Modified by:
 ## Created:     29/10/2000
-## RCS-ID:      $Id: typemap 3449 2013-03-30 01:08:34Z mdootson $
+## RCS-ID:      $Id: typemap 3470 2013-04-13 08:38:19Z mdootson $
 ## Copyright:   (c) 2000-2010 Mattia Barbon
 ## Licence:     This program is free software; you can redistribute it and/or
 ##              modify it under the same terms as Perl itself
@@ -369,6 +369,7 @@ wxPlFontEnumerator *    O_NON_WXOBJECT_VXSP_THR
 wxNativeFontInfo *      O_NON_WXOBJECT_THR
 wxFont *                O_WXOBJECT_THR
 wxRegion *              O_WXOBJECT_THR
+wxRegionIterator *      O_WXOBJECT_THR
 wxIcon *                O_WXOBJECT_THR
 wxIconBundle *          O_NON_WXOBJECT
 wxIconLocation *        O_NON_WXOBJECT

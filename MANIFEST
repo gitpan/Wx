@@ -208,6 +208,15 @@ ext/html/XS/HtmlPrintout.xsp
 ext/html/XS/HtmlTag.xsp
 ext/html/XS/HtmlTagHandler.xsp
 ext/html/XS/HtmlWindow.xsp
+ext/ipc/cpp/ipc.h
+ext/ipc/IPC.xs
+ext/ipc/lib/Wx/IPC.pm
+ext/ipc/Makefile.PL
+ext/ipc/t/01_load.t
+ext/ipc/t/02_inheritance.t
+ext/ipc/t/03_threads.t
+ext/ipc/typemap
+ext/ipc/XS/IPC.xsp
 ext/Makefile.PL
 ext/mdi/cpp/mdi.h
 ext/mdi/lib/Wx/MDI.pm
@@ -591,4 +600,5 @@ XS/VScrolledWindow.xsp
 XS/Wave.xs
 XS/Window.xsp
 XS/Wizard.xs
-META.yml                                 Module meta-data (added by MakeMaker)
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
