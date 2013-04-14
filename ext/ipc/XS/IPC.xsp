@@ -138,9 +138,9 @@ wxConnection::Poke( item, data, format = wxIPC_TEXT  )
     wxIPCFormat format
   CODE:
 #if WXPERL_W_VERSION_GE( 2, 9, 0 )
-    RETVAL = THIS->Poke(item, (void*)SvPVX(data), (size_t)SvLEN(data), format);
+    RETVAL = THIS->Poke(item, (void*)SvPVX(data), (size_t)SvCUR(data), format);
 #else
-    RETVAL = THIS->Poke(item, (wxChar*)SvPVX(data), (int)SvLEN(data), format);
+    RETVAL = THIS->Poke(item, (wxChar*)SvPVX(data), (int)SvCUR(data), format);
 #endif
   OUTPUT: RETVAL
     
@@ -160,9 +160,9 @@ wxConnection::Advise( item, data, format = wxIPC_TEXT )
     wxIPCFormat format
   CODE:
 #if WXPERL_W_VERSION_GE( 2, 9, 0 )
-    RETVAL = THIS->Advise(item, (void*)SvPVX(data), (size_t)SvLEN(data), format);
+    RETVAL = THIS->Advise(item, (void*)SvPVX(data), (size_t)SvCUR(data), format);
 #else
-    RETVAL = THIS->Advise(item, (wxChar*)SvPVX(data), (int)SvLEN(data), format);
+    RETVAL = THIS->Advise(item, (wxChar*)SvPVX(data), (int)SvCUR(data), format);
 #endif
   OUTPUT: RETVAL
 
