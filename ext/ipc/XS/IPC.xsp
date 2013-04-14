@@ -19,6 +19,7 @@
 
 #if wxUSE_IPC
 
+
 #define wxUSE_DDE_FOR_IPC 1
 #include <wx/ipc.h>
 #include <cpp/ipc.h>
@@ -96,6 +97,16 @@ newBuffer( CLASS, buffer )
 #endif
   OUTPUT: RETVAL
 
+
+#if WXPERL_W_VERSION_GE( 2, 9, 0 )
+bool
+wxConnection::Execute( data )
+    SV* data
+  CODE:
+    RETVAL = THIS->Execute((void*)SvPVX(data), (size_t)SvLEN(data), wxIPC_TEXT);
+  OUTPUT: RETVAL
+
+#else
 bool
 wxConnection::Execute( data )
     wxString data
@@ -103,6 +114,7 @@ wxConnection::Execute( data )
     RETVAL = THIS->Execute( data );
   OUTPUT: RETVAL
 
+#endif
 
 void
 wxConnection::Request( item, format = wxIPC_TEXT )
@@ -118,7 +130,6 @@ wxConnection::Request( item, format = wxIPC_TEXT )
     void *buffer = (void*)THIS->Request(item, &size, format);
     EXTEND( SP, 1 );
     PUSHs( sv_2mortal( newSVpvn( (char*)buffer, size) ) );
-
 
 bool
 wxConnection::Poke( item, data, format = wxIPC_TEXT  )
