@@ -392,6 +392,7 @@ GDI.xs
 interface/wx/bannerwindow.h
 interface/wx/bmpbuttn.h
 interface/wx/button.h
+interface/wx/commandlinkbutton.h
 interface/wx/dataview/dataviewlistctrl.h
 interface/wx/dataview/dataviewliststore.h
 interface/wx/dataview/dataviewvirtuallistmodel.h
@@ -403,6 +404,7 @@ interface/wx/infobar.h
 interface/wx/rearrangectrl.h
 interface/wx/richtooltip.h
 interface/wx/treelist.h
+interface/wx/uiaction.h
 lib/Wx/Api.pod
 lib/Wx/App.pm
 lib/Wx/ArtProvider.pm
@@ -509,7 +511,7 @@ XS/EvtHandler.xs
 XS/FileCtrl.xsp
 XS/FileDialog.xs
 XS/FilePickerCtrl.xsp
-XS/FindReplaceDialog.xs
+XS/FindReplaceDialog.xsp
 XS/Font.xs
 XS/FontDialog.xs
 XS/FontEnumerator.xsp

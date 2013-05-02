@@ -19,7 +19,6 @@
 
 #if wxUSE_IPC
 
-
 #define wxUSE_DDE_FOR_IPC 1
 #include <wx/ipc.h>
 #include <cpp/ipc.h>
@@ -65,7 +64,6 @@ enum wxIPCFormat
 
 %{
 
-
 MODULE=Wx PACKAGE=Wx::Connection
 
 void
@@ -83,7 +81,8 @@ newDefault( CLASS )
   CODE:
     RETVAL = new wxPlConnection( CLASS );
   OUTPUT: RETVAL
-
+  CLEANUP:
+    wxPli_object_set_deleteable( aTHX_ ST(0), true );
 
 wxConnection*
 newBuffer( CLASS, buffer )
@@ -96,7 +95,24 @@ newBuffer( CLASS, buffer )
     RETVAL = new wxPlConnection( CLASS, (wxChar*)SvPVX(buffer), (int)SvCUR(buffer));
 #endif
   OUTPUT: RETVAL
+  CLEANUP:
+    wxPli_object_set_deleteable( aTHX_ ST(0), true );
+    
 
+static void
+wxConnection::CLONE()
+  CODE:
+    wxPli_thread_sv_clone( aTHX_ CLASS, (wxPliCloneSV)wxPli_detach_object );
+
+
+
+## // thread OK
+void
+wxConnection::DESTROY()
+  CODE:
+    wxPli_thread_sv_unregister( aTHX_ wxPli_get_class( aTHX_ ST(0) ), THIS, ST(0) );
+    if( wxPli_object_is_deleteable( aTHX_ ST(0) ) )
+        delete THIS;    
 
 #if WXPERL_W_VERSION_GE( 2, 9, 0 )
 bool
@@ -166,8 +182,20 @@ wxConnection::Advise( item, data, format = wxIPC_TEXT )
 #endif
   OUTPUT: RETVAL
 
+
 bool
 wxConnection::Disconnect()
+  CODE:
+    wxPli_object_set_deleteable( aTHX_ ST(0), true );
+    RETVAL = THIS->Disconnect();
+  OUTPUT: RETVAL
+
+bool
+wxConnection::GetConnected()
+
+void
+wxConnection::SetConnected( connected )
+    bool connected
 
 bool
 wxConnection::OnStartAdvise( topic, item )
@@ -273,6 +301,10 @@ new( CLASS )
     RETVAL = new wxPlServer( CLASS );
   OUTPUT: RETVAL
 
+void
+wxServer::Destroy()
+  CODE:
+    delete THIS;
 
 bool
 wxServer::Create( servicename )
@@ -296,6 +328,10 @@ new( CLASS )
     RETVAL = new wxPlClient( CLASS );
   OUTPUT: RETVAL
 
+void
+wxClient::Destroy()
+  CODE:
+    delete THIS;
 
 bool
 wxClient::ValidHost( host )
@@ -310,14 +346,13 @@ wxClient::MakeConnection(host, server, topic )
     RETVAL = (wxConnection*)THIS->MakeConnection(host, server, topic );
   OUTPUT: RETVAL
 
-
 wxConnection*
 wxClient::OnMakeConnection( )
   CODE:
     RETVAL = (wxConnection*)((wxPlClient*)THIS)->base_OnMakeConnection();
   OUTPUT: RETVAL
 
-
 %}
+
 
 #endif

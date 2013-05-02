@@ -1,5 +1,16 @@
 Revision history for Perl extension Wx.
 
+0.9922 Wed May 01 2013 
+    - added wxCommandLinkButton
+    - updates to ID creation methods
+    - rt#84633
+    - added wxUIActionSimulator
+    - wxFindReplaceDialog new return a hash type object
+    - wxProgressDialog updates
+    - IPC classes object deletion updates
+    - wxString conversion UTF-8 only in Unicode builds
+    - typemap template missing some specs since 0.9917
+
 0.9921 Sun Apr 14 2013
     - Fix 2.9.4 handling of wxConnection::Execute
 
